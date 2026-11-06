@@ -1,0 +1,130 @@
+
+.leaderboard-page {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 35px 25px;
+    color: inherit;
+}
+
+.leaderboard-header {
+    text-align: center;
+    margin-bottom: 35px;
+    position: relative;
+}
+
+.leaderboard-header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 20px 0 10px;
+}
+
+.leaderboard-header p {
+    font-size: 15px;
+    opacity: 0.75;
+}
+
+.leaderboard-header .back-btn {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.leaderboard-loading,
+.leaderboard-empty,
+.leaderboard-error {
+    text-align: center;
+    padding: 45px 20px;
+    border-radius: 14px;
+    background: rgba(128, 128, 128, 0.08);
+}
+
+.leaderboard-error {
+    color: #dc3545;
+}
+
+.leaderboard-error button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.leaderboard-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 14px;
+    box-shadow: 0 5px 22px rgba(0, 0, 0, 0.08);
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    min-width: 650px;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+    padding: 17px 20px;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.18);
+}
+
+.leaderboard-table th {
+    background: #6c4ce4;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.leaderboard-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.leaderboard-table tbody tr:hover {
+    background: rgba(128, 128, 128, 0.08);
+}
+
+.leaderboard-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.leaderboard-rank {
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.leaderboard-player {
+    font-weight: 700;
+}
+
+.leaderboard-score {
+    font-weight: 800;
+    color: #6c4ce4;
+}
+
+@media (max-width: 600px) {
+    .leaderboard-page {
+        padding: 25px 12px;
+    }
+
+    .leaderboard-header h1 {
+        font-size: 25px;
+        margin-top: 55px;
+    }
+
+    .leaderboard-header p {
+        font-size: 13px;
+    }
+
+    .leaderboard-table th,
+    .leaderboard-table td {
+        padding: 13px 12px;
+    }
+}

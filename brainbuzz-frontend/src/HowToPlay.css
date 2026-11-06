@@ -1,0 +1,127 @@
+
+.how-to-play-page {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 35px 22px;
+}
+
+.how-to-play-header {
+    text-align: center;
+    position: relative;
+    margin-bottom: 35px;
+}
+
+.how-back-btn {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.how-to-play-header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 20px 0 10px;
+}
+
+.how-to-play-header p {
+    opacity: 0.7;
+    font-size: 15px;
+}
+
+.how-to-play-content {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.how-card {
+    padding: 25px 22px;
+    border-radius: 15px;
+    background: rgba(128, 128, 128, 0.08);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease;
+}
+
+.how-card:hover {
+    transform: translateY(-5px);
+}
+
+.how-icon {
+    font-size: 35px;
+}
+
+.how-card h3 {
+    font-size: 18px;
+    margin: 15px 0 10px;
+}
+
+.how-card p {
+    font-size: 14px;
+    line-height: 1.7;
+    opacity: 0.75;
+}
+
+.how-start-section {
+    text-align: center;
+    margin-top: 40px;
+    padding: 30px 20px;
+    border-radius: 16px;
+    background: rgba(108, 76, 228, 0.09);
+}
+
+.how-start-section h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.how-start-section p {
+    opacity: 0.75;
+    margin-bottom: 20px;
+}
+
+.how-start-btn {
+    padding: 13px 28px;
+    border: none;
+    border-radius: 9px;
+    background: #6c4ce4;
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.how-start-btn:hover {
+    transform: translateY(-3px);
+}
+
+@media (max-width: 800px) {
+    .how-to-play-content {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 550px) {
+    .how-to-play-page {
+        padding: 25px 12px;
+    }
+
+    .how-to-play-header h1 {
+        font-size: 24px;
+        margin-top: 55px;
+    }
+
+    .how-to-play-content {
+        grid-template-columns: 1fr;
+    }
+
+    .how-start-section h2 {
+        font-size: 20px;
+    }
+}

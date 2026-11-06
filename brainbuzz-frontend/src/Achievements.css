@@ -1,0 +1,150 @@
+
+.achievements-page {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 35px 22px;
+}
+
+.achievements-header {
+    position: relative;
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.achievements-back-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.achievements-header h1 {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 20px 0 10px;
+}
+
+.achievements-header p {
+    font-size: 15px;
+    opacity: 0.7;
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.achievement-card {
+    padding: 27px 22px;
+    text-align: center;
+    border-radius: 15px;
+    background: rgba(128, 128, 128, 0.08);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease;
+}
+
+.achievement-card:hover {
+    transform: translateY(-5px);
+}
+
+.achievement-card.locked {
+    opacity: 0.55;
+}
+
+.achievement-icon {
+    width: 75px;
+    height: 75px;
+    margin: 0 auto 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(108, 76, 228, 0.12);
+    font-size: 38px;
+}
+
+.achievement-card h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.achievement-card p {
+    font-size: 14px;
+    line-height: 1.6;
+    opacity: 0.7;
+    min-height: 45px;
+}
+
+.achievement-status {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 7px 14px;
+    border-radius: 20px;
+    background: rgba(22, 128, 60, 0.1);
+    color: #16803c;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.achievement-card.locked .achievement-status {
+    background: rgba(128, 128, 128, 0.15);
+    color: inherit;
+}
+
+.achievements-message {
+    padding: 45px 20px;
+    text-align: center;
+    border-radius: 14px;
+    background: rgba(128, 128, 128, 0.08);
+}
+
+.achievements-message h3 {
+    margin: 12px 0;
+}
+
+.achievements-message p {
+    opacity: 0.7;
+}
+
+.achievements-empty-icon {
+    font-size: 45px;
+}
+
+.achievements-error {
+    color: #dc3545;
+}
+
+.achievements-error button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+@media (max-width: 800px) {
+    .achievements-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 550px) {
+    .achievements-page {
+        padding: 25px 12px;
+    }
+
+    .achievements-header h1 {
+        font-size: 25px;
+        margin-top: 55px;
+    }
+
+    .achievements-grid {
+        grid-template-columns: 1fr;
+    }
+}
