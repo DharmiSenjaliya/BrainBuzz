@@ -408,10 +408,7 @@ function App() {
                 headers: { Authorization: `Bearer ${token}` },
             })
 
-            if (
-                response.data.success &&
-                response.data.questions?.length > 0
-            ) {
+            if (response.data.questions?.length > 0) {
                 setQuestions(response.data.questions)
                 setSelectedLevel(level)
                 resetGame()
@@ -1061,7 +1058,7 @@ function App() {
     }
 
     // DASHBOARD
-    if (showDashboard && questions.length > 0) {
+if (showDashboard) {
         const maxLevelToShow = Math.max(10, currentUnlockedLevel + 4)
 
         return (

@@ -1,0 +1,40 @@
+.admin-dashboard {
+    min-height: 100vh;
+    background: #0f172a;
+    color: white;
+    padding: 25px;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: #1e293b;
+    border-radius: 12px;
+}
+
+.admin-header h2 {
+    margin: 0;
+}
+
+.admin-header button {
+    padding: 10px 22px;
+    border: none;
+    border-radius: 8px;
+    background: #7c3aed;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.admin-content {
+    margin-top: 30px;
+    padding: 25px;
+    background: #1e293b;
+    border-radius: 12px;
+}
+
+.admin-content h3 {
+    margin-top: 0;
+}

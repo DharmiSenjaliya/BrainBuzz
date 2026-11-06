@@ -6,6 +6,12 @@ function Profile({ user, onBack, onEditProfile, onChangePassword }) {
     const email = user?.email || 'Email not available'
     const image = user?.profile_image || user?.avatar || user?.profile_photo
 
+    const imageUrl = image
+        ? image.startsWith('http')
+            ? image
+            : `http://127.0.0.1:8000/storage/${image.replace(/^\/?storage\//, '')}`
+        : null
+
     return (
         <div className="profile-page">
             <div className="profile-header">
@@ -19,8 +25,14 @@ function Profile({ user, onBack, onEditProfile, onChangePassword }) {
 
             <div className="profile-card">
                 <div className="profile-avatar">
-                    {image ? (
-                        <img src={image} alt="Profile" />
+                    {imageUrl ? (
+                       <img
+                        src={`http://127.0.0.1:8000/storage/${image.replace(/^\/?storage\//, '')}`}
+                        alt="Profile"
+                        onError={(e) => {
+                            console.log('Profile image failed:', e.target.src)
+                        }}
+                    />
                     ) : (
                         <span>{name.charAt(0).toUpperCase()}</span>
                     )}
