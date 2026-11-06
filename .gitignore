@@ -1,0 +1,17 @@
+# Laravel backend
+/brainbuzz-backend/.env
+/brainbuzz-backend/.env.*
+!/brainbuzz-backend/.env.example
+/brainbuzz-backend/vendor/
+/brainbuzz-backend/storage/*.key
+/brainbuzz-backend/storage/logs/
+/brainbuzz-backend/bootstrap/cache/*.php
+
+# React frontend
+/brainbuzz-frontend/node_modules/
+/brainbuzz-frontend/dist/
+
+# General
+.DS_Store
+Thumbs.db
+*.log
