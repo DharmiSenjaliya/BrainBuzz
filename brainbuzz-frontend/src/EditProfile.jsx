@@ -1,5 +1,6 @@
 
 import { useState } from 'react'
+import Select from 'react-select'
 import {
     getCountries,
     getCountryCallingCode,
@@ -8,17 +9,32 @@ import {
 import './EditProfile.css'
 import api from './services/api'
 
-// Get all supported countries
 const countryNames = new Intl.DisplayNames(['en'], {
     type: 'region',
 })
 
+function getFlag(countryCode) {
+    return String.fromCodePoint(
+        ...countryCode
+            .toUpperCase()
+            .split('')
+            .map((char) => 127397 + char.charCodeAt(0))
+    )
+}
+
 const countries = getCountries()
-    .map((code) => ({
-        code,
-        name: countryNames.of(code) || code,
-        dialCode: getCountryCallingCode(code),
-    }))
+    .map((code) => {
+        const name = countryNames.of(code) || code
+        const dialCode = getCountryCallingCode(code)
+
+        return {
+            value: code,
+            name,
+            dialCode,
+            flag: getFlag(code),
+            label: `${getFlag(code)} ${name} (+${dialCode})`,
+        }
+    })
     .sort((a, b) => a.name.localeCompare(b.name))
 
 function getInitialPhoneData(value) {
@@ -35,19 +51,7 @@ function getInitialPhoneData(value) {
         }
     }
 
-    return {
-        country: 'IN',
-        phone: value,
-    }
-}
-
-function getFlag(countryCode) {
-    return String.fromCodePoint(
-        ...countryCode
-            .toUpperCase()
-            .split('')
-            .map((char) => 127397 + char.charCodeAt(0))
-    )
+    return { country: 'IN', phone: value }
 }
 
 function EditProfile({ user, onBack, onProfileUpdated }) {
@@ -62,14 +66,12 @@ function EditProfile({ user, onBack, onProfileUpdated }) {
     const [phoneError, setPhoneError] = useState('')
 
     const selectedCountry = countries.find(
-        (item) => item.code === country
+        (item) => item.value === country
     )
 
-    const handlePhoneChange = (value) => {
-        setPhone(value)
-        setPhoneError('')
-        setMessage('')
-    }
+    const selectedOption = selectedCountry || countries.find(
+        (item) => item.value === 'IN'
+    )
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -158,39 +160,135 @@ function EditProfile({ user, onBack, onProfileUpdated }) {
 
                 <label>Phone Number</label>
 
-                <div className="international-phone-group">
+                <div className="phone-input-wrapper">
 
-                    <select
-                        className="country-select"
-                        value={country}
+                    <div className="phone-country-select">
+                        <Select
+                            className="country-react-select"
+                            classNamePrefix="country"
+                            options={countries}
+                            value={selectedOption}
+                            onChange={(option) => {
+                                if (option) {
+                                    setCountry(option.value)
+                                    setPhoneError('')
+                                    setMessage('')
+                                }
+                            }}
+                            isSearchable
+                            isClearable={false}
+                            placeholder="Country"
+                            noOptionsMessage={() => 'No country found'}
+                            filterOption={(option, inputValue) => {
+                                const search = inputValue
+                                    .toLowerCase()
+                                    .replace('+', '')
+                                    .trim()
+
+                                return (
+                                    option.data.name.toLowerCase().includes(search) ||
+                                    option.data.value.toLowerCase().includes(search) ||
+                                    option.data.dialCode.includes(search) ||
+                                    (search === 'usa' && option.data.value === 'US') ||
+                                    (search === 'uk' && option.data.value === 'GB')
+                                )
+                            }}
+                            formatOptionLabel={(option, { context }) => (
+                                <span>
+                                    {context === 'value'
+                                        ? `${option.flag} +${option.dialCode}`
+                                        : `${option.flag} ${option.name} (+${option.dialCode})`
+                                    }
+                                </span>
+                            )}
+                            menuPortalTarget={document.body}
+                            menuPosition="fixed"
+                            styles={{
+                                container: (base) => ({
+                                    ...base,
+                                    width: '100%',
+                                }),
+                                control: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: '#0f172a',
+                                    border: 'none',
+                                    borderRight: '1px solid #475569',
+                                    borderRadius: '8px 0 0 8px',
+                                    minHeight: '46px',
+                                    boxShadow: 'none',
+                                    cursor: 'text',
+                                }),
+                                valueContainer: (base) => ({
+                                    ...base,
+                                    padding: '0 4px 0 10px',
+                                    flexWrap: 'nowrap',
+                                }),
+                                singleValue: (base) => ({
+                                    ...base,
+                                    color: 'white',
+                                    whiteSpace: 'nowrap',
+                                    fontWeight: 600,
+                                }),
+                                input: (base) => ({
+                                    ...base,
+                                    color: 'white',
+                                    margin: 0,
+                                    padding: 0,
+                                }),
+                                indicatorsContainer: (base) => ({
+                                    ...base,
+                                    paddingRight: 4,
+                                }),
+                                dropdownIndicator: (base) => ({
+                                    ...base,
+                                    color: '#a78bfa',
+                                    padding: 4,
+                                }),
+                                indicatorSeparator: () => ({
+                                    display: 'none',
+                                }),
+                                menuPortal: (base) => ({
+                                    ...base,
+                                    zIndex: 9999,
+                                }),
+                                menu: (base) => ({
+                                    ...base,
+                                    backgroundColor: '#1e293b',
+                                    width: '250px',
+                                }),
+                                menuList: (base) => ({
+                                    ...base,
+                                    maxHeight: '220px',
+                                }),
+                                option: (base, state) => ({
+                                    ...base,
+                                    backgroundColor: state.isFocused
+                                        ? '#334155'
+                                        : '#1e293b',
+                                    color: 'white',
+                                    cursor: 'pointer',
+                                }),
+                                placeholder: (base) => ({
+                                    ...base,
+                                    color: '#94a3b8',
+                                }),
+                            }}
+                        />
+                    </div>
+
+                    <input
+                        type="tel"
+                        className="phone-number-input"
+                        value={phone}
                         onChange={(e) => {
-                            setCountry(e.target.value)
+                            setPhone(e.target.value)
                             setPhoneError('')
                             setMessage('')
                         }}
-                    >
-                        {countries.map((item) => (
-                            <option key={item.code} value={item.code}>
-                                {getFlag(item.code)} {item.name} (+{item.dialCode})
-                            </option>
-                        ))}
-                    </select>
-
-                    <div className="phone-input-wrapper">
-                        <span className="phone-country-code">
-                            +{selectedCountry?.dialCode}
-                        </span>
-
-                        <input
-                            type="tel"
-                            className="phone-number-input"
-                            value={phone}
-                            onChange={(e) => handlePhoneChange(e.target.value)}
-                            placeholder="Enter phone number"
-                            inputMode="tel"
-                            autoComplete="tel-national"
-                        />
-                    </div>
+                        placeholder="Enter phone number"
+                        inputMode="tel"
+                        autoComplete="tel-national"
+                    />
                 </div>
 
                 {phoneError && (
@@ -200,7 +298,7 @@ function EditProfile({ user, onBack, onProfileUpdated }) {
                 )}
 
                 <small className="phone-help-text">
-                    Select your country and enter your phone number.
+                    Click the country code to change your country.
                 </small>
 
                 <label>Profile Image</label>

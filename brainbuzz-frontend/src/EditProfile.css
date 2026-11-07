@@ -157,3 +157,57 @@
         font-size: 12px;
     }
 }
+
+/* Country Search Box */
+
+.country-search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    background: #0f172a;
+    color: white;
+    font-size: 14px;
+}
+
+.country-search-input::placeholder {
+    color: #94a3b8;
+}
+
+.country-search-input:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+}
+
+.phone-input-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    background: #0f172a;
+    overflow: visible;
+    position: relative;
+}
+
+.phone-country-select {
+    width: 145px;
+    min-width: 145px;
+    flex-shrink: 0;
+}
+
+.edit-profile-form .phone-number-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    border-radius: 0 8px 8px 0;
+    box-shadow: none;
+    background: transparent;
+}
+
+.phone-number-input:focus {
+    outline: none;
+    box-shadow: none;
+}

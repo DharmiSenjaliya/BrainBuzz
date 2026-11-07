@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use libphonenumber\PhoneNumberUtil;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\NumberParseException;
 
 class ProfileController extends Controller
 {
@@ -12,9 +14,44 @@ class ProfileController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|string|max:16|regex:/^\+[1-9]\d{1,14}$/',
             'profile_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
+
+        // Country-wise phone number validation
+        if (!empty($validated['phone'])) {
+            try {
+                $phoneUtil = PhoneNumberUtil::getInstance();
+
+                $phoneNumber = $phoneUtil->parse(
+                    $validated['phone'],
+                    null
+                );
+
+                if (!$phoneUtil->isValidNumber($phoneNumber)) {
+                    return response()->json([
+                        'message' => 'Please enter a valid international phone number.',
+                        'errors' => [
+                            'phone' => ['Invalid phone number for the selected country.']
+                        ]
+                    ], 422);
+                }
+
+                // Store number in international E.164 format
+                $validated['phone'] = $phoneUtil->format(
+                    $phoneNumber,
+                    PhoneNumberFormat::E164
+                );
+
+            } catch (NumberParseException $e) {
+                return response()->json([
+                    'message' => 'Invalid phone number.',
+                    'errors' => [
+                        'phone' => ['Please enter a valid international phone number.']
+                    ]
+                ], 422);
+            }
+        }
 
         $user = $request->user();
 

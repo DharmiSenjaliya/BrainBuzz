@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import api from './services/api'
 import './Feedback.css'
@@ -9,6 +8,14 @@ function Feedback({ onBack }) {
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState('')
     const [error, setError] = useState('')
+
+    const ratingDetails = {
+        1: { label: 'Poor', emoji: '😞', text: 'We will try to improve!' },
+        2: { label: 'Needs Improvement', emoji: '😕', text: 'Thanks for your honesty!' },
+        3: { label: 'Good', emoji: '🙂', text: 'Glad you enjoyed it!' },
+        4: { label: 'Very Good', emoji: '😄', text: 'We appreciate your support!' },
+        5: { label: 'Excellent', emoji: '🤩', text: 'Awesome! Thank you!' },
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -54,79 +61,135 @@ function Feedback({ onBack }) {
 
     return (
         <div className="feedback-page">
-            <div className="feedback-header">
+
+            <div className="feedback-topbar">
                 <button className="feedback-back-btn" onClick={onBack}>
-                    ← Back
+                    <span>←</span> Back to Dashboard
                 </button>
 
-                <h1>💬 Share Your Feedback</h1>
-                <p>Your suggestions help us improve BrainBuzz!</p>
+                <span className="feedback-brand">
+                    <span className="feedback-brand-icon">B</span>
+                    BrainBuzz
+                </span>
             </div>
 
-            <form className="feedback-card" onSubmit={handleSubmit}>
-                <h2>How was your experience?</h2>
+            <div className="feedback-content">
 
-                <div className="feedback-rating">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                            key={star}
-                            type="button"
-                            className={`feedback-star ${
-                                star <= rating ? 'active' : ''
-                            }`}
-                            onClick={() => setRating(star)}
-                            aria-label={`Rate ${star} stars`}
-                        >
-                            ★
-                        </button>
-                    ))}
+                <div className="feedback-intro">
+                    <span className="feedback-eyebrow">
+                        <span className="feedback-live-dot"></span>
+                        YOUR VOICE MATTERS
+                    </span>
+
+                    <h1>
+                        Help us make
+                        <span> BrainBuzz better.</span>
+                    </h1>
+
+                    <p>
+                        Your feedback helps us create a smarter,
+                        better and more enjoyable gaming experience.
+                    </p>
                 </div>
 
-                <p className="feedback-rating-label">
-                    {rating === 5
-                        ? 'Excellent!'
-                        : rating === 4
-                        ? 'Very Good!'
-                        : rating === 3
-                        ? 'Good'
-                        : rating === 2
-                        ? 'Needs Improvement'
-                        : 'Poor'}
-                </p>
+                <form className="feedback-card" onSubmit={handleSubmit}>
 
-                <label htmlFor="feedback-message">
-                    Your Feedback
-                </label>
+                    <div className="feedback-card-heading">
+                        <div>
+                            <span className="feedback-step">YOUR EXPERIENCE</span>
+                            <h2>How was your experience?</h2>
+                            <p>Rate your overall experience with BrainBuzz.</p>
+                        </div>
 
-                <textarea
-                    id="feedback-message"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Tell us what you think..."
-                    rows="6"
-                    maxLength="1000"
-                />
+                        <div className="feedback-heading-icon">✦</div>
+                    </div>
 
-                <div className="feedback-character-count">
-                    {message.length}/1000
+                    <div className="feedback-rating-box">
+
+                        <div className="feedback-stars">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <button
+                                    key={star}
+                                    type="button"
+                                    className={`feedback-star ${
+                                        star <= rating ? 'active' : ''
+                                    }`}
+                                    onClick={() => setRating(star)}
+                                    aria-label={`Rate ${star} stars`}
+                                >
+                                    ★
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="feedback-rating-result">
+                            <span className="feedback-rating-emoji">
+                                {ratingDetails[rating].emoji}
+                            </span>
+
+                            <div>
+                                <strong>{ratingDetails[rating].label}</strong>
+                                <small>{ratingDetails[rating].text}</small>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div className="feedback-divider"></div>
+
+                    <div className="feedback-message-heading">
+                        <label htmlFor="feedback-message">
+                            Tell us more
+                        </label>
+                        <span>Required</span>
+                    </div>
+
+                    <textarea
+                        id="feedback-message"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Share your thoughts, suggestions or ideas..."
+                        rows="6"
+                        maxLength="1000"
+                    />
+
+                    <div className="feedback-character-count">
+                        <span>We'd love to hear your thoughts.</span>
+                        <strong>{message.length}/1000</strong>
+                    </div>
+
+                    {success && (
+                        <div className="feedback-success">
+                            <span>✓</span> {success}
+                        </div>
+                    )}
+
+                    {error && (
+                        <div className="feedback-error">
+                            <span>!</span> {error}
+                        </div>
+                    )}
+
+                    <button
+                        className="feedback-submit-btn"
+                        type="submit"
+                        disabled={loading}
+                    >
+                        {loading ? 'Submitting...' : 'Submit Feedback'}
+                        {!loading && <span>→</span>}
+                    </button>
+
+                    <p className="feedback-privacy">
+                        🔒 Your feedback is valuable and helps us improve.
+                    </p>
+
+                </form>
+
+                <div className="feedback-footer">
+                    Made with <span>♥</span> for the BrainBuzz community
                 </div>
 
-                {success && (
-                    <div className="feedback-success">{success}</div>
-                )}
-
-                {error && (
-                    <div className="feedback-error">{error}</div>
-                )}
-
-                <button
-                    className="feedback-submit-btn"
-                    type="submit"
-                    disabled={loading}
-                >
-                    {loading ? 'Submitting...' : 'Submit Feedback'}
-                </button>
-            </form>
+            </div>
         </div>
     )
 }
