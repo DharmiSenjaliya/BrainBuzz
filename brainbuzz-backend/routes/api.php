@@ -23,6 +23,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/game-history', [GameResultController::class, 'history']);
 Route::get('/leaderboard', [GameResultController::class, 'leaderboard']);
+Route::get('/achievements', [GameResultController::class, 'achievements']);
+
 
     Route::post('/logout', [AuthController::class, 'logout']);
 Route::post('/change-password', [AuthController::class, 'changePassword']);

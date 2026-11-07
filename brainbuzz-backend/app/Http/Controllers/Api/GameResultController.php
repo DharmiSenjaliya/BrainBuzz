@@ -132,6 +132,91 @@ class GameResultController extends Controller
         ]);
     }
 
+    // Player achievements
+public function achievements(Request $request)
+{
+    $userId = $request->user()->id;
+
+    $results = GameResult::where('user_id', $userId)->get();
+
+    $gamesPlayed = $results->count();
+    $totalScore = $results->sum('score');
+
+    $completedLevels = $results
+        ->where('passed', true)
+        ->pluck('level')
+        ->unique()
+        ->count();
+
+    $perfectGame = $results->contains(function ($result) {
+        return $result->total_questions > 0 &&
+            $result->correct_answers === $result->total_questions;
+    });
+
+    $achievements = [
+        [
+            'id' => 1,
+            'name' => 'First Game',
+            'description' => 'Complete your first game.',
+            'icon' => '🏅',
+            'earned' => $gamesPlayed >= 1,
+        ],
+        [
+            'id' => 2,
+            'name' => '5 Games Played',
+            'description' => 'Complete 5 games.',
+            'icon' => '🎮',
+            'earned' => $gamesPlayed >= 5,
+        ],
+        [
+            'id' => 3,
+            'name' => '100 Points',
+            'description' => 'Earn 100 total points.',
+            'icon' => '💯',
+            'earned' => $totalScore >= 100,
+        ],
+        [
+            'id' => 4,
+            'name' => '500 Points',
+            'description' => 'Earn 500 total points.',
+            'icon' => '⭐',
+            'earned' => $totalScore >= 500,
+        ],
+        [
+            'id' => 5,
+            'name' => 'Perfect Game',
+            'description' => 'Answer every question correctly in one game.',
+            'icon' => '🎯',
+            'earned' => $perfectGame,
+        ],
+        [
+            'id' => 6,
+            'name' => 'Level 1 Completed',
+            'description' => 'Successfully complete Level 1.',
+            'icon' => '🥇',
+            'earned' => $results->contains(function ($result) {
+                return $result->level == 1 && $result->passed;
+            }),
+        ],
+        [
+            'id' => 7,
+            'name' => '3 Levels Completed',
+            'description' => 'Successfully complete 3 different levels.',
+            'icon' => '🏆',
+            'earned' => $completedLevels >= 3,
+        ],
+    ];
+
+    return response()->json([
+        'success' => true,
+        'achievements' => $achievements,
+        'earned_count' => collect($achievements)
+            ->where('earned', true)
+            ->count(),
+        'total_achievements' => count($achievements),
+    ]);
+}
+
     // Player level-wise progress
     public function levelProgress(Request $request)
     {
