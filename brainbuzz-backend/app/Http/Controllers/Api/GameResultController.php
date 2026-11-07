@@ -1,0 +1,181 @@
+<?php
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\GameResult;
+use App\Models\User;
+use Illuminate\Http\Request;
+
+class GameResultController extends Controller
+{
+    // Save player's game result
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'level' => 'required|integer|min:1',
+            'score' => 'required|integer|min:0',
+            'correct_answers' => 'required|integer|min:0|max:5',
+            'wrong_answers' => 'required|integer|min:0|max:5',
+            'total_questions' => 'required|integer|min:1|max:5',
+            'passed' => 'required|boolean',
+        ]);
+
+        if (
+            $validated['correct_answers'] + $validated['wrong_answers']
+            !== $validated['total_questions']
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid game result.',
+            ], 422);
+        }
+
+        $result = GameResult::create([
+            ...$validated,
+            'user_id' => $request->user()->id,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Game result saved successfully!',
+            'result' => $result,
+        ], 201);
+    }
+
+    // Player's game history
+    public function history(Request $request)
+    {
+        $results = GameResult::where('user_id', $request->user()->id)
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'results' => $results,
+        ]);
+    }
+
+    // Player dashboard statistics
+    public function dashboard(Request $request)
+    {
+        $results = GameResult::where('user_id', $request->user()->id);
+
+        $gamesPlayed = (clone $results)->count();
+        $totalScore = (clone $results)->sum('score');
+        $totalCorrect = (clone $results)->sum('correct_answers');
+        $totalWrong = (clone $results)->sum('wrong_answers');
+        $totalQuestions = (clone $results)->sum('total_questions');
+
+        $accuracy = $totalQuestions > 0
+            ? round(($totalCorrect / $totalQuestions) * 100)
+            : 0;
+
+        return response()->json([
+            'success' => true,
+            'stats' => [
+                'games_played' => $gamesPlayed,
+                'total_score' => $totalScore,
+                'total_correct' => $totalCorrect,
+                'total_wrong' => $totalWrong,
+                'accuracy' => $accuracy,
+            ],
+        ]);
+    }
+
+    // Leaderboard - All players ranking
+    public function leaderboard(Request $request)
+    {
+        $players = User::joinSub(
+            GameResult::selectRaw('
+                user_id,
+                SUM(score) as total_score,
+                COUNT(*) as games_played,
+                SUM(correct_answers) as total_correct,
+                SUM(total_questions) as total_questions
+            ')
+            ->groupBy('user_id'),
+            'game_stats',
+            'users.id',
+            '=',
+            'game_stats.user_id'
+        )
+        ->select(
+            'users.id',
+            'users.name',
+            'game_stats.total_score',
+            'game_stats.games_played'
+        )
+        ->selectRaw('
+            ROUND(
+                (game_stats.total_correct / NULLIF(game_stats.total_questions, 0)) * 100,
+                1
+            ) as accuracy
+        ')
+        ->orderByDesc('game_stats.total_score')
+        ->orderBy('users.name')
+        ->get();
+
+        $leaderboard = $players->values()->map(function ($player, $index) {
+            $player->rank = $index + 1;
+            return $player;
+        });
+
+        $currentPlayer = $leaderboard->firstWhere(
+            'id',
+            $request->user()->id
+        );
+
+        return response()->json([
+            'success' => true,
+            'leaderboard' => $leaderboard,
+            'current_user_rank' => $currentPlayer->rank ?? null,
+        ]);
+    }
+
+    // Player level-wise progress
+    public function levelProgress(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        $results = GameResult::where('user_id', $userId)
+            ->get()
+            ->groupBy('level');
+
+        $levels = [];
+        $currentLevel = 1;
+
+        for ($level = 1; $level <= 50; $level++) {
+            $levelResults = $results->get($level, collect());
+
+            $bestCorrect = $levelResults->max('correct_answers') ?? 0;
+
+            $isCompleted = $levelResults->contains(
+                fn ($result) => $result->passed
+            );
+
+            $isUnlocked = $level === 1 || $currentLevel >= $level;
+
+            $stars = $bestCorrect >= 5 ? 3 :
+                ($bestCorrect >= 4 ? 2 :
+                ($bestCorrect >= 3 ? 1 : 0));
+
+            $levels[] = [
+                'level' => $level,
+                'is_unlocked' => $isUnlocked,
+                'is_completed' => $isCompleted,
+                'stars' => $stars,
+                'best_correct_answers' => $bestCorrect,
+            ];
+
+            if ($isCompleted && $level === $currentLevel) {
+                $currentLevel++;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'current_level' => $currentLevel,
+            'levels' => $levels,
+        ]);
+    }
+}

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 class QuestionController extends Controller
 {
+    // Get 5 random active questions for selected level
     public function index(Request $request)
     {
         $validated = $request->validate([
@@ -32,6 +33,45 @@ class QuestionController extends Controller
         ]);
     }
 
+    // Check player's answer
+    public function checkAnswer(Request $request)
+    {
+        $validated = $request->validate([
+            'question_id' => 'required|integer|exists:questions,id',
+            'answer' => 'required|string|max:255',
+        ]);
+
+        $question = Question::where('id', $validated['question_id'])
+            ->where('is_active', true)
+            ->first();
+
+        if (!$question) {
+            return response()->json([
+                'correct' => false,
+                'points' => 0,
+                'message' => 'Question is not available.',
+            ], 404);
+        }
+
+        $playerAnswer = mb_strtolower(trim($validated['answer']));
+        $correctAnswer = mb_strtolower(trim($question->answer));
+
+        if ($playerAnswer === $correctAnswer) {
+            return response()->json([
+                'correct' => true,
+                'points' => (int) $question->points,
+                'message' => 'Correct answer!',
+            ]);
+        }
+
+        return response()->json([
+            'correct' => false,
+            'points' => 0,
+            'message' => 'Wrong answer! Try again.',
+        ]);
+    }
+
+    // Add new question
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -53,6 +93,7 @@ class QuestionController extends Controller
         ], 201);
     }
 
+    // Get all questions for admin
     public function adminIndex()
     {
         return response()->json([
@@ -62,6 +103,7 @@ class QuestionController extends Controller
         ]);
     }
 
+    // Update question
     public function update(Request $request, Question $question)
     {
         $validated = $request->validate([
@@ -83,6 +125,7 @@ class QuestionController extends Controller
         ]);
     }
 
+    // Delete question
     public function destroy(Question $question)
     {
         $question->delete();

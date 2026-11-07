@@ -399,6 +399,7 @@ function App() {
     }
 }
 
+
     const fetchQuestions = async (token, level = selectedLevel) => {
         try {
             setLoading(true)
@@ -629,64 +630,81 @@ function App() {
     }
 
     // CHECK ANSWER
-    const checkAnswer = async () => {
-        if (!answer.trim()) {
-            setMessage('Please enter your answer!')
-            return
-        }
+   // CHECK ANSWER
+const checkAnswer = async () => {
+    if (!answer.trim()) {
+        setMessage('Please enter your answer!')
+        return
+    }
 
-        if (
-            checking ||
-            completed ||
-            answeredCorrectly ||
-            questionFinished ||
-            !question
-        ) return
+    if (
+        checking ||
+        completed ||
+        answeredCorrectly ||
+        questionFinished ||
+        !question
+    ) return
 
-        try {
-            setChecking(true)
-            setMessage('Checking your answer...')
+    const token = localStorage.getItem('brainbuzz_token')
 
-            const response = await api.post('/check-answer', {
+    if (!token) {
+        setMessage('Please login again to continue playing.')
+        return
+    }
+
+    try {
+        setChecking(true)
+        setMessage('Checking your answer...')
+
+        const response = await api.post(
+            '/check-answer',
+            {
                 question_id: question.id,
                 answer: answer.trim(),
-            })
-
-            if (response.data.correct === true) {
-                setScore((previous) => previous + response.data.points)
-                setCorrectCount((previous) => previous + 1)
-
-                setMessage(
-                    `🎉 Correct Answer! You earned ${response.data.points} points.`
-                )
-
-                setAnsweredCorrectly(true)
-                setAnswer('')
-            } else {
-                const remaining = attempts - 1
-                setAttempts(remaining)
-                setAnswer('')
-
-                if (remaining === 0) {
-                    setWrongCount((previous) => previous + 1)
-                    setQuestionFinished(true)
-                    setMessage('❌ No attempts left! Move to the next question.')
-                } else {
-                    setMessage(
-                        `❌ Wrong Answer! ${remaining} attempts remaining.`
-                    )
-                }
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
             }
-        } catch (error) {
-            console.error('Answer API Error:', error)
+        )
+
+        if (response.data.correct === true) {
+            setScore((previous) => previous + response.data.points)
+            setCorrectCount((previous) => previous + 1)
+
             setMessage(
-                error.response?.data?.message ||
-                'Something went wrong. Please try again.'
+                `🎉 Correct Answer! You earned ${response.data.points} points.`
             )
-        } finally {
-            setChecking(false)
+
+            setAnsweredCorrectly(true)
+            setAnswer('')
+        } else {
+            const remaining = attempts - 1
+            setAttempts(remaining)
+            setAnswer('')
+
+            if (remaining === 0) {
+                setWrongCount((previous) => previous + 1)
+                setQuestionFinished(true)
+                setMessage('❌ No attempts left! Move to the next question.')
+            } else {
+                setMessage(
+                    `❌ Wrong Answer! ${remaining} attempts remaining.`
+                )
+            }
         }
+    } catch (error) {
+        console.error('Answer API Error:', error)
+
+        setMessage(
+            error.response?.data?.message ||
+            'Something went wrong. Please try again.'
+        )
+    } finally {
+        setChecking(false)
     }
+}
 
     // NEXT QUESTION / SAVE RESULT
     const nextQuestion = async () => {
@@ -706,8 +724,7 @@ function App() {
         const totalQuestions = questions.length
         const finalWrong = totalQuestions - finalCorrect
         const finalScore = score
-        const passed = totalQuestions === 5 && finalCorrect >= 3
-
+        const passed = totalQuestions > 0 && finalCorrect >= Math.min(3, totalQuestions)  
         setCompleted(true)
         setMessage('')
         setSavingResult(true)
@@ -1243,8 +1260,8 @@ if (showDashboard) {
             ? Math.round((correctCount / totalQuestions) * 100)
             : 0
 
-        const passed = totalQuestions === 5 && correctCount >= 3
-
+        const passed = totalQuestions > 0 && correctCount >= Math.min(3, totalQuestions)
+        
         let performance = 'Level Failed! 💪 Try Again!'
 
         if (passed && accuracy === 100) {

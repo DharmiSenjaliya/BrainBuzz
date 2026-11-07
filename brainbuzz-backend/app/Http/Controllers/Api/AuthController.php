@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Password;
 
 class AuthController extends Controller
 {
@@ -85,6 +86,58 @@ class AuthController extends Controller
             'message' => 'Password changed successfully!',
         ]);
     }
+ 
+ // Forgot Password
+public function forgotPassword(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email|exists:users,email',
+    ]);
+
+    $status = Password::sendResetLink(
+        $request->only('email')
+    );
+
+    if ($status !== Password::RESET_LINK_SENT) {
+        return response()->json([
+            'message' => __($status),
+        ], 422);
+    }
+
+    return response()->json([
+        'message' => 'Password reset link sent successfully! Check your email.',
+    ]);
+}
+
+// Reset Password
+public function resetPassword(Request $request)
+{
+    $validated = $request->validate([
+        'token' => 'required|string',
+        'email' => 'required|email',
+        'password' => 'required|string|min:8|confirmed',
+    ]);
+
+    $status = Password::reset(
+        $validated,
+        function ($user, $password) {
+            $user->password = $password;
+            $user->save();
+
+            $user->tokens()->delete();
+        }
+    );
+
+    if ($status !== Password::PASSWORD_RESET) {
+        return response()->json([
+            'message' => __($status),
+        ], 422);
+    }
+
+    return response()->json([
+        'message' => 'Password reset successfully! Please login with your new password.',
+    ]);
+}    
 
     // Player Logout
     public function logout(Request $request)

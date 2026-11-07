@@ -7,6 +7,7 @@
     color: inherit;
 }
 
+/* Header */
 .leaderboard-header {
     text-align: center;
     margin-bottom: 35px;
@@ -14,9 +15,10 @@
 }
 
 .leaderboard-header h1 {
-    font-size: 32px;
+    font-size: 34px;
     font-weight: 800;
     margin: 20px 0 10px;
+    letter-spacing: -0.8px;
 }
 
 .leaderboard-header p {
@@ -29,19 +31,30 @@
     left: 0;
     top: 0;
     padding: 10px 18px;
-    border: none;
-    border-radius: 8px;
+    border: 1px solid rgba(128, 128, 128, 0.2);
+    border-radius: 10px;
     cursor: pointer;
     font-weight: 600;
+    transition: all 0.2s ease;
 }
 
+.leaderboard-header .back-btn:hover {
+    transform: translateX(-3px);
+}
+
+/* Loading, Empty and Error */
 .leaderboard-loading,
 .leaderboard-empty,
 .leaderboard-error {
     text-align: center;
     padding: 45px 20px;
-    border-radius: 14px;
+    border-radius: 16px;
     background: rgba(128, 128, 128, 0.08);
+}
+
+.leaderboard-empty h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
 }
 
 .leaderboard-error {
@@ -54,15 +67,19 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
+    font-weight: 600;
 }
 
+/* Table Wrapper */
 .leaderboard-table-wrapper {
     width: 100%;
     overflow-x: auto;
-    border-radius: 14px;
-    box-shadow: 0 5px 22px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    border: 1px solid rgba(128, 128, 128, 0.15);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }
 
+/* Table */
 .leaderboard-table {
     width: 100%;
     border-collapse: collapse;
@@ -72,51 +89,74 @@
 
 .leaderboard-table th,
 .leaderboard-table td {
-    padding: 17px 20px;
-    border-bottom: 1px solid rgba(128, 128, 128, 0.18);
+    padding: 19px 20px;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.15);
 }
 
 .leaderboard-table th {
     background: #6c4ce4;
     color: #fff;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
+/* Table Rows */
 .leaderboard-table tbody tr {
     transition: background 0.2s ease;
 }
 
 .leaderboard-table tbody tr:hover {
-    background: rgba(128, 128, 128, 0.08);
+    background: rgba(108, 76, 228, 0.07);
 }
 
 .leaderboard-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-.leaderboard-rank {
-    font-size: 19px;
-    font-weight: 800;
+/* Top 3 Highlights */
+.leaderboard-table tbody tr:nth-child(1) {
+    background: rgba(255, 193, 7, 0.10);
 }
 
+.leaderboard-table tbody tr:nth-child(2) {
+    background: rgba(160, 160, 160, 0.10);
+}
+
+.leaderboard-table tbody tr:nth-child(3) {
+    background: rgba(205, 127, 50, 0.10);
+}
+
+/* Rank */
+.leaderboard-rank {
+    font-size: 20px;
+    font-weight: 800;
+    text-align: center;
+}
+
+/* Player */
 .leaderboard-player {
     font-weight: 700;
+    font-size: 15px;
 }
 
+/* Score */
 .leaderboard-score {
     font-weight: 800;
     color: #6c4ce4;
+    font-size: 16px;
 }
 
+/* Mobile Responsive */
 @media (max-width: 600px) {
     .leaderboard-page {
         padding: 25px 12px;
     }
 
     .leaderboard-header h1 {
-        font-size: 25px;
-        margin-top: 55px;
+        font-size: 26px;
+        margin-top: 60px;
     }
 
     .leaderboard-header p {
@@ -125,6 +165,184 @@
 
     .leaderboard-table th,
     .leaderboard-table td {
-        padding: 13px 12px;
+        padding: 14px 12px;
+        font-size: 13px;
+    }
+
+    .leaderboard-rank {
+        font-size: 17px;
+    }
+
+    .leaderboard-score {
+        font-size: 14px;
+    }
+}
+
+
+/* My Rank Card */
+.my-rank-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px 28px;
+    margin-bottom: 35px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #6c4ce4, #9275f5);
+    color: #fff;
+    box-shadow: 0 8px 25px rgba(108, 76, 228, 0.22);
+}
+
+.my-rank-label {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.my-rank-card h2 {
+    font-size: 30px;
+    margin: 7px 0 0;
+    font-weight: 800;
+}
+
+.my-rank-icon {
+    font-size: 38px;
+}
+
+/* Top Three Section */
+.top-three-section {
+    margin-bottom: 35px;
+}
+
+.top-three-section h2 {
+    font-size: 23px;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.top-three-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.top-player-card {
+    padding: 25px 15px;
+    text-align: center;
+    border-radius: 16px;
+    border: 1px solid rgba(128, 128, 128, 0.18);
+    background: rgba(128, 128, 128, 0.06);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.top-player-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.09);
+}
+
+.top-player-card.rank-1 {
+    background: rgba(255, 193, 7, 0.12);
+    border-color: rgba(255, 193, 7, 0.45);
+}
+
+.top-player-card.rank-2 {
+    background: rgba(160, 160, 160, 0.12);
+    border-color: rgba(160, 160, 160, 0.4);
+}
+
+.top-player-card.rank-3 {
+    background: rgba(205, 127, 50, 0.12);
+    border-color: rgba(205, 127, 50, 0.4);
+}
+
+.top-player-medal {
+    font-size: 38px;
+    margin-bottom: 12px;
+}
+
+.top-player-name {
+    font-size: 19px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.top-player-score {
+    font-size: 27px;
+    font-weight: 800;
+    color: #6c4ce4;
+}
+
+.top-player-score span {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.top-player-games,
+.top-player-accuracy {
+    font-size: 13px;
+    opacity: 0.75;
+    margin-top: 9px;
+}
+
+/* Current Player Highlight */
+.leaderboard-table tbody tr.current-player-row {
+    background: rgba(108, 76, 228, 0.13);
+    outline: 2px solid rgba(108, 76, 228, 0.35);
+    outline-offset: -2px;
+}
+
+.you-badge {
+    display: inline-block;
+    margin-left: 9px;
+    padding: 4px 8px;
+    border-radius: 20px;
+    background: #6c4ce4;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    vertical-align: middle;
+}
+
+/* Refresh Button */
+.leaderboard-refresh {
+    text-align: center;
+    margin-top: 25px;
+}
+
+.leaderboard-refresh button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    background: #6c4ce4;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.leaderboard-refresh button:hover {
+    background: #5738ce;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 650px) {
+    .top-three-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .top-player-card {
+        padding: 20px 15px;
+    }
+
+    .my-rank-card {
+        padding: 18px;
+    }
+
+    .my-rank-card h2 {
+        font-size: 25px;
+    }
+
+    .top-three-section h2 {
+        font-size: 20px;
     }
 }
