@@ -551,10 +551,26 @@ function App() {
         }
     }
 
-    const handleAdminLogin = (adminData) => {
-        setAdmin(adminData)
+    const handleAdminLogin = async (adminData) => {
+    try {
+        const response = await api.post('/admin/login', adminData)
+
+        const token = response.data.token
+
+        localStorage.setItem('brainbuzz_admin_token', token)
+
+        setAdmin(response.data.user)
         setShowAdminLogin(false)
+
+    } catch (error) {
+        console.error('Admin Login Error:', error)
+
+        alert(
+            error.response?.data?.message ||
+            'Admin login failed. Please try again.'
+        )
     }
+}
 
     const handleProfileUpdated = (updatedUser) => {
         setUser((previousUser) => ({

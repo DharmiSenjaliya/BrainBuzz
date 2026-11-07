@@ -63,6 +63,37 @@ class AuthController extends Controller
         ]);
     }
 
+    // Admin Login
+public function adminLogin(Request $request)
+{
+    $validated = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|string',
+    ]);
+
+    $user = User::where('email', $validated['email'])->first();
+
+    if (!$user || !Hash::check($validated['password'], $user->password)) {
+        return response()->json([
+            'message' => 'Invalid email or password.',
+        ], 401);
+    }
+
+    if (!$user->is_admin) {
+        return response()->json([
+            'message' => 'Access denied. Admin account required.',
+        ], 403);
+    }
+
+    $token = $user->createToken('brainbuzz-admin')->plainTextToken;
+
+    return response()->json([
+        'message' => 'Admin login successful!',
+        'token' => $token,
+        'user' => $user,
+    ]);
+}
+
     // Change Player Password
     public function changePassword(Request $request)
     {

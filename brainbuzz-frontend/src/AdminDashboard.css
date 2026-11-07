@@ -38,3 +38,103 @@
 .admin-content h3 {
     margin-top: 0;
 }
+
+/* ADMIN FEEDBACK SECTION */
+
+.admin-feedback-section {
+    margin-top: 35px;
+}
+
+.admin-feedback-section h2 {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.admin-feedback-section > p {
+    color: #cbd5e1;
+}
+
+.admin-feedback-section > button {
+    margin: 12px 0 22px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #7c3aed;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.admin-feedback-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+}
+
+.admin-feedback-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 20px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 12px;
+}
+
+.admin-feedback-card h4 {
+    margin: 0 0 6px;
+    color: #ffffff;
+}
+
+.admin-feedback-card p {
+    color: #cbd5e1;
+    overflow-wrap: anywhere;
+}
+
+.admin-feedback-card small {
+    color: #94a3b8;
+}
+
+.admin-feedback-rating {
+    color: #fbbf24 !important;
+    font-size: 21px;
+    letter-spacing: 2px;
+}
+
+.admin-feedback-card button {
+    padding: 9px 14px;
+    border: none;
+    border-radius: 7px;
+    background: #dc3545;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.admin-feedback-card button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.feedback-error {
+    color: #f87171 !important;
+}
+
+@media (max-width: 600px) {
+    .admin-dashboard {
+        padding: 12px;
+    }
+
+    .admin-content {
+        padding: 16px;
+    }
+
+    .admin-header h2 {
+        font-size: 17px;
+    }
+
+    .admin-feedback-card {
+        flex-direction: column;
+    }
+}

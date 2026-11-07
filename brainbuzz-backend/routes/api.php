@@ -6,10 +6,13 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\QuestionController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\GameResultController;
+use App\Http\Controllers\Api\FeedbackController;
+use App\Http\Controllers\Api\AdminFeedbackController;
 
 // Public Authentication Routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/admin/login', [AuthController::class, 'adminLogin']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
@@ -43,4 +46,7 @@ Route::post('/check-answer', [QuestionController::class, 'checkAnswer']);
     Route::put('/questions/{question}', [QuestionController::class, 'update']);
 
     Route::delete('/questions/{question}', [QuestionController::class, 'destroy']);
+    Route::post('/feedback', [FeedbackController::class, 'store']);
+    Route::get('/admin/feedback', [AdminFeedbackController::class, 'index']);
+Route::delete('/admin/feedback/{id}', [AdminFeedbackController::class, 'destroy']);
 });

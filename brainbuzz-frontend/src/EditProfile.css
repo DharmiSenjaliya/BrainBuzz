@@ -1,3 +1,4 @@
+
 .edit-profile-container {
     min-height: 100vh;
     display: flex;
@@ -8,7 +9,7 @@
 
 .edit-profile-form {
     width: 100%;
-    max-width: 450px;
+    max-width: 480px;
     padding: 30px;
     display: flex;
     flex-direction: column;
@@ -27,9 +28,12 @@
 .edit-profile-form label {
     color: #cbd5e1;
     font-size: 14px;
+    font-weight: 600;
 }
 
 .edit-profile-form input {
+    width: 100%;
+    box-sizing: border-box;
     padding: 12px;
     border: 1px solid #475569;
     border-radius: 8px;
@@ -38,9 +42,82 @@
     font-size: 15px;
 }
 
+.edit-profile-form input:focus,
+.country-select:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+}
+
 .edit-profile-form input:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+/* International Phone Input */
+
+.international-phone-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.country-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    background: #0f172a;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.country-select option {
+    background: #1e293b;
+    color: white;
+}
+
+.phone-input-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border: 1px solid #475569;
+    border-radius: 8px;
+    background: #0f172a;
+    overflow: hidden;
+}
+
+.phone-country-code {
+    padding: 12px 14px;
+    color: #a78bfa;
+    font-weight: 700;
+    border-right: 1px solid #475569;
+    white-space: nowrap;
+}
+
+.edit-profile-form .phone-number-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.phone-number-input:focus {
+    outline: none;
+}
+
+.phone-validation-error {
+    color: #f87171 !important;
+    font-size: 13px;
+    margin: -5px 0 0;
+}
+
+.phone-help-text {
+    color: #94a3b8;
+    font-size: 12px;
+    margin-top: -7px;
 }
 
 .edit-profile-form p {
@@ -58,7 +135,25 @@
     cursor: pointer;
 }
 
+.edit-profile-form button:hover {
+    opacity: 0.9;
+}
+
 .edit-profile-form button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+@media (max-width: 500px) {
+    .edit-profile-container {
+        padding: 15px;
+    }
+
+    .edit-profile-form {
+        padding: 22px 17px;
+    }
+
+    .country-select {
+        font-size: 12px;
+    }
 }

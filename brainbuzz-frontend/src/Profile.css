@@ -1,9 +1,10 @@
 
 .profile-page {
     width: 100%;
-    max-width: 900px;
+    max-width: 1100px;
     margin: 0 auto;
-    padding: 35px 20px;
+    padding: 35px 20px 60px;
+    color: inherit;
 }
 
 .profile-header {
@@ -13,7 +14,7 @@
 }
 
 .profile-header h1 {
-    font-size: 30px;
+    font-size: 32px;
     font-weight: 800;
     margin: 15px 0 8px;
 }
@@ -28,18 +29,21 @@
     left: 0;
     top: 0;
     padding: 10px 18px;
-    border: none;
+    border: 1px solid rgba(128, 128, 128, 0.25);
     border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
+    background: rgba(128, 128, 128, 0.12);
+    color: inherit;
 }
 
 .profile-card {
-    max-width: 600px;
-    margin: 0 auto;
+    max-width: 650px;
+    margin: 0 auto 45px;
     padding: 35px;
     border-radius: 18px;
     background: rgba(128, 128, 128, 0.08);
+    border: 1px solid rgba(128, 128, 128, 0.15);
     box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
     text-align: center;
 }
@@ -132,9 +136,185 @@
     color: white;
 }
 
+/* Game Statistics */
+
+.profile-stats-section {
+    margin: 40px 0;
+}
+
+.profile-stats-section h2,
+.game-history-section h2 {
+    font-size: 23px;
+    font-weight: 800;
+    margin-bottom: 22px;
+}
+
+.profile-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 18px;
+}
+
+.profile-stat-card {
+    padding: 25px 15px;
+    text-align: center;
+    border-radius: 15px;
+    background: rgba(128, 128, 128, 0.08);
+    border: 1px solid rgba(128, 128, 128, 0.16);
+    transition: transform 0.2s ease;
+}
+
+.profile-stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.profile-stat-card span {
+    display: block;
+    font-size: 30px;
+    margin-bottom: 12px;
+}
+
+.profile-stat-card h3 {
+    font-size: 27px;
+    font-weight: 800;
+    margin: 0 0 6px;
+    color: #8b70ff;
+}
+
+.profile-stat-card p {
+    font-size: 13px;
+    opacity: 0.7;
+    margin: 0;
+}
+
+/* Game History */
+
+.game-history-section {
+    margin-top: 45px;
+}
+
+.game-history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.game-history-header h2 {
+    margin: 0;
+}
+
+.game-history-header button {
+    padding: 10px 17px;
+    border: none;
+    border-radius: 8px;
+    background: #6c4ce4;
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.game-history-header button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.game-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.game-history-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    border-radius: 13px;
+    background: rgba(128, 128, 128, 0.08);
+    border: 1px solid rgba(128, 128, 128, 0.16);
+}
+
+.game-history-info h3 {
+    font-size: 17px;
+    margin: 0 0 7px;
+}
+
+.game-history-info p {
+    font-size: 12px;
+    opacity: 0.65;
+    margin: 0;
+}
+
+.game-history-score {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+}
+
+.game-history-score strong {
+    font-size: 16px;
+    color: #8b70ff;
+}
+
+.game-history-score span {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.game-passed,
+.game-failed {
+    display: inline-block;
+    padding: 7px 13px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.game-passed {
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+}
+
+.game-failed {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+}
+
+.no-game-history {
+    text-align: center;
+    padding: 45px 20px;
+    border-radius: 15px;
+    background: rgba(128, 128, 128, 0.08);
+    border: 1px solid rgba(128, 128, 128, 0.16);
+}
+
+.no-game-history span {
+    font-size: 42px;
+}
+
+.no-game-history h3 {
+    margin: 12px 0 8px;
+}
+
+.no-game-history p {
+    opacity: 0.7;
+    font-size: 14px;
+}
+
+.profile-error {
+    color: #ef4444;
+    padding: 12px;
+}
+
+/* Responsive */
+
 @media (max-width: 600px) {
     .profile-page {
-        padding: 25px 12px;
+        padding: 25px 12px 40px;
     }
 
     .profile-header h1 {
@@ -158,5 +338,36 @@
 
     .profile-detail-item strong {
         text-align: left;
+    }
+
+    .profile-stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .profile-stat-card {
+        padding: 20px 8px;
+    }
+
+    .profile-stat-card h3 {
+        font-size: 23px;
+    }
+
+    .game-history-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 13px;
+    }
+
+    .game-history-score {
+        text-align: left;
+    }
+
+    .game-history-header {
+        align-items: flex-start;
+    }
+
+    .game-history-header h2 {
+        font-size: 19px;
     }
 }
