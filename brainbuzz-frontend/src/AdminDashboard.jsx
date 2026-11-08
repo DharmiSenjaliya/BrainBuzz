@@ -7,6 +7,10 @@ function AdminDashboard({ admin, onLogout }) {
 
     const [questions, setQuestions] = useState([])
     const [feedback, setFeedback] = useState([])
+    const [players, setPlayers] = useState([])
+    const [loadingPlayers, setLoadingPlayers] = useState(true)
+    const [playersError, setPlayersError] = useState('')
+    const [searchPlayer, setSearchPlayer] = useState('')
 
     const [loadingQuestions, setLoadingQuestions] = useState(true)
     const [loadingFeedback, setLoadingFeedback] = useState(true)
@@ -88,10 +92,47 @@ function AdminDashboard({ admin, onLogout }) {
         }
     }
 
+    const fetchPlayers = async (search = '') => {
+    try {
+        setLoadingPlayers(true)
+        setPlayersError('')
+
+        const response = await api.get(
+            `/admin/players${search ? `?search=${encodeURIComponent(search)}` : ''}`,
+            authConfig
+        )
+
+        setPlayers(response.data.players || [])
+    } catch (error) {
+        console.error('Players Fetch Error:', error)
+
+        setPlayersError(
+            error.response?.data?.message ||
+            'Unable to load players.'
+        )
+    } finally {
+        setLoadingPlayers(false)
+    }
+}
+
     useEffect(() => {
         fetchQuestions()
         fetchFeedback()
+        fetchPlayers()
     }, [])
+
+    // Automatic Player Search
+useEffect(() => {
+    if (activeTab !== 'players') {
+        return
+    }
+
+    const searchTimer = setTimeout(() => {
+        fetchPlayers(searchPlayer)
+    }, 400)
+
+    return () => clearTimeout(searchTimer)
+}, [searchPlayer, activeTab])
 
     const activeQuestions = questions.filter(
         (question) => Boolean(question.is_active)
@@ -351,37 +392,100 @@ function AdminDashboard({ admin, onLogout }) {
     }
 
     const handleDeleteFeedback = async (id) => {
-        if (
-            !window.confirm(
-                'Are you sure you want to delete this feedback?'
-            )
-        ) {
-            return
-        }
-
-        try {
-            setDeletingFeedbackId(id)
-
-            await api.delete(
-                `/admin/feedback/${id}`,
-                authConfig
-            )
-
-            setFeedback((previous) =>
-                previous.filter((item) => item.id !== id)
-            )
-
-        } catch (error) {
-            console.error('Feedback Delete Error:', error)
-
-            alert(
-                error.response?.data?.message ||
-                'Unable to delete feedback.'
-            )
-        } finally {
-            setDeletingFeedbackId(null)
-        }
+    if (
+        !window.confirm(
+            'Are you sure you want to delete this feedback?'
+        )
+    ) {
+        return
     }
+
+    try {
+        setDeletingFeedbackId(id)
+
+        await api.delete(
+            `/admin/feedback/${id}`,
+            authConfig
+        )
+
+        setFeedback((previous) =>
+            previous.filter((item) => item.id !== id)
+        )
+
+    } catch (error) {
+        console.error('Feedback Delete Error:', error)
+
+        alert(
+            error.response?.data?.message ||
+            'Unable to delete feedback.'
+        )
+    } finally {
+        setDeletingFeedbackId(null)
+    }
+}
+
+// Update Player Active / Inactive Status
+const handlePlayerStatusToggle = async (player) => {
+    try {
+        const newStatus = !Boolean(player.is_active)
+
+        await api.put(
+            `/admin/players/${player.id}/status`,
+            {
+                is_active: newStatus
+            },
+            authConfig
+        )
+
+        setPlayers((previous) =>
+            previous.map((item) =>
+                item.id === player.id
+                    ? { ...item, is_active: newStatus }
+                    : item
+            )
+        )
+
+    } catch (error) {
+        console.error('Player Status Error:', error)
+
+        alert(
+            error.response?.data?.message ||
+            'Unable to update player status.'
+        )
+    }
+}
+
+// Delete Player
+const handleDeletePlayer = async (id) => {
+    if (
+        !window.confirm(
+            'Are you sure you want to delete this player?'
+        )
+    ) {
+        return
+    }
+
+    try {
+        await api.delete(
+            `/admin/players/${id}`,
+            authConfig
+        )
+
+        setPlayers((previous) =>
+            previous.filter((player) => player.id !== id)
+        )
+
+        alert('Player deleted successfully.')
+
+    } catch (error) {
+        console.error('Player Delete Error:', error)
+
+        alert(
+            error.response?.data?.message ||
+            'Unable to delete player.'
+        )
+    }
+}
 
     return (
         <div className="admin-dashboard">
@@ -424,45 +528,52 @@ function AdminDashboard({ admin, onLogout }) {
 
             <div className="admin-layout">
 
-                <aside className="admin-sidebar">
+              <aside className="admin-sidebar">
 
-                    <button
-                        className={`admin-nav-btn ${
-                            activeTab === 'overview'
-                                ? 'active'
-                                : ''
-                        }`}
-                        onClick={() => setActiveTab('overview')}
-                    >
-                        <span>▦</span>
-                        Overview
-                    </button>
+    <button
+        className={`admin-nav-btn ${
+            activeTab === 'overview' ? 'active' : ''
+        }`}
+        onClick={() => setActiveTab('overview')}
+    >
+        <span>▦</span>
+        Overview
+    </button>
 
-                    <button
-                        className={`admin-nav-btn ${
-                            activeTab === 'questions'
-                                ? 'active'
-                                : ''
-                        }`}
-                        onClick={() => setActiveTab('questions')}
-                    >
-                        <span>?</span>
-                        Questions
-                    </button>
+    <button
+        className={`admin-nav-btn ${
+            activeTab === 'questions' ? 'active' : ''
+        }`}
+        onClick={() => setActiveTab('questions')}
+    >
+        <span>?</span>
+        Questions
+    </button>
 
-                    <button
-                        className={`admin-nav-btn ${
-                            activeTab === 'feedback'
-                                ? 'active'
-                                : ''
-                        }`}
-                        onClick={() => setActiveTab('feedback')}
-                    >
-                        <span>💬</span>
-                        Feedback
-                    </button>
+    <button
+        className={`admin-nav-btn ${
+            activeTab === 'feedback' ? 'active' : ''
+        }`}
+        onClick={() => setActiveTab('feedback')}
+    >
+        <span>💬</span>
+        Feedback
+    </button>
 
-                </aside>
+    <button
+        className={`admin-nav-btn ${
+            activeTab === 'players' ? 'active' : ''
+        }`}
+        onClick={() => {
+            setActiveTab('players')
+            fetchPlayers()
+        }}
+    >
+        <span>👥</span>
+        Players
+    </button>
+
+</aside>
 
                 <main className="admin-main">
 
@@ -994,6 +1105,172 @@ function AdminDashboard({ admin, onLogout }) {
 
                                         </div>
                                     ))}
+
+                                </div>
+                            )}
+
+                        </section>
+                    )}
+                 
+
+                    {/* PLAYERS MANAGEMENT SECTION */}
+                    {activeTab === 'players' && (
+                        <section className="admin-section">
+
+                            <div className="admin-page-heading">
+                                <div>
+                                    <span className="admin-eyebrow">
+                                        USER MANAGEMENT
+                                    </span>
+
+                                    <h1>Player Management</h1>
+
+                                    <p>
+                                        Manage registered BrainBuzz players.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="admin-player-toolbar">
+
+<div className="admin-player-search">
+    <input
+        type="text"
+        placeholder="Search by name, email or phone..."
+        value={searchPlayer}
+        onChange={(e) => setSearchPlayer(e.target.value)}
+    />
+</div>
+
+                            </div>
+
+                            {loadingPlayers ? (
+                                <div className="admin-empty-state">
+                                    Loading players...
+                                </div>
+                            ) : playersError ? (
+                                <div className="admin-error-message">
+                                    {playersError}
+                                </div>
+                            ) : players.length === 0 ? (
+                                <div className="admin-empty-state">
+                                    <h3>No Players Found</h3>
+                                    <p>
+                                        No registered players available.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="admin-players-table-wrapper">
+
+                                    <table className="admin-players-table">
+
+                                        <thead>
+                                            <tr>
+                                                <th>Player</th>
+                                                <th>Email</th>
+                                                <th>Phone</th>
+                                                <th>Joined Date</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {players.map((player) => (
+                                                <tr key={player.id}>
+
+                                                    <td>
+                                                        <div className="admin-player-info">
+
+                                                            <div className="admin-player-avatar">
+                                                                {player.profile_image ? (
+                                                                    <img
+                                                                        src={
+                                                                            player.profile_image.startsWith('http')
+                                                                                ? player.profile_image
+                                                                                : `http://127.0.0.1:8000/storage/${player.profile_image}`
+                                                                        }
+                                                                        alt={player.name}
+                                                                    />
+                                                                ) : (
+                                                                    (player.name || 'U')
+                                                                        .charAt(0)
+                                                                        .toUpperCase()
+                                                                )}
+                                                            </div>
+
+                                                            <strong>
+                                                                {player.name}
+                                                            </strong>
+
+                                                        </div>
+                                                    </td>
+
+                                                    <td>
+                                                        {player.email || 'N/A'}
+                                                    </td>
+
+                                                    <td>
+                                                        {player.phone || 'N/A'}
+                                                    </td>
+
+                                                    <td>
+                                                        {player.created_at
+                                                            ? new Date(
+                                                                player.created_at
+                                                            ).toLocaleDateString()
+                                                            : 'N/A'}
+                                                    </td>
+
+                                                    <td>
+                                                        <span
+                                                            className={`admin-player-status ${
+                                                                player.is_active
+                                                                    ? 'active'
+                                                                    : 'inactive'
+                                                            }`}
+                                                        >
+                                                            {player.is_active
+                                                                ? 'Active'
+                                                                : 'Inactive'}
+                                                        </span>
+                                                    </td>
+
+                                                    <td>
+                                                        <div className="admin-player-actions">
+
+                                                            <button
+                                                                className={`admin-player-toggle ${
+                                                                    player.is_active
+                                                                        ? 'deactivate'
+                                                                        : 'activate'
+                                                                }`}
+                                                                onClick={() =>
+                                                                    handlePlayerStatusToggle(player)
+                                                                }
+                                                            >
+                                                                {player.is_active
+                                                                    ? 'Deactivate'
+                                                                    : 'Activate'}
+                                                            </button>
+
+                                                            <button
+                                                                className="admin-delete-btn"
+                                                                onClick={() =>
+                                                                    handleDeletePlayer(player.id)
+                                                                }
+                                                            >
+                                                                Delete
+                                                            </button>
+
+                                                        </div>
+                                                    </td>
+
+                                                </tr>
+                                            ))}
+                                        </tbody>
+
+                                    </table>
 
                                 </div>
                             )}

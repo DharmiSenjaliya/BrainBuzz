@@ -54,6 +54,14 @@ class AuthController extends Controller
             ], 403);
         }
 
+        // Block inactive players
+        if (!$user->is_active) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Your account has been deactivated. Please contact the administrator.',
+            ], 403);
+        }
+
         $token = $user->createToken('brainbuzz-player')->plainTextToken;
 
         return response()->json([
@@ -64,35 +72,35 @@ class AuthController extends Controller
     }
 
     // Admin Login
-public function adminLogin(Request $request)
-{
-    $validated = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|string',
-    ]);
+    public function adminLogin(Request $request)
+    {
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
 
-    $user = User::where('email', $validated['email'])->first();
+        $user = User::where('email', $validated['email'])->first();
 
-    if (!$user || !Hash::check($validated['password'], $user->password)) {
+        if (!$user || !Hash::check($validated['password'], $user->password)) {
+            return response()->json([
+                'message' => 'Invalid email or password.',
+            ], 401);
+        }
+
+        if (!$user->is_admin) {
+            return response()->json([
+                'message' => 'Access denied. Admin account required.',
+            ], 403);
+        }
+
+        $token = $user->createToken('brainbuzz-admin')->plainTextToken;
+
         return response()->json([
-            'message' => 'Invalid email or password.',
-        ], 401);
+            'message' => 'Admin login successful!',
+            'token' => $token,
+            'user' => $user,
+        ]);
     }
-
-    if (!$user->is_admin) {
-        return response()->json([
-            'message' => 'Access denied. Admin account required.',
-        ], 403);
-    }
-
-    $token = $user->createToken('brainbuzz-admin')->plainTextToken;
-
-    return response()->json([
-        'message' => 'Admin login successful!',
-        'token' => $token,
-        'user' => $user,
-    ]);
-}
 
     // Change Player Password
     public function changePassword(Request $request)
@@ -117,58 +125,58 @@ public function adminLogin(Request $request)
             'message' => 'Password changed successfully!',
         ]);
     }
- 
- // Forgot Password
-public function forgotPassword(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email|exists:users,email',
-    ]);
 
-    $status = Password::sendResetLink(
-        $request->only('email')
-    );
+    // Forgot Password
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
 
-    if ($status !== Password::RESET_LINK_SENT) {
-        return response()->json([
-            'message' => __($status),
-        ], 422);
-    }
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
 
-    return response()->json([
-        'message' => 'Password reset link sent successfully! Check your email.',
-    ]);
-}
-
-// Reset Password
-public function resetPassword(Request $request)
-{
-    $validated = $request->validate([
-        'token' => 'required|string',
-        'email' => 'required|email',
-        'password' => 'required|string|min:8|confirmed',
-    ]);
-
-    $status = Password::reset(
-        $validated,
-        function ($user, $password) {
-            $user->password = $password;
-            $user->save();
-
-            $user->tokens()->delete();
+        if ($status !== Password::RESET_LINK_SENT) {
+            return response()->json([
+                'message' => __($status),
+            ], 422);
         }
-    );
 
-    if ($status !== Password::PASSWORD_RESET) {
         return response()->json([
-            'message' => __($status),
-        ], 422);
+            'message' => 'Password reset link sent successfully! Check your email.',
+        ]);
     }
 
-    return response()->json([
-        'message' => 'Password reset successfully! Please login with your new password.',
-    ]);
-}    
+    // Reset Password
+    public function resetPassword(Request $request)
+    {
+        $validated = $request->validate([
+            'token' => 'required|string',
+            'email' => 'required|email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $status = Password::reset(
+            $validated,
+            function ($user, $password) {
+                $user->password = $password;
+                $user->save();
+
+                $user->tokens()->delete();
+            }
+        );
+
+        if ($status !== Password::PASSWORD_RESET) {
+            return response()->json([
+                'message' => __($status),
+            ], 422);
+        }
+
+        return response()->json([
+            'message' => 'Password reset successfully! Please login with your new password.',
+        ]);
+    }
 
     // Player Logout
     public function logout(Request $request)

@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\GameResultController;
 use App\Http\Controllers\Api\FeedbackController;
 use App\Http\Controllers\Api\AdminFeedbackController;
+use App\Http\Controllers\Api\AdminPlayerController;
+
 
 // Public Authentication Routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -49,4 +51,8 @@ Route::post('/check-answer', [QuestionController::class, 'checkAnswer']);
     Route::post('/feedback', [FeedbackController::class, 'store']);
     Route::get('/admin/feedback', [AdminFeedbackController::class, 'index']);
 Route::delete('/admin/feedback/{id}', [AdminFeedbackController::class, 'destroy']);
+    // Admin Player Management
+    Route::get('/admin/players', [AdminPlayerController::class, 'index']);
+    Route::put('/admin/players/{id}/status', [AdminPlayerController::class, 'updateStatus']);
+    Route::delete('/admin/players/{id}', [AdminPlayerController::class, 'destroy']);
 });

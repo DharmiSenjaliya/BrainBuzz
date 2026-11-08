@@ -19,6 +19,7 @@ class User extends Authenticatable
         'phone',
         'profile_image',
         'is_admin',
+        'is_active',
         'password',
     ];
 
@@ -33,6 +34,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'is_active' => 'boolean',
         ];
     }
 }
