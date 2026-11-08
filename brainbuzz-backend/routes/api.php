@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\GameResultController;
 use App\Http\Controllers\Api\FeedbackController;
 use App\Http\Controllers\Api\AdminFeedbackController;
 use App\Http\Controllers\Api\AdminPlayerController;
+use App\Http\Controllers\Api\AdminLeaderboardController;
+use App\Http\Controllers\Api\NotificationController;
 
 
 // Public Authentication Routes
@@ -55,4 +57,12 @@ Route::delete('/admin/feedback/{id}', [AdminFeedbackController::class, 'destroy'
     Route::get('/admin/players', [AdminPlayerController::class, 'index']);
     Route::put('/admin/players/{id}/status', [AdminPlayerController::class, 'updateStatus']);
     Route::delete('/admin/players/{id}', [AdminPlayerController::class, 'destroy']);
+    // Admin Leaderboard
+Route::get('/admin/leaderboard', [AdminLeaderboardController::class, 'index']);
+
+// Player Notifications
+Route::get('/notifications', [NotificationController::class, 'index']);
+Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
 });

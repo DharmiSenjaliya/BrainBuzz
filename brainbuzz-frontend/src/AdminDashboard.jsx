@@ -11,6 +11,11 @@ function AdminDashboard({ admin, onLogout }) {
     const [loadingPlayers, setLoadingPlayers] = useState(true)
     const [playersError, setPlayersError] = useState('')
     const [searchPlayer, setSearchPlayer] = useState('')
+    // Leaderboard Management
+    const [leaderboard, setLeaderboard] = useState([])
+    const [loadingLeaderboard, setLoadingLeaderboard] = useState(false)
+    const [leaderboardError, setLeaderboardError] = useState('')
+    const [searchLeaderboard, setSearchLeaderboard] = useState('')
 
     const [loadingQuestions, setLoadingQuestions] = useState(true)
     const [loadingFeedback, setLoadingFeedback] = useState(true)
@@ -115,6 +120,31 @@ function AdminDashboard({ admin, onLogout }) {
     }
 }
 
+   // Fetch Admin Leaderboard
+const fetchLeaderboard = async (search = '') => {
+    try {
+        setLoadingLeaderboard(true)
+        setLeaderboardError('')
+
+        const response = await api.get(
+            `/admin/leaderboard${search ? `?search=${encodeURIComponent(search)}` : ''}`,
+            authConfig
+        )
+
+        setLeaderboard(response.data.leaderboard || [])
+
+    } catch (error) {
+        console.error('Leaderboard Fetch Error:', error)
+
+        setLeaderboardError(
+            error.response?.data?.message ||
+            'Unable to load leaderboard.'
+        )
+    } finally {
+        setLoadingLeaderboard(false)
+    }
+}
+
     useEffect(() => {
         fetchQuestions()
         fetchFeedback()
@@ -133,6 +163,20 @@ useEffect(() => {
 
     return () => clearTimeout(searchTimer)
 }, [searchPlayer, activeTab])
+
+
+// Automatic Leaderboard Search
+useEffect(() => {
+    if (activeTab !== 'leaderboard') {
+        return
+    }
+
+    const searchTimer = setTimeout(() => {
+        fetchLeaderboard(searchLeaderboard)
+    }, 400)
+
+    return () => clearTimeout(searchTimer)
+}, [searchLeaderboard, activeTab])
 
     const activeQuestions = questions.filter(
         (question) => Boolean(question.is_active)
@@ -572,6 +616,19 @@ const handleDeletePlayer = async (id) => {
         <span>👥</span>
         Players
     </button>
+
+    <button
+    className={`admin-nav-btn ${
+        activeTab === 'leaderboard' ? 'active' : ''
+    }`}
+    onClick={() => {
+        setActiveTab('leaderboard')
+        fetchLeaderboard()
+    }}
+>
+    <span>🏆</span>
+    Leaderboard
+</button>
 
 </aside>
 
@@ -1278,6 +1335,190 @@ const handleDeletePlayer = async (id) => {
                         </section>
                     )}
 
+                {/* ADMIN LEADERBOARD SECTION */}
+{activeTab === 'leaderboard' && (
+    <section className="admin-section">
+
+        <div className="admin-page-heading">
+            <div>
+                <span className="admin-eyebrow">
+                    PERFORMANCE ANALYTICS
+                </span>
+
+                <h1>Leaderboard Management</h1>
+
+                <p>
+                    Track player rankings and game performance.
+                </p>
+            </div>
+        </div>
+
+        {/* Search */}
+        <div className="admin-player-toolbar">
+            <div className="admin-player-search">
+                <input
+                    type="text"
+                    placeholder="Search player by name or email..."
+                    value={searchLeaderboard}
+                    onChange={(e) =>
+                        setSearchLeaderboard(e.target.value)
+                    }
+                />
+            </div>
+        </div>
+
+        {/* LEADERBOARD SUMMARY CARDS */}
+{!loadingLeaderboard && !leaderboardError && (
+    <div className="leaderboard-summary-grid">
+
+        <div className="leaderboard-summary-card">
+            <span className="summary-icon">👥</span>
+            <p>Total Ranked Players</p>
+            <h2>{leaderboard.length}</h2>
+        </div>
+
+        <div className="leaderboard-summary-card">
+            <span className="summary-icon">🎮</span>
+            <p>Total Games Played</p>
+            <h2>
+                {leaderboard.reduce(
+                    (total, player) =>
+                        total + Number(player.games_played || 0),
+                    0
+                )}
+            </h2>
+        </div>
+
+        <div className="leaderboard-summary-card">
+            <span className="summary-icon">🏆</span>
+            <p>Highest Player Score</p>
+            <h2>
+                {leaderboard.length
+                    ? Math.max(
+                        ...leaderboard.map(
+                            (player) => Number(player.total_score || 0)
+                        )
+                    )
+                    : 0}
+            </h2>
+        </div>
+
+        <div className="leaderboard-summary-card">
+            <span className="summary-icon">📊</span>
+            <p>Average Accuracy</p>
+            <h2>
+                {leaderboard.length
+                    ? (
+                        leaderboard.reduce(
+                            (total, player) =>
+                                total + Number(player.accuracy || 0),
+                            0
+                        ) / leaderboard.length
+                    ).toFixed(2)
+                    : '0.00'}%
+            </h2>
+        </div>
+
+    </div>
+)}
+
+
+        {/* Leaderboard Table */}
+        {loadingLeaderboard ? (
+            <div className="admin-empty-state">
+                Loading leaderboard...
+            </div>
+        ) : leaderboardError ? (
+            <div className="admin-error-message">
+                {leaderboardError}
+            </div>
+        ) : leaderboard.length === 0 ? (
+            <div className="admin-empty-state">
+                <h3>No Leaderboard Data</h3>
+                <p>
+                    Players' game results will appear here.
+                </p>
+            </div>
+        ) : (
+            <div className="admin-players-table-wrapper">
+
+                <table className="admin-players-table">
+
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Player</th>
+                            <th>Total Score</th>
+                            <th>Games Played</th>
+                            <th>Correct</th>
+                            <th>Wrong</th>
+                            <th>Accuracy</th>
+                            <th>Highest Score</th>
+                            <th>Levels Passed</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {leaderboard.map((player) => (
+                            <tr key={player.user_id}>
+
+                                <td>
+                                    <strong>
+                                        {player.rank <= 3
+                                            ? ['🥇', '🥈', '🥉'][player.rank - 1]
+                                            : `#${player.rank}`}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <div className="admin-player-info">
+                                        <div className="admin-player-avatar">
+                                            {(player.name || 'U')
+                                                .charAt(0)
+                                                .toUpperCase()}
+                                        </div>
+
+                                        <div>
+                                            <strong>{player.name}</strong>
+                                            <div>
+                                                <small>{player.email}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <strong>{player.total_score}</strong>
+                                </td>
+
+                                <td>{player.games_played}</td>
+
+                                <td>{player.correct_answers}</td>
+
+                                <td>{player.wrong_answers}</td>
+
+                                <td>
+                                    <strong>
+                                        {player.accuracy}%
+                                    </strong>
+                                </td>
+
+                                <td>{player.highest_score}</td>
+
+                                <td>{player.levels_passed}</td>
+
+                            </tr>
+                        ))}
+                    </tbody>
+
+                </table>
+
+            </div>
+        )}
+
+    </section>
+)}
+                
                 </main>
             </div>
 

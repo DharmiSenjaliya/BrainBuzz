@@ -5,42 +5,60 @@ use App\Http\Controllers\Controller;
 use App\Models\GameResult;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 
 class GameResultController extends Controller
 {
     // Save player's game result
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'level' => 'required|integer|min:1',
-            'score' => 'required|integer|min:0',
-            'correct_answers' => 'required|integer|min:0|max:5',
-            'wrong_answers' => 'required|integer|min:0|max:5',
-            'total_questions' => 'required|integer|min:1|max:5',
-            'passed' => 'required|boolean',
-        ]);
+   
+// Save player's game result and create notification
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'level' => 'required|integer|min:1',
+        'score' => 'required|integer|min:0',
+        'correct_answers' => 'required|integer|min:0|max:5',
+        'wrong_answers' => 'required|integer|min:0|max:5',
+        'total_questions' => 'required|integer|min:1|max:5',
+        'passed' => 'required|boolean',
+    ]);
 
-        if (
-            $validated['correct_answers'] + $validated['wrong_answers']
-            !== $validated['total_questions']
-        ) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid game result.',
-            ], 422);
-        }
-
-        $result = GameResult::create([
-            ...$validated,
-            'user_id' => $request->user()->id,
-        ]);
-
+    if (
+        $validated['correct_answers'] + $validated['wrong_answers']
+        !== $validated['total_questions']
+    ) {
         return response()->json([
-            'success' => true,
-            'message' => 'Game result saved successfully!',
-            'result' => $result,
-        ], 201);
+            'success' => false,
+            'message' => 'Invalid game result.',
+        ], 422);
     }
+
+    $user = $request->user();
+
+    $result = GameResult::create([
+        ...$validated,
+        'user_id' => $user->id,
+    ]);
+
+    $status = $result->passed ? 'Level Passed!' : 'Keep Practicing!';
+
+    $user->notifications()->create([
+        'id' => (string) \Illuminate\Support\Str::uuid(),
+        'type' => 'game',
+        'data' => [
+            'type' => 'game',
+            'title' => $status,
+            'message' => "You completed Level {$result->level} with {$result->score} points and {$result->correct_answers} correct answers.",
+        ],
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Game result saved successfully!',
+        'result' => $result,
+    ], 201);
+}
+
 
     // Player's game history
     public function history(Request $request)
