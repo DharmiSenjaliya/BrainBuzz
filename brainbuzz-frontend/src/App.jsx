@@ -12,10 +12,11 @@ import ChangePassword from './ChangePassword'
 import ForgotPassword from './ForgotPassword'
 import ResetPassword from './ResetPassword'
 import Achievements from './Achievements'
+import DailyChallenge from './DailyChallenge'
 
 // NAVBAR COMPONENT
-function Navbar({ user, onLogout, theme, onToggleTheme }) {
-    const [notifications, setNotifications] = useState([])
+function Navbar({ user, onLogout }) {
+        const [notifications, setNotifications] = useState([])
     const [unreadCount, setUnreadCount] = useState(0)
     const [showNotifications, setShowNotifications] = useState(false)
     const [notificationLoading, setNotificationLoading] = useState(false)
@@ -120,9 +121,7 @@ function Navbar({ user, onLogout, theme, onToggleTheme }) {
             <h2>🧠 BrainBuzz</h2>
 
             <div className="user-area">
-                <button className="theme-btn" onClick={onToggleTheme}>
-                    {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-                </button>
+                
 
                 <div className="notification-wrapper">
                     <button
@@ -253,18 +252,11 @@ function App() {
         () => window.location.pathname === '/reset-password'
     )
 
-    const [theme, setTheme] = useState(
-        localStorage.getItem('brainbuzz_theme') || 'light'
-    )
-
-    const toggleTheme = () => {
-        const newTheme = theme === 'light' ? 'dark' : 'light'
-        setTheme(newTheme)
-        localStorage.setItem('brainbuzz_theme', newTheme)
-    }
+    const theme = 'dark'
 
     const [showAchievements, setShowAchievements] = useState(false)
     const [showLeaderboard, setShowLeaderboard] = useState(false)
+    const [showDailyChallenge, setShowDailyChallenge] = useState(false)
 
     const [dashboardStats, setDashboardStats] = useState({
         games_played: 0,
@@ -289,8 +281,8 @@ function App() {
     }
 
     useEffect(() => {
-        document.body.className = `${theme}-theme`
-    }, [theme])
+    document.body.className = 'dark-theme'
+}, [])
 
     const [user, setUser] = useState(null)
     const [authMode, setAuthMode] = useState('login')
@@ -825,12 +817,7 @@ const checkAnswer = async () => {
         return (
             <div className={`app auth-page ${theme}-theme`}>
                 <main className="auth-container">
-                    <button
-                        className="theme-btn auth-theme-btn"
-                        onClick={toggleTheme}
-                    >
-                        {theme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode'}
-                    </button>
+               
 
                     <ForgotPassword
                         onBack={() => {
@@ -849,13 +836,6 @@ const checkAnswer = async () => {
             <div className={`app auth-page ${theme}-theme`}>
                 <main className="auth-container">
                     <div className="auth-logo">🧠 BrainBuzz</div>
-
-                    <button
-                        className="theme-btn auth-theme-btn"
-                        onClick={toggleTheme}
-                    >
-                        {theme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode'}
-                    </button>
 
                     <p className="auth-subtitle">
                         Train Your Brain, Challenge Yourself!
@@ -999,7 +979,6 @@ const checkAnswer = async () => {
             user={user}
             onLogout={handleLogout}
             theme={theme}
-            onToggleTheme={toggleTheme}
         />
     )
 
@@ -1020,6 +999,17 @@ const checkAnswer = async () => {
             </div>
         )
     }
+
+    if (showDailyChallenge) {
+    return (
+        <div className={`app ${theme}-theme`}>
+            {navbar}
+            <DailyChallenge
+                onBack={() => setShowDailyChallenge(false)}
+            />
+        </div>
+    )
+}
 
     if (showLeaderboard) {
         return (
@@ -1198,7 +1188,13 @@ if (showDashboard) {
                                 )
                             })}
                         </div>
-
+                                                <button
+                            className="dashboard-btn"
+                            onClick={() => setShowDailyChallenge(true)}
+                        >
+                            🎯 Daily Challenge
+                        </button>
+                        
                         <button
                             className="dashboard-btn"
                             onClick={() => setShowLeaderboard(true)}

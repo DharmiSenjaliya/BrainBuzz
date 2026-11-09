@@ -48,3 +48,174 @@
 .admin-login-form button:hover {
     background: #6d28d9;
 }
+
+/* ==============================
+   DAILY CHALLENGE MANAGEMENT
+============================== */
+
+.admin-daily-form {
+    margin-bottom: 25px;
+}
+
+.admin-daily-form h2,
+.admin-daily-list-heading h2 {
+    color: #f8fafc;
+    margin-bottom: 20px;
+}
+
+.admin-daily-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.admin-daily-form-grid label {
+    display: block;
+    color: #94a3b8;
+    margin-bottom: 8px;
+}
+
+.admin-daily-form-grid input {
+    width: 100%;
+    padding: 12px;
+    background: #080d1b;
+    border: 1px solid #26334d;
+    border-radius: 8px;
+    color: #f8fafc;
+}
+
+.admin-daily-question-heading,
+.admin-daily-list-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin: 22px 0 15px;
+}
+
+.admin-daily-question-heading h3 {
+    color: #f8fafc;
+    margin: 0;
+}
+
+.admin-daily-question-heading strong {
+    color: #a78bfa;
+}
+
+.admin-daily-question-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    max-height: 350px;
+    overflow-y: auto;
+    padding: 5px;
+    margin-bottom: 20px;
+}
+
+.admin-daily-question-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+    background: #080d1b;
+    border: 1px solid #26334d;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.admin-daily-question-option.selected {
+    border-color: #8b5cf6;
+    background: #1b1733;
+}
+
+.admin-daily-question-option input {
+    margin-top: 4px;
+    accent-color: #8b5cf6;
+}
+
+.admin-daily-question-option span {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+}
+
+.admin-daily-question-option strong {
+    color: #f8fafc;
+    overflow-wrap: anywhere;
+}
+
+.admin-daily-question-option small {
+    color: #94a3b8;
+}
+
+.admin-daily-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.admin-daily-actions button {
+    padding: 7px 12px;
+    border: 1px solid #8b5cf6;
+    border-radius: 6px;
+    background: #1b1733;
+    color: #c4b5fd;
+    cursor: pointer;
+}
+
+.admin-daily-actions button.delete {
+    border-color: #ef4444;
+    background: #2b151d;
+    color: #fca5a5;
+}
+
+.admin-daily-actions button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.admin-daily-status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.admin-daily-status.active {
+    color: #86efac;
+    background: #123322;
+}
+
+.admin-daily-status.inactive {
+    color: #fca5a5;
+    background: #351b25;
+}
+
+.admin-success-message {
+    padding: 12px 16px;
+    margin-bottom: 15px;
+    border: 1px solid #166534;
+    border-radius: 8px;
+    background: #123322;
+    color: #86efac;
+}
+
+@media (max-width: 768px) {
+    .admin-daily-form-grid,
+    .admin-daily-question-list {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-daily-question-heading,
+    .admin-daily-list-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-daily-actions {
+        flex-wrap: wrap;
+    }
+}

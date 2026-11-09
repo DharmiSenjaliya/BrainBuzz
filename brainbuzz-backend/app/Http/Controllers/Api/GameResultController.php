@@ -80,6 +80,10 @@ public function store(Request $request)
 
         $gamesPlayed = (clone $results)->count();
         $totalScore = (clone $results)->sum('score');
+        $dailyBonus = \App\Models\DailyChallengeAttempt::where('user_id', $request->user()->id)
+        ->sum('bonus_points');
+
+    $totalScore += $dailyBonus;
         $totalCorrect = (clone $results)->sum('correct_answers');
         $totalWrong = (clone $results)->sum('wrong_answers');
         $totalQuestions = (clone $results)->sum('total_questions');
@@ -103,6 +107,12 @@ public function store(Request $request)
     // Leaderboard - All players ranking
     public function leaderboard(Request $request)
     {
+
+    $dailyBonusStats = \App\Models\DailyChallengeAttempt::selectRaw('
+    user_id,
+    SUM(bonus_points) as daily_bonus
+')
+->groupBy('user_id');
         $players = User::joinSub(
             GameResult::selectRaw('
                 user_id,
@@ -117,19 +127,28 @@ public function store(Request $request)
             '=',
             'game_stats.user_id'
         )
+        ->leftJoinSub(
+    $dailyBonusStats,
+    'daily_bonus_stats',
+    'users.id',
+    '=',
+    'daily_bonus_stats.user_id'
+)
         ->select(
             'users.id',
             'users.name',
-            'game_stats.total_score',
             'game_stats.games_played'
         )
+        ->selectRaw('
+            game_stats.total_score + COALESCE(daily_bonus_stats.daily_bonus, 0) as total_score
+        ')
         ->selectRaw('
             ROUND(
                 (game_stats.total_correct / NULLIF(game_stats.total_questions, 0)) * 100,
                 1
             ) as accuracy
         ')
-        ->orderByDesc('game_stats.total_score')
+        ->orderByDesc('total_score')
         ->orderBy('users.name')
         ->get();
 

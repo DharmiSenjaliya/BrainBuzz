@@ -4,6 +4,20 @@ import api from './services/api'
 
 function AdminDashboard({ admin, onLogout }) {
     const [activeTab, setActiveTab] = useState('overview')
+    // Daily Challenge Management
+const [dailyChallenges, setDailyChallenges] = useState([])
+const [loadingDailyChallenges, setLoadingDailyChallenges] = useState(false)
+const [dailyChallengeError, setDailyChallengeError] = useState('')
+const [dailyChallengeSuccess, setDailyChallengeSuccess] = useState('')
+const [savingDailyChallenge, setSavingDailyChallenge] = useState(false)
+const [editingDailyChallenge, setEditingDailyChallenge] = useState(null)
+
+const [dailyChallengeForm, setDailyChallengeForm] = useState({
+    challenge_date: new Date().toLocaleDateString('en-CA'),
+    question_ids: [],
+    bonus_points: 50,
+    is_active: true,
+})
 
     const [questions, setQuestions] = useState([])
     const [feedback, setFeedback] = useState([])
@@ -73,6 +87,175 @@ function AdminDashboard({ admin, onLogout }) {
             setLoadingQuestions(false)
         }
     }
+
+    // Fetch Daily Challenges
+const fetchDailyChallenges = async () => {
+    try {
+        setLoadingDailyChallenges(true)
+        setDailyChallengeError('')
+
+        const response = await api.get(
+            '/admin/daily-challenges',
+            authConfig
+        )
+
+        setDailyChallenges(response.data.challenges || [])
+    } catch (error) {
+        console.error('Daily Challenges Fetch Error:', error)
+
+        setDailyChallengeError(
+            error.response?.data?.message ||
+            'Unable to load daily challenges.'
+        )
+    } finally {
+        setLoadingDailyChallenges(false)
+    }
+}
+      
+    // Handle Daily Challenge Form
+const handleDailyChallengeInput = (e) => {
+    const { name, value, type, checked } = e.target
+
+    setDailyChallengeForm((previous) => ({
+        ...previous,
+        [name]: type === 'checkbox' ? checked : value,
+    }))
+}
+
+// Select / Deselect Challenge Questions
+const toggleDailyChallengeQuestion = (questionId) => {
+    setDailyChallengeForm((previous) => {
+        const selected = previous.question_ids
+
+        if (selected.includes(questionId)) {
+            return {
+                ...previous,
+                question_ids: selected.filter((id) => id !== questionId),
+            }
+        }
+
+        if (selected.length >= 5) {
+            setDailyChallengeError('You can select exactly 5 questions.')
+            return previous
+        }
+
+        setDailyChallengeError('')
+
+        return {
+            ...previous,
+            question_ids: [...selected, questionId],
+        }
+    })
+}
+
+// Reset Daily Challenge Form
+const resetDailyChallengeForm = () => {
+    setEditingDailyChallenge(null)
+
+    setDailyChallengeForm({
+        challenge_date: new Date().toLocaleDateString('en-CA'),
+        question_ids: [],
+        bonus_points: 50,
+        is_active: true,
+    })
+
+    setDailyChallengeError('')
+    setDailyChallengeSuccess('')
+}
+
+// Create / Update Daily Challenge
+const handleDailyChallengeSubmit = async (e) => {
+    e.preventDefault()
+
+    if (dailyChallengeForm.question_ids.length !== 5) {
+        setDailyChallengeError('Please select exactly 5 questions.')
+        return
+    }
+
+    try {
+        setSavingDailyChallenge(true)
+        setDailyChallengeError('')
+        setDailyChallengeSuccess('')
+
+        const payload = {
+            ...dailyChallengeForm,
+            bonus_points: Number(dailyChallengeForm.bonus_points),
+        }
+
+        if (editingDailyChallenge) {
+            await api.put(
+                `/admin/daily-challenges/${editingDailyChallenge.id}`,
+                payload,
+                authConfig
+            )
+            setDailyChallengeSuccess('Daily challenge updated successfully.')
+        } else {
+            await api.post(
+                '/admin/daily-challenges',
+                payload,
+                authConfig
+            )
+            setDailyChallengeSuccess('Daily challenge created successfully.')
+        }
+
+        resetDailyChallengeForm()
+        await fetchDailyChallenges()
+    } catch (error) {
+        setDailyChallengeError(
+            error.response?.data?.message ||
+            'Unable to save daily challenge.'
+        )
+    } finally {
+        setSavingDailyChallenge(false)
+    }
+}
+
+// Edit Daily Challenge
+const handleEditDailyChallenge = (challenge) => {
+    setEditingDailyChallenge(challenge)
+
+    setDailyChallengeForm({
+        challenge_date: String(challenge.challenge_date).slice(0, 10),
+        question_ids: (challenge.question_ids || []).map(Number),
+        bonus_points: challenge.bonus_points,
+        is_active: Boolean(challenge.is_active),
+    })
+
+    setDailyChallengeError('')
+    setDailyChallengeSuccess('')
+    setActiveTab('daily-challenges')
+}
+
+// Delete Daily Challenge
+const handleDeleteDailyChallenge = async (challenge) => {
+    if (Number(challenge.attempts_count || 0) > 0) {
+        setDailyChallengeError('Challenges with attempts cannot be deleted.')
+        return
+    }
+
+    if (!window.confirm('Are you sure you want to delete this daily challenge?')) {
+        return
+    }
+
+    try {
+        setDailyChallengeError('')
+        setDailyChallengeSuccess('')
+
+        await api.delete(
+            `/admin/daily-challenges/${challenge.id}`,
+            authConfig
+        )
+
+        setDailyChallengeSuccess('Daily challenge deleted successfully.')
+        await fetchDailyChallenges()
+    } catch (error) {
+        setDailyChallengeError(
+            error.response?.data?.message ||
+            'Unable to delete daily challenge.'
+        )
+    }
+}
+
 
     const fetchFeedback = async () => {
         try {
@@ -149,6 +332,7 @@ const fetchLeaderboard = async (search = '') => {
         fetchQuestions()
         fetchFeedback()
         fetchPlayers()
+        fetchDailyChallenges()
     }, [])
 
     // Automatic Player Search
@@ -628,6 +812,19 @@ const handleDeletePlayer = async (id) => {
 >
     <span>🏆</span>
     Leaderboard
+</button>
+
+<button
+    className={`admin-nav-btn ${
+        activeTab === 'daily-challenges' ? 'active' : ''
+    }`}
+    onClick={() => {
+        setActiveTab('daily-challenges')
+        fetchDailyChallenges()
+    }}
+>
+    <span>🎯</span>
+    Daily Challenges
 </button>
 
 </aside>
@@ -1518,7 +1715,280 @@ const handleDeletePlayer = async (id) => {
 
     </section>
 )}
-                
+
+{/* DAILY CHALLENGE MANAGEMENT */}
+{activeTab === 'daily-challenges' && (
+    <section className="admin-section">
+
+        <div className="admin-page-heading">
+            <div>
+                <span className="admin-eyebrow">GAME MANAGEMENT</span>
+                <h1>Daily Challenges</h1>
+                <p>Create and manage daily challenges for players.</p>
+            </div>
+
+            <button
+                className="admin-primary-btn"
+                onClick={resetDailyChallengeForm}
+            >
+                + New Challenge
+            </button>
+        </div>
+
+        {dailyChallengeError && (
+            <div className="admin-error-message">
+                {dailyChallengeError}
+            </div>
+        )}
+
+        {dailyChallengeSuccess && (
+            <div className="admin-success-message">
+                {dailyChallengeSuccess}
+            </div>
+        )}
+
+        {/* CREATE / EDIT FORM */}
+        <div className="admin-content-card admin-daily-form">
+
+            <h2>
+                {editingDailyChallenge
+                    ? 'Edit Daily Challenge'
+                    : 'Create Daily Challenge'}
+            </h2>
+
+            <form onSubmit={handleDailyChallengeSubmit}>
+
+                <div className="admin-daily-form-grid">
+
+                    <div>
+                        <label>Challenge Date</label>
+                        <input
+                            type="date"
+                            name="challenge_date"
+                            value={dailyChallengeForm.challenge_date}
+                            onChange={handleDailyChallengeInput}
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <label>Bonus Points</label>
+                        <input
+                            type="number"
+                            name="bonus_points"
+                            min="0"
+                            max="10000"
+                            value={dailyChallengeForm.bonus_points}
+                            onChange={handleDailyChallengeInput}
+                            required
+                        />
+                    </div>
+
+                </div>
+
+                <label className="admin-checkbox-label">
+                    <input
+                        type="checkbox"
+                        name="is_active"
+                        checked={dailyChallengeForm.is_active}
+                        onChange={handleDailyChallengeInput}
+                    />
+                    <span>Challenge is active</span>
+                </label>
+
+                <div className="admin-daily-question-heading">
+                    <h3>Select 5 Questions</h3>
+                    <strong>
+                        {dailyChallengeForm.question_ids.length}/5 Selected
+                    </strong>
+                </div>
+
+                {loadingQuestions ? (
+                    <p>Loading questions...</p>
+                ) : (
+                    <div className="admin-daily-question-list">
+
+                        {questions
+                            .filter((question) => Boolean(question.is_active))
+                            .map((question) => {
+                                const selected =
+                                    dailyChallengeForm.question_ids.includes(
+                                        Number(question.id)
+                                    )
+
+                                return (
+                                    <label
+                                        key={question.id}
+                                        className={`admin-daily-question-option ${
+                                            selected ? 'selected' : ''
+                                        }`}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={selected}
+                                            onChange={() =>
+                                                toggleDailyChallengeQuestion(
+                                                    Number(question.id)
+                                                )
+                                            }
+                                        />
+
+                                        <span>
+                                            <strong>{question.title}</strong>
+                                            <small>
+                                                Level {question.level} · {question.points} points
+                                            </small>
+                                        </span>
+                                    </label>
+                                )
+                            })}
+
+                    </div>
+                )}
+
+                <div className="admin-modal-actions">
+
+                    {editingDailyChallenge && (
+                        <button
+                            type="button"
+                            className="admin-cancel-btn"
+                            onClick={resetDailyChallengeForm}
+                        >
+                            Cancel Edit
+                        </button>
+                    )}
+
+                    <button
+                        type="submit"
+                        className="admin-primary-btn"
+                        disabled={
+                            savingDailyChallenge ||
+                            dailyChallengeForm.question_ids.length !== 5
+                        }
+                    >
+                        {savingDailyChallenge
+                            ? 'Saving...'
+                            : editingDailyChallenge
+                                ? 'Update Challenge'
+                                : 'Create Challenge'}
+                    </button>
+
+                </div>
+
+            </form>
+        </div>
+
+        {/* CHALLENGE LIST */}
+        <div className="admin-content-card">
+
+            <div className="admin-daily-list-heading">
+                <h2>All Daily Challenges</h2>
+
+                <button
+                    className="admin-refresh-btn"
+                    onClick={fetchDailyChallenges}
+                    disabled={loadingDailyChallenges}
+                >
+                    {loadingDailyChallenges ? 'Loading...' : 'Refresh'}
+                </button>
+            </div>
+
+            {loadingDailyChallenges ? (
+                <div className="admin-empty-state">
+                    Loading daily challenges...
+                </div>
+            ) : dailyChallenges.length === 0 ? (
+                <div className="admin-empty-state">
+                    No daily challenges created yet.
+                </div>
+            ) : (
+                <div className="admin-table-wrapper">
+                    <table className="admin-table">
+
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Questions</th>
+                                <th>Bonus</th>
+                                <th>Attempts</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {dailyChallenges.map((challenge) => (
+                                <tr key={challenge.id}>
+
+                                    <td>
+                                        <strong>
+                                            {String(challenge.challenge_date).slice(0, 10)}
+                                        </strong>
+                                    </td>
+
+                                    <td>
+                                        {(challenge.question_ids || []).length} Questions
+                                    </td>
+
+                                    <td>
+                                        +{challenge.bonus_points}
+                                    </td>
+
+                                    <td>
+                                        {challenge.attempts_count || 0}
+                                    </td>
+
+                                    <td>
+                                        <span className={`admin-daily-status ${
+                                            challenge.is_active ? 'active' : 'inactive'
+                                        }`}>
+                                            {challenge.is_active ? 'Active' : 'Inactive'}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <div className="admin-daily-actions">
+
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleEditDailyChallenge(challenge)
+                                                }
+                                                disabled={
+                                                    Number(challenge.attempts_count || 0) > 0
+                                                }
+                                            >
+                                                Edit
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                className="delete"
+                                                onClick={() =>
+                                                    handleDeleteDailyChallenge(challenge)
+                                                }
+                                                disabled={
+                                                    Number(challenge.attempts_count || 0) > 0
+                                                }
+                                            >
+                                                Delete
+                                            </button>
+
+                                        </div>
+                                    </td>
+
+                                </tr>
+                            ))}
+                        </tbody>
+
+                    </table>
+                </div>
+            )}
+
+        </div>
+
+    </section>
+)}
                 </main>
             </div>
 
