@@ -215,10 +215,23 @@ $today = now('Asia/Kolkata')->toDateString();
                 'completed_at' => $completedAt,
             ]);
 
-            // Update daily completion streak
-            $streak = DailyChallengeStreak::firstOrNew([
-                'user_id' => $user->id,
-            ]);
+        
+            // Safely create or lock player's streak record
+            $streakNow = now();
+
+            \Illuminate\Support\Facades\DB::table('daily_challenge_streaks')
+                ->insertOrIgnore([
+                    'user_id' => $user->id,
+                    'current_streak' => 0,
+                    'longest_streak' => 0,
+                    'last_completed_date' => null,
+                    'created_at' => $streakNow,
+                    'updated_at' => $streakNow,
+                ]);
+
+            $streak = DailyChallengeStreak::where('user_id', $user->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
             $yesterday = $completedAt->copy()
                 ->subDay()
@@ -241,6 +254,7 @@ $today = now('Asia/Kolkata')->toDateString();
 
             $streak->last_completed_date = $today;
             $streak->save();
+
 
             // Create completion notification
             $user->notifications()->create([

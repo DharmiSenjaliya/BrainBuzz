@@ -1,63 +1,64 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\GameResult;
 use App\Models\User;
+use App\Models\DailyChallengeAttempt;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Notification;
 
 class GameResultController extends Controller
 {
-    // Save player's game result
-   
-// Save player's game result and create notification
-public function store(Request $request)
-{
-    $validated = $request->validate([
-        'level' => 'required|integer|min:1',
-        'score' => 'required|integer|min:0',
-        'correct_answers' => 'required|integer|min:0|max:5',
-        'wrong_answers' => 'required|integer|min:0|max:5',
-        'total_questions' => 'required|integer|min:1|max:5',
-        'passed' => 'required|boolean',
-    ]);
+    // Save player's game result and create notification
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'level' => 'required|integer|min:1',
+            'score' => 'required|integer|min:0',
+            'correct_answers' => 'required|integer|min:0|max:5',
+            'wrong_answers' => 'required|integer|min:0|max:5',
+            'total_questions' => 'required|integer|min:1|max:5',
+            'passed' => 'required|boolean',
+        ]);
 
-    if (
-        $validated['correct_answers'] + $validated['wrong_answers']
-        !== $validated['total_questions']
-    ) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Invalid game result.',
-        ], 422);
-    }
+        if (
+            $validated['correct_answers'] + $validated['wrong_answers']
+            !== $validated['total_questions']
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid game result.',
+            ], 422);
+        }
 
-    $user = $request->user();
+        $user = $request->user();
 
-    $result = GameResult::create([
-        ...$validated,
-        'user_id' => $user->id,
-    ]);
+        $result = GameResult::create([
+            ...$validated,
+            'user_id' => $user->id,
+        ]);
 
-    $status = $result->passed ? 'Level Passed!' : 'Keep Practicing!';
+        $status = $result->passed
+            ? 'Level Passed!'
+            : 'Keep Practicing!';
 
-    $user->notifications()->create([
-        'id' => (string) \Illuminate\Support\Str::uuid(),
-        'type' => 'game',
-        'data' => [
+        $user->notifications()->create([
+            'id' => (string) \Illuminate\Support\Str::uuid(),
             'type' => 'game',
-            'title' => $status,
-            'message' => "You completed Level {$result->level} with {$result->score} points and {$result->correct_answers} correct answers.",
-        ],
-    ]);
+            'data' => [
+                'type' => 'game',
+                'title' => $status,
+                'message' => "You completed Level {$result->level} with {$result->score} points and {$result->correct_answers} correct answers.",
+            ],
+        ]);
 
-    return response()->json([
-        'success' => true,
-        'message' => 'Game result saved successfully!',
-        'result' => $result,
-    ], 201);
-}
+        return response()->json([
+            'success' => true,
+            'message' => 'Game result saved successfully!',
+            'result' => $result,
+        ], 201);
+    }
 
 
     // Player's game history
@@ -73,20 +74,31 @@ public function store(Request $request)
         ]);
     }
 
+
     // Player dashboard statistics
     public function dashboard(Request $request)
     {
-        $results = GameResult::where('user_id', $request->user()->id);
+        $userId = $request->user()->id;
 
-        $gamesPlayed = (clone $results)->count();
-        $totalScore = (clone $results)->sum('score');
-        $dailyBonus = \App\Models\DailyChallengeAttempt::where('user_id', $request->user()->id)
-        ->sum('bonus_points');
+        $results = GameResult::where('user_id', $userId);
 
-    $totalScore += $dailyBonus;
-        $totalCorrect = (clone $results)->sum('correct_answers');
-        $totalWrong = (clone $results)->sum('wrong_answers');
-        $totalQuestions = (clone $results)->sum('total_questions');
+        $dailyAttempts = DailyChallengeAttempt::where('user_id', $userId)
+            ->where('is_completed', true);
+
+        $gamesPlayed = (clone $results)->count()
+            + (clone $dailyAttempts)->count();
+
+        $totalScore = (clone $results)->sum('score')
+            + (clone $dailyAttempts)->sum('score');
+
+        $totalCorrect = (clone $results)->sum('correct_answers')
+            + (clone $dailyAttempts)->sum('correct_answers');
+
+        $totalWrong = (clone $results)->sum('wrong_answers')
+            + (clone $dailyAttempts)->sum('wrong_answers');
+
+        $totalQuestions = (clone $results)->sum('total_questions')
+            + ((clone $dailyAttempts)->count() * 5);
 
         $accuracy = $totalQuestions > 0
             ? round(($totalCorrect / $totalQuestions) * 100)
@@ -104,56 +116,85 @@ public function store(Request $request)
         ]);
     }
 
-    // Leaderboard - All players ranking
+
+    // Player leaderboard
     public function leaderboard(Request $request)
     {
+        // Normal game statistics
+        $gameStats = GameResult::selectRaw('
+            user_id,
+            SUM(score) as game_score,
+            COUNT(*) as games_played,
+            SUM(correct_answers) as total_correct,
+            SUM(total_questions) as total_questions
+        ')
+            ->groupBy('user_id');
 
-    $dailyBonusStats = \App\Models\DailyChallengeAttempt::selectRaw('
-    user_id,
-    SUM(bonus_points) as daily_bonus
-')
-->groupBy('user_id');
-        $players = User::joinSub(
-            GameResult::selectRaw('
+        // Completed daily challenge statistics
+        $dailyStats = DailyChallengeAttempt::where('is_completed', true)
+            ->selectRaw('
                 user_id,
-                SUM(score) as total_score,
-                COUNT(*) as games_played,
-                SUM(correct_answers) as total_correct,
-                SUM(total_questions) as total_questions
+                SUM(score) as daily_score,
+                COUNT(*) as daily_challenges_played,
+                SUM(correct_answers) as daily_correct,
+                SUM(wrong_answers) as daily_wrong,
+                COUNT(*) * 5 as daily_total_questions
             ')
-            ->groupBy('user_id'),
-            'game_stats',
-            'users.id',
-            '=',
-            'game_stats.user_id'
-        )
-        ->leftJoinSub(
-    $dailyBonusStats,
-    'daily_bonus_stats',
-    'users.id',
-    '=',
-    'daily_bonus_stats.user_id'
-)
-        ->select(
-            'users.id',
-            'users.name',
-            'game_stats.games_played'
-        )
-        ->selectRaw('
-            game_stats.total_score + COALESCE(daily_bonus_stats.daily_bonus, 0) as total_score
-        ')
-        ->selectRaw('
-            ROUND(
-                (game_stats.total_correct / NULLIF(game_stats.total_questions, 0)) * 100,
-                1
-            ) as accuracy
-        ')
-        ->orderByDesc('total_score')
-        ->orderBy('users.name')
-        ->get();
+            ->groupBy('user_id');
+
+        $players = User::query()
+            ->leftJoinSub(
+                $gameStats,
+                'game_stats',
+                'users.id',
+                '=',
+                'game_stats.user_id'
+            )
+            ->leftJoinSub(
+                $dailyStats,
+                'daily_stats',
+                'users.id',
+                '=',
+                'daily_stats.user_id'
+            )
+            ->where('users.is_admin', false)
+            ->where('users.is_active', true)
+            ->select(
+                'users.id',
+                'users.name'
+            )
+            ->selectRaw('
+                COALESCE(game_stats.game_score, 0)
+                + COALESCE(daily_stats.daily_score, 0) as total_score
+            ')
+            ->selectRaw('
+                COALESCE(game_stats.games_played, 0)
+                + COALESCE(daily_stats.daily_challenges_played, 0)
+                as games_played
+            ')
+            ->selectRaw('
+                COALESCE(game_stats.total_correct, 0)
+                + COALESCE(daily_stats.daily_correct, 0) as total_correct
+            ')
+            ->selectRaw('
+                COALESCE(game_stats.total_questions, 0)
+                + COALESCE(daily_stats.daily_total_questions, 0)
+                as total_questions
+            ')
+            ->orderByDesc('total_score')
+            ->orderBy('users.name')
+            ->get();
 
         $leaderboard = $players->values()->map(function ($player, $index) {
             $player->rank = $index + 1;
+
+            $player->accuracy = $player->total_questions > 0
+                ? round(
+                    ($player->total_correct / $player->total_questions) * 100,
+                    1
+                )
+                : 0;
+
             return $player;
         });
 
@@ -169,90 +210,109 @@ public function store(Request $request)
         ]);
     }
 
+
     // Player achievements
-public function achievements(Request $request)
-{
-    $userId = $request->user()->id;
+    public function achievements(Request $request)
+    {
+        $userId = $request->user()->id;
 
-    $results = GameResult::where('user_id', $userId)->get();
+        $results = GameResult::where('user_id', $userId)->get();
 
-    $gamesPlayed = $results->count();
-    $totalScore = $results->sum('score');
+        $dailyAttempts = DailyChallengeAttempt::where('user_id', $userId)
+            ->where('is_completed', true)
+            ->get();
 
-    $completedLevels = $results
-        ->where('passed', true)
-        ->pluck('level')
-        ->unique()
-        ->count();
+        $gamesPlayed = $results->count() + $dailyAttempts->count();
 
-    $perfectGame = $results->contains(function ($result) {
-        return $result->total_questions > 0 &&
-            $result->correct_answers === $result->total_questions;
-    });
+        $totalScore = $results->sum('score')
+            + $dailyAttempts->sum('score');
 
-    $achievements = [
-        [
-            'id' => 1,
-            'name' => 'First Game',
-            'description' => 'Complete your first game.',
-            'icon' => '🏅',
-            'earned' => $gamesPlayed >= 1,
-        ],
-        [
-            'id' => 2,
-            'name' => '5 Games Played',
-            'description' => 'Complete 5 games.',
-            'icon' => '🎮',
-            'earned' => $gamesPlayed >= 5,
-        ],
-        [
-            'id' => 3,
-            'name' => '100 Points',
-            'description' => 'Earn 100 total points.',
-            'icon' => '💯',
-            'earned' => $totalScore >= 100,
-        ],
-        [
-            'id' => 4,
-            'name' => '500 Points',
-            'description' => 'Earn 500 total points.',
-            'icon' => '⭐',
-            'earned' => $totalScore >= 500,
-        ],
-        [
-            'id' => 5,
-            'name' => 'Perfect Game',
-            'description' => 'Answer every question correctly in one game.',
-            'icon' => '🎯',
-            'earned' => $perfectGame,
-        ],
-        [
-            'id' => 6,
-            'name' => 'Level 1 Completed',
-            'description' => 'Successfully complete Level 1.',
-            'icon' => '🥇',
-            'earned' => $results->contains(function ($result) {
-                return $result->level == 1 && $result->passed;
-            }),
-        ],
-        [
-            'id' => 7,
-            'name' => '3 Levels Completed',
-            'description' => 'Successfully complete 3 different levels.',
-            'icon' => '🏆',
-            'earned' => $completedLevels >= 3,
-        ],
-    ];
+        $completedLevels = $results
+            ->where('passed', true)
+            ->pluck('level')
+            ->unique()
+            ->count();
 
-    return response()->json([
-        'success' => true,
-        'achievements' => $achievements,
-        'earned_count' => collect($achievements)
-            ->where('earned', true)
-            ->count(),
-        'total_achievements' => count($achievements),
-    ]);
-}
+        $perfectGame = $results->contains(function ($result) {
+            return $result->total_questions > 0 &&
+                $result->correct_answers === $result->total_questions;
+        });
+
+        $perfectDailyChallenge = $dailyAttempts->contains(function ($attempt) {
+            return $attempt->correct_answers === 5;
+        });
+
+        $achievements = [
+            [
+                'id' => 1,
+                'name' => 'First Game',
+                'description' => 'Complete your first game.',
+                'icon' => '🏅',
+                'earned' => $gamesPlayed >= 1,
+            ],
+            [
+                'id' => 2,
+                'name' => '5 Games Played',
+                'description' => 'Complete 5 games.',
+                'icon' => '🎮',
+                'earned' => $gamesPlayed >= 5,
+            ],
+            [
+                'id' => 3,
+                'name' => '100 Points',
+                'description' => 'Earn 100 total points.',
+                'icon' => '💯',
+                'earned' => $totalScore >= 100,
+            ],
+            [
+                'id' => 4,
+                'name' => '500 Points',
+                'description' => 'Earn 500 total points.',
+                'icon' => '⭐',
+                'earned' => $totalScore >= 500,
+            ],
+            [
+                'id' => 5,
+                'name' => 'Perfect Game',
+                'description' => 'Answer every question correctly in one game.',
+                'icon' => '🎯',
+                'earned' => $perfectGame,
+            ],
+            [
+                'id' => 6,
+                'name' => 'Level 1 Completed',
+                'description' => 'Successfully complete Level 1.',
+                'icon' => '🥇',
+                'earned' => $results->contains(function ($result) {
+                    return $result->level == 1 && $result->passed;
+                }),
+            ],
+            [
+                'id' => 7,
+                'name' => '3 Levels Completed',
+                'description' => 'Successfully complete 3 different levels.',
+                'icon' => '🏆',
+                'earned' => $completedLevels >= 3,
+            ],
+            [
+                'id' => 8,
+                'name' => 'Perfect Daily Challenge',
+                'description' => 'Answer all 5 Daily Challenge questions correctly.',
+                'icon' => '🔥',
+                'earned' => $perfectDailyChallenge,
+            ],
+        ];
+
+        return response()->json([
+            'success' => true,
+            'achievements' => $achievements,
+            'earned_count' => collect($achievements)
+                ->where('earned', true)
+                ->count(),
+            'total_achievements' => count($achievements),
+        ]);
+    }
+
 
     // Player level-wise progress
     public function levelProgress(Request $request)

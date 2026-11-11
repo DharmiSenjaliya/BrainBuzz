@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\AdminLeaderboardController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\DailyChallengeController;
 use App\Http\Controllers\Api\AdminDailyChallengeController;
+use App\Http\Controllers\Api\CategoryController;
 
 // Public Authentication Routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -79,4 +80,14 @@ Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])
 Route::get('/daily-challenge', [DailyChallengeController::class, 'index']);
 Route::post('/daily-challenge/submit', [DailyChallengeController::class, 'submit']);
 Route::get('/daily-challenge/history', [DailyChallengeController::class, 'history']);
+
+
+// Player Categories
+Route::get('/categories', [CategoryController::class, 'playerIndex']);
+
+// Category Management
+Route::get('/admin/categories', [CategoryController::class, 'index']);
+Route::post('/admin/categories', [CategoryController::class, 'store']);
+Route::put('/admin/categories/{category}', [CategoryController::class, 'update']);
+Route::delete('/admin/categories/{category}', [CategoryController::class, 'destroy']);
 });

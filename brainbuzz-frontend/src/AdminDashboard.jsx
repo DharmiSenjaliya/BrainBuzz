@@ -20,6 +20,22 @@ const [dailyChallengeForm, setDailyChallengeForm] = useState({
 })
 
     const [questions, setQuestions] = useState([])
+    // Category Management
+const [categories, setCategories] = useState([])
+const [loadingCategories, setLoadingCategories] = useState(false)
+const [categoryError, setCategoryError] = useState('')
+const [categorySuccess, setCategorySuccess] = useState('')
+const [savingCategory, setSavingCategory] = useState(false)
+const [showCategoryForm, setShowCategoryForm] = useState(false)
+const [editingCategory, setEditingCategory] = useState(null)
+const [searchCategory, setSearchCategory] = useState('')
+
+const [categoryForm, setCategoryForm] = useState({
+    name: '',
+    description: '',
+    icon: '',
+    is_active: true,
+})
     const [feedback, setFeedback] = useState([])
     const [players, setPlayers] = useState([])
     const [loadingPlayers, setLoadingPlayers] = useState(true)
@@ -39,6 +55,7 @@ const [dailyChallengeForm, setDailyChallengeForm] = useState({
 
     const [searchQuestion, setSearchQuestion] = useState('')
     const [questionLevelFilter, setQuestionLevelFilter] = useState('all')
+    const [questionCategoryFilter, setQuestionCategoryFilter] = useState('all')
     const [feedbackRatingFilter, setFeedbackRatingFilter] = useState('all')
 
     const [showQuestionForm, setShowQuestionForm] = useState(false)
@@ -48,15 +65,15 @@ const [dailyChallengeForm, setDailyChallengeForm] = useState({
     const [deletingFeedbackId, setDeletingFeedbackId] = useState(null)
 
     const [questionForm, setQuestionForm] = useState({
-        title: '',
-        clues: ['', ''],
-        answer: '',
-        hint: '',
-        level: 1,
-        points: 10,
-        is_active: true,
-    })
-
+    category_id: '',
+    title: '',
+    clues: ['', ''],
+    answer: '',
+    hint: '',
+    level: 1,
+    points: 10,
+    is_active: true,
+})
     const token = localStorage.getItem('brainbuzz_admin_token')
 
     const authConfig = {
@@ -85,6 +102,169 @@ const [dailyChallengeForm, setDailyChallengeForm] = useState({
             )
         } finally {
             setLoadingQuestions(false)
+        }
+    }
+
+        // Fetch Categories
+    const fetchCategories = async () => {
+        try {
+            setLoadingCategories(true)
+            setCategoryError('')
+
+            const response = await api.get(
+                '/admin/categories',
+                authConfig
+            )
+
+            setCategories(response.data.categories || [])
+
+        } catch (error) {
+            console.error('Categories Fetch Error:', error)
+
+            setCategoryError(
+                error.response?.data?.message ||
+                'Unable to load categories.'
+            )
+        } finally {
+            setLoadingCategories(false)
+        }
+    }
+
+        // Handle Category Form Input
+    const handleCategoryInput = (e) => {
+        const { name, value, type, checked } = e.target
+
+        setCategoryForm((previous) => ({
+            ...previous,
+            [name]: type === 'checkbox' ? checked : value,
+        }))
+    }
+
+    // Open Add Category Form
+    const openAddCategory = () => {
+        setEditingCategory(null)
+
+        setCategoryForm({
+            name: '',
+            description: '',
+            icon: '',
+            is_active: true,
+        })
+
+        setCategoryError('')
+        setCategorySuccess('')
+        setShowCategoryForm(true)
+    }
+
+    // Open Edit Category Form
+    const openEditCategory = (category) => {
+        setEditingCategory(category)
+
+        setCategoryForm({
+            name: category.name || '',
+            description: category.description || '',
+            icon: category.icon || '',
+            is_active: Boolean(category.is_active),
+        })
+
+        setCategoryError('')
+        setCategorySuccess('')
+        setShowCategoryForm(true)
+    }
+
+    // Reset Category Form
+    const resetCategoryForm = () => {
+        setCategoryForm({
+            name: '',
+            description: '',
+            icon: '',
+            is_active: true,
+        })
+
+        setEditingCategory(null)
+        setShowCategoryForm(false)
+        setCategoryError('')
+    }
+
+        // Save Category
+    const handleCategorySubmit = async (e) => {
+        e.preventDefault()
+
+        try {
+            setSavingCategory(true)
+            setCategoryError('')
+            setCategorySuccess('')
+
+            const payload = {
+                name: categoryForm.name.trim(),
+                description: categoryForm.description.trim() || null,
+                icon: categoryForm.icon.trim() || null,
+                is_active: Boolean(categoryForm.is_active),
+            }
+
+            if (editingCategory) {
+                await api.put(
+                    `/admin/categories/${editingCategory.id}`,
+                    payload,
+                    authConfig
+                )
+
+                setCategorySuccess('Category updated successfully!')
+            } else {
+                await api.post(
+                    '/admin/categories',
+                    payload,
+                    authConfig
+                )
+
+                setCategorySuccess('Category created successfully!')
+            }
+
+            setShowCategoryForm(false)
+            setEditingCategory(null)
+
+            await fetchCategories()
+
+        } catch (error) {
+            console.error('Category Save Error:', error)
+
+            setCategoryError(
+                error.response?.data?.message ||
+                'Unable to save category.'
+            )
+        } finally {
+            setSavingCategory(false)
+        }
+    }
+
+    // Delete Category
+    const handleDeleteCategory = async (category) => {
+        if (
+            !window.confirm(
+                `Delete "${category.name}" category? Its questions will remain uncategorized.`
+            )
+        ) {
+            return
+        }
+
+        try {
+            await api.delete(
+                `/admin/categories/${category.id}`,
+                authConfig
+            )
+
+            setCategorySuccess('Category deleted successfully!')
+
+            await fetchCategories()
+            await fetchQuestions()
+
+        } catch (error) {
+            console.error('Category Delete Error:', error)
+
+            setCategoryError(
+                error.response?.data?.message ||
+                'Unable to delete category.'
+            )
         }
     }
 
@@ -329,11 +509,12 @@ const fetchLeaderboard = async (search = '') => {
 }
 
     useEffect(() => {
-        fetchQuestions()
-        fetchFeedback()
-        fetchPlayers()
-        fetchDailyChallenges()
-    }, [])
+    fetchQuestions()
+    fetchFeedback()
+    fetchPlayers()
+    fetchDailyChallenges()
+    fetchCategories()
+}, [])
 
     // Automatic Player Search
 useEffect(() => {
@@ -378,7 +559,7 @@ useEffect(() => {
             ).toFixed(1)
             : '0.0'
 
-    const filteredQuestions = useMemo(() => {
+       const filteredQuestions = useMemo(() => {
         return questions.filter((question) => {
             const search = searchQuestion.toLowerCase().trim()
 
@@ -391,10 +572,23 @@ useEffect(() => {
                 questionLevelFilter === 'all' ||
                 String(question.level) === String(questionLevelFilter)
 
-            return matchesSearch && matchesLevel
-        })
-    }, [questions, searchQuestion, questionLevelFilter])
+            const matchesCategory =
+                questionCategoryFilter === 'all' ||
+                (
+                    questionCategoryFilter === 'uncategorized'
+                        ? !question.category_id
+                        : String(question.category_id) ===
+                          String(questionCategoryFilter)
+                )
 
+            return matchesSearch && matchesLevel && matchesCategory
+        })
+    }, [
+        questions,
+        searchQuestion,
+        questionLevelFilter,
+        questionCategoryFilter,
+    ])
     const filteredFeedback = useMemo(() => {
         return feedback.filter((item) => {
             if (feedbackRatingFilter === 'all') {
@@ -405,8 +599,9 @@ useEffect(() => {
         })
     }, [feedback, feedbackRatingFilter])
 
-    const resetQuestionForm = () => {
+        const resetQuestionForm = () => {
         setQuestionForm({
+            category_id: '',
             title: '',
             clues: ['', ''],
             answer: '',
@@ -424,14 +619,15 @@ useEffect(() => {
         setEditingQuestion(null)
 
         setQuestionForm({
-            title: '',
-            clues: ['', ''],
-            answer: '',
-            hint: '',
-            level: 1,
-            points: 10,
-            is_active: true,
-        })
+    category_id: '',
+    title: '',
+    clues: ['', ''],
+    answer: '',
+    hint: '',
+    level: 1,
+    points: 10,
+    is_active: true,
+})
 
         setShowQuestionForm(true)
     }
@@ -455,6 +651,9 @@ useEffect(() => {
             level: question.level || 1,
             points: question.points || 10,
             is_active: Boolean(question.is_active),
+            category_id: question.category_id
+    ? String(question.category_id)
+    : '',
         })
 
         setShowQuestionForm(true)
@@ -518,7 +717,10 @@ useEffect(() => {
         }
 
         try {
-            const payload = {
+                        const payload = {
+                category_id: questionForm.category_id
+                    ? Number(questionForm.category_id)
+                    : null,
                 title: questionForm.title.trim(),
                 clues: cleanedClues,
                 answer: questionForm.answer.trim(),
@@ -776,6 +978,20 @@ const handleDeletePlayer = async (id) => {
     >
         <span>?</span>
         Questions
+    </button>
+
+
+        <button
+        className={`admin-nav-btn ${
+            activeTab === 'categories' ? 'active' : ''
+        }`}
+        onClick={() => {
+            setActiveTab('categories')
+            fetchCategories()
+        }}
+    >
+        <span>📂</span>
+        Categories
     </button>
 
     <button
@@ -1084,7 +1300,32 @@ const handleDeletePlayer = async (id) => {
                                         </option>
                                     ))}
                                 </select>
+                                                            <select
+                                    value={questionCategoryFilter}
+                                    onChange={(e) =>
+                                        setQuestionCategoryFilter(e.target.value)
+                                    }
+                                >
+                                    <option value="all">
+                                        All Categories
+                                    </option>
 
+                                    <option value="uncategorized">
+                                        Uncategorized
+                                    </option>
+
+                                    {categories.map((category) => (
+                                        <option
+                                            key={category.id}
+                                            value={String(category.id)}
+                                        >
+                                            {category.icon
+                                                ? `${category.icon} `
+                                                : ''}
+                                            {category.name}
+                                        </option>
+                                    ))}
+                                </select>
                                 <button
                                     className="admin-refresh-btn"
                                     onClick={fetchQuestions}
@@ -1115,6 +1356,7 @@ const handleDeletePlayer = async (id) => {
                                             <tr>
                                                 <th>ID</th>
                                                 <th>Question</th>
+                                                <th>Category</th>
                                                 <th>Level</th>
                                                 <th>Points</th>
                                                 <th>Status</th>
@@ -1123,9 +1365,10 @@ const handleDeletePlayer = async (id) => {
                                         </thead>
 
                                         <tbody>
-                                            {filteredQuestions.map(
+                                 {filteredQuestions.map(
                                                 (question) => (
                                                     <tr key={question.id}>
+
                                                         <td>
                                                             #{question.id}
                                                         </td>
@@ -1138,6 +1381,19 @@ const handleDeletePlayer = async (id) => {
                                                             <small>
                                                                 Answer: {question.answer}
                                                             </small>
+                                                        </td>
+
+                                                        <td>
+                                                            {question.category ? (
+                                                                <>
+                                                                    {question.category.icon
+                                                                        ? `${question.category.icon} `
+                                                                        : ''}
+                                                                    {question.category.name}
+                                                                </>
+                                                            ) : (
+                                                                'Uncategorized'
+                                                            )}
                                                         </td>
 
                                                         <td>
@@ -1205,6 +1461,7 @@ const handleDeletePlayer = async (id) => {
 
                                                             </div>
                                                         </td>
+
                                                     </tr>
                                                 )
                                             )}
@@ -1217,6 +1474,171 @@ const handleDeletePlayer = async (id) => {
 
                         </section>
                     )}
+                                         {activeTab === 'categories' && (
+                        <section>
+                            <div className="admin-page-heading">
+                                <div>
+                                    <span className="admin-eyebrow">
+                                        CONTENT MANAGEMENT
+                                    </span>
+                                    <h1>Categories</h1>
+                                    <p>
+                                        Manage question categories for BrainBuzz.
+                                    </p>
+                                </div>
+
+                                <button
+                                    className="admin-primary-btn"
+                                    onClick={openAddCategory}
+                                >
+                                    + Add Category
+                                </button>
+                            </div>
+
+                            {categorySuccess && (
+                                <div className="admin-success-box">
+                                    {categorySuccess}
+                                </div>
+                            )}
+
+                            {categoryError && (
+                                <div className="admin-error-box">
+                                    {categoryError}
+                                </div>
+                            )}
+
+                            <div className="admin-toolbar">
+                                <input
+                                    type="text"
+                                    placeholder="Search categories..."
+                                    value={searchCategory}
+                                    onChange={(e) =>
+                                        setSearchCategory(e.target.value)
+                                    }
+                                />
+                            </div>
+
+                            {loadingCategories ? (
+                                <div className="admin-loading">
+                                    Loading categories...
+                                </div>
+                            ) : (
+                                <div className="admin-table-wrapper">
+                                    <table className="admin-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Category</th>
+                                                <th>Description</th>
+                                                <th>Questions</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            {categories
+                                                .filter((category) => {
+                                                    const search =
+                                                        searchCategory
+                                                            .toLowerCase()
+                                                            .trim()
+
+                                                    return (
+                                                        !search ||
+                                                        category.name
+                                                            ?.toLowerCase()
+                                                            .includes(search) ||
+                                                        category.description
+                                                            ?.toLowerCase()
+                                                            .includes(search)
+                                                    )
+                                                })
+                                                .map((category) => (
+                                                    <tr key={category.id}>
+                                                        <td>{category.id}</td>
+
+                                                        <td>
+                                                            {category.icon
+                                                                ? `${category.icon} `
+                                                                : ''}
+                                                            {category.name}
+                                                        </td>
+
+                                                        <td>
+                                                            {category.description ||
+                                                                '—'}
+                                                        </td>
+
+                                                        <td>
+                                                            {category.questions_count || 0}
+                                                        </td>
+
+                                                        <td>
+                                                            <span
+                                                                className={
+                                                                    category.is_active
+                                                                        ? 'admin-status-active'
+                                                                        : 'admin-status-inactive'
+                                                                }
+                                                            >
+                                                                {category.is_active
+                                                                    ? 'Active'
+                                                                    : 'Inactive'}
+                                                            </span>
+                                                        </td>
+
+                                                        <td>
+                                                            <button
+                                                                className="admin-edit-btn"
+                                                                onClick={() =>
+                                                                    openEditCategory(category)
+                                                                }
+                                                            >
+                                                                Edit
+                                                            </button>
+
+                                                            <button
+                                                                className="admin-delete-btn"
+                                                                onClick={() =>
+                                                                    handleDeleteCategory(category)
+                                                                }
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+
+                                            {categories.filter((category) => {
+                                                const search =
+                                                    searchCategory
+                                                        .toLowerCase()
+                                                        .trim()
+
+                                                return (
+                                                    !search ||
+                                                    category.name
+                                                        ?.toLowerCase()
+                                                        .includes(search) ||
+                                                    category.description
+                                                        ?.toLowerCase()
+                                                        .includes(search)
+                                                )
+                                            }).length === 0 && (
+                                                <tr>
+                                                    <td colSpan="6">
+                                                        No categories found.
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </section>
+                    )}
+
 
                     {activeTab === 'feedback' && (
                         <section>
@@ -2019,6 +2441,116 @@ const handleDeletePlayer = async (id) => {
                                 </h2>
                             </div>
 
+                                    {showCategoryForm && (
+                <div
+                    className="admin-modal-overlay"
+                    onClick={(e) => {
+                        if (e.target === e.currentTarget) {
+                            resetCategoryForm()
+                        }
+                    }}
+                >
+                    <div className="admin-question-modal">
+
+                        <div className="admin-modal-header">
+                            <div>
+                                <span className="admin-eyebrow">
+                                    {editingCategory
+                                        ? 'EDIT CATEGORY'
+                                        : 'NEW CATEGORY'}
+                                </span>
+
+                                <h2>
+                                    {editingCategory
+                                        ? 'Edit Category'
+                                        : 'Add Category'}
+                                </h2>
+                            </div>
+
+                            <button
+                                type="button"
+                                className="admin-modal-close"
+                                onClick={resetCategoryForm}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleCategorySubmit}>
+
+                            <label>Category Name</label>
+
+                            <input
+                                type="text"
+                                name="name"
+                                value={categoryForm.name}
+                                onChange={handleCategoryInput}
+                                placeholder="Example: General Knowledge"
+                                maxLength={255}
+                                required
+                            />
+
+                            <label>Description</label>
+
+                            <textarea
+                                name="description"
+                                value={categoryForm.description}
+                                onChange={handleCategoryInput}
+                                placeholder="Enter category description"
+                                rows="3"
+                            />
+
+                            <label>Category Icon (Emoji)</label>
+
+                            <input
+                                type="text"
+                                name="icon"
+                                value={categoryForm.icon}
+                                onChange={handleCategoryInput}
+                                placeholder="Example: 🧠"
+                                maxLength={50}
+                            />
+
+                            <label className="admin-checkbox-label">
+                                <input
+                                    type="checkbox"
+                                    name="is_active"
+                                    checked={categoryForm.is_active}
+                                    onChange={handleCategoryInput}
+                                />
+
+                                <span>Category is active</span>
+                            </label>
+
+                            <div className="admin-modal-actions">
+
+                                <button
+                                    type="button"
+                                    className="admin-cancel-btn"
+                                    onClick={resetCategoryForm}
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    type="submit"
+                                    className="admin-primary-btn"
+                                    disabled={savingCategory}
+                                >
+                                    {savingCategory
+                                        ? 'Saving...'
+                                        : editingCategory
+                                            ? 'Update Category'
+                                            : 'Create Category'}
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            )}
                             <button
                                 className="admin-modal-close"
                                 onClick={resetQuestionForm}
@@ -2028,6 +2560,32 @@ const handleDeletePlayer = async (id) => {
                         </div>
 
                         <form onSubmit={handleQuestionSubmit}>
+
+                                                    <label>Category</label>
+
+                            <select
+                                name="category_id"
+                                value={questionForm.category_id}
+                                onChange={handleQuestionInput}
+                            >
+                                <option value="">Uncategorized</option>
+
+                                {categories
+                                    .filter((category) =>
+                                        Boolean(category.is_active)
+                                    )
+                                    .map((category) => (
+                                        <option
+                                            key={category.id}
+                                            value={String(category.id)}
+                                        >
+                                            {category.icon
+                                                ? `${category.icon} `
+                                                : ''}
+                                            {category.name}
+                                        </option>
+                                    ))}
+                            </select>
 
                             <label>Question</label>
 

@@ -4,34 +4,66 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Question;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class QuestionController extends Controller
 {
+    // Check admin access
+    private function checkAdmin(Request $request)
+    {
+        if (!$request->user() || !$request->user()->is_admin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized. Admin access required.',
+            ], 403);
+        }
+
+        return null;
+    }
+
     // Get 5 random active questions for selected level
     public function index(Request $request)
-    {
-        $validated = $request->validate([
-            'level' => 'required|integer|min:1',
-        ]);
+{
+    $validated = $request->validate([
+        'level' => 'required|integer|min:1',
+        'category_id' => 'nullable|integer|exists:categories,id',
+    ]);
 
-        $questions = Question::where('level', $validated['level'])
-            ->where('is_active', true)
-            ->inRandomOrder()
-            ->limit(5)
-            ->get([
-                'id',
-                'title',
-                'clues',
-                'hint',
-                'level',
-                'points',
-            ]);
+    $query = Question::where('level', $validated['level'])
+        ->where('is_active', true);
 
-        return response()->json([
-            'questions' => $questions,
-        ]);
+        $query->where(function ($categoryQuery) {
+    $categoryQuery->whereNull('category_id')
+        ->orWhereHas('category', function ($activeCategory) {
+            $activeCategory->where('is_active', true);
+        });
+});
+
+    if (!empty($validated['category_id'])) {
+        $query->where('category_id', $validated['category_id'])
+            ->whereHas('category', function ($categoryQuery) {
+                $categoryQuery->where('is_active', true);
+            });
     }
+
+    $questions = $query
+        ->inRandomOrder()
+        ->limit(5)
+        ->get([
+            'id',
+            'category_id',
+            'title',
+            'clues',
+            'hint',
+            'level',
+            'points',
+        ]);
+
+    return response()->json([
+        'questions' => $questions,
+    ]);
+}
 
     // Check player's answer
     public function checkAnswer(Request $request)
@@ -42,8 +74,14 @@ class QuestionController extends Controller
         ]);
 
         $question = Question::where('id', $validated['question_id'])
-            ->where('is_active', true)
-            ->first();
+    ->where('is_active', true)
+    ->where(function ($categoryQuery) {
+        $categoryQuery->whereNull('category_id')
+            ->orWhereHas('category', function ($activeCategory) {
+                $activeCategory->where('is_active', true);
+            });
+    })
+    ->first();
 
         if (!$question) {
             return response()->json([
@@ -74,7 +112,12 @@ class QuestionController extends Controller
     // Add new question
     public function store(Request $request)
     {
+        if ($error = $this->checkAdmin($request)) {
+            return $error;
+        }
+
         $validated = $request->validate([
+            'category_id' => 'nullable|integer|exists:categories,id',
             'title' => 'required|string|max:255',
             'clues' => 'required|array|min:1|max:5',
             'clues.*' => 'required|string',
@@ -85,19 +128,35 @@ class QuestionController extends Controller
             'is_active' => 'sometimes|boolean',
         ]);
 
+        if (!empty($validated['category_id'])) {
+            $category = Category::find($validated['category_id']);
+
+            if (!$category || !$category->is_active) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Selected category is inactive or unavailable.',
+                ], 422);
+            }
+        }
+
         $question = Question::create($validated);
 
         return response()->json([
             'message' => 'Question created successfully!',
-            'question' => $question,
+            'question' => $question->load('category'),
         ], 201);
     }
 
     // Get all questions for admin
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
+        if ($error = $this->checkAdmin($request)) {
+            return $error;
+        }
+
         return response()->json([
-            'questions' => Question::orderBy('level')
+            'questions' => Question::with('category')
+                ->orderBy('level')
                 ->orderBy('id')
                 ->get(),
         ]);
@@ -106,7 +165,12 @@ class QuestionController extends Controller
     // Update question
     public function update(Request $request, Question $question)
     {
+        if ($error = $this->checkAdmin($request)) {
+            return $error;
+        }
+
         $validated = $request->validate([
+            'category_id' => 'sometimes|nullable|integer|exists:categories,id',
             'title' => 'sometimes|required|string|max:255',
             'clues' => 'sometimes|required|array|min:1|max:5',
             'clues.*' => 'required|string',
@@ -117,17 +181,32 @@ class QuestionController extends Controller
             'is_active' => 'sometimes|boolean',
         ]);
 
+        if (!empty($validated['category_id'])) {
+            $category = Category::find($validated['category_id']);
+
+            if (!$category || !$category->is_active) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Selected category is inactive or unavailable.',
+                ], 422);
+            }
+        }
+
         $question->update($validated);
 
         return response()->json([
             'message' => 'Question updated successfully!',
-            'question' => $question->fresh(),
+            'question' => $question->fresh()->load('category'),
         ]);
     }
 
     // Delete question
-    public function destroy(Question $question)
+    public function destroy(Request $request, Question $question)
     {
+        if ($error = $this->checkAdmin($request)) {
+            return $error;
+        }
+
         $question->delete();
 
         return response()->json([

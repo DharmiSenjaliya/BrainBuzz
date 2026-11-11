@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\DailyChallenge;
-use App\Models\Question;
+use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
-class AdminDailyChallengeController extends Controller
+class CategoryController extends Controller
 {
     private function checkAdmin(Request $request)
     {
@@ -22,24 +22,24 @@ class AdminDailyChallengeController extends Controller
         return null;
     }
 
-    // Get all daily challenges
+    // Get all categories
     public function index(Request $request)
     {
         if ($error = $this->checkAdmin($request)) {
             return $error;
         }
 
-        $challenges = DailyChallenge::withCount('attempts')
-            ->orderByDesc('challenge_date')
+        $categories = Category::withCount('questions')
+            ->orderBy('name')
             ->get();
 
         return response()->json([
             'success' => true,
-            'challenges' => $challenges,
+            'categories' => $categories,
         ]);
     }
 
-    // Create a daily challenge
+    // Create category
     public function store(Request $request)
     {
         if ($error = $this->checkAdmin($request)) {
@@ -47,119 +47,68 @@ class AdminDailyChallengeController extends Controller
         }
 
         $validated = $request->validate([
-            'challenge_date' => [
-                'required',
-                'date',
-                'after_or_equal:today',
-                'unique:daily_challenges,challenge_date',
-            ],
-            'question_ids' => 'required|array|size:5',
-            'question_ids.*' => 'required|integer|distinct|exists:questions,id',
-            'bonus_points' => 'required|integer|min:0|max:10000',
+            'name' => 'required|string|max:255|unique:categories,name',
+            'description' => 'nullable|string',
+            'icon' => 'nullable|string|max:50',
             'is_active' => 'sometimes|boolean',
         ]);
 
-        $activeQuestions = Question::whereIn(
-            'id',
-            $validated['question_ids']
-        )->where('is_active', true)->count();
+        $validated['slug'] = Str::slug($validated['name']);
 
-        if ($activeQuestions !== 5) {
-            return response()->json([
-                'success' => false,
-                'message' => 'All 5 selected questions must be active.',
-            ], 422);
-        }
-
-        $challenge = DailyChallenge::create([
-            'challenge_date' => $validated['challenge_date'],
-            'question_ids' => $validated['question_ids'],
-            'bonus_points' => $validated['bonus_points'],
-            'is_active' => $validated['is_active'] ?? true,
-        ]);
+        $category = Category::create($validated);
 
         return response()->json([
             'success' => true,
-            'message' => 'Daily Challenge created successfully!',
-            'challenge' => $challenge,
+            'message' => 'Category created successfully!',
+            'category' => $category,
         ], 201);
     }
 
-    // Update a daily challenge
-    public function update(Request $request, $id)
+    // Update category
+    public function update(Request $request, Category $category)
     {
         if ($error = $this->checkAdmin($request)) {
             return $error;
-        }
-
-        $challenge = DailyChallenge::findOrFail($id);
-
-        if ($challenge->attempts()->exists()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'A challenge with player attempts cannot be edited.',
-            ], 409);
         }
 
         $validated = $request->validate([
-            'challenge_date' => [
+            'name' => [
                 'sometimes',
                 'required',
-                'date',
-                'after_or_equal:today',
-                Rule::unique('daily_challenges', 'challenge_date')
-                    ->ignore($challenge->id),
+                'string',
+                'max:255',
+                Rule::unique('categories', 'name')->ignore($category->id),
             ],
-            'question_ids' => 'sometimes|required|array|size:5',
-            'question_ids.*' => 'required|integer|distinct|exists:questions,id',
-            'bonus_points' => 'sometimes|required|integer|min:0|max:10000',
+            'description' => 'nullable|string',
+            'icon' => 'nullable|string|max:50',
             'is_active' => 'sometimes|boolean',
         ]);
 
-        if (isset($validated['question_ids'])) {
-            $activeQuestions = Question::whereIn(
-                'id',
-                $validated['question_ids']
-            )->where('is_active', true)->count();
-
-            if ($activeQuestions !== 5) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'All 5 selected questions must be active.',
-                ], 422);
-            }
+        if (array_key_exists('name', $validated)) {
+            $validated['slug'] = Str::slug($validated['name']);
         }
 
-        $challenge->update($validated);
+        $category->update($validated);
 
         return response()->json([
             'success' => true,
-            'message' => 'Daily Challenge updated successfully!',
-            'challenge' => $challenge->fresh(),
+            'message' => 'Category updated successfully!',
+            'category' => $category->fresh()->loadCount('questions'),
         ]);
     }
 
-    // Delete a daily challenge
-    public function destroy(Request $request, $id)
+    // Delete category
+    public function destroy(Request $request, Category $category)
     {
         if ($error = $this->checkAdmin($request)) {
             return $error;
         }
 
-        $challenge = DailyChallenge::findOrFail($id);
-
-        if ($challenge->attempts()->exists()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'A challenge with player attempts cannot be deleted.',
-            ], 409);
-        }
-
-        $challenge->delete();
+        $category->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Daily Challenge deleted successfully!',
+            'message' => 'Category deleted successfully! Its questions are preserved as uncategorized.',
         ]);
     }
 }

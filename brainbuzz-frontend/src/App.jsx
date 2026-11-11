@@ -322,6 +322,11 @@ function App() {
     const [levelProgress, setLevelProgress] = useState([])
     const [currentUnlockedLevel, setCurrentUnlockedLevel] = useState(1)
 
+    // CATEGORY FILTER STATES
+    const [playerCategories, setPlayerCategories] = useState([])
+    const [selectedCategory, setSelectedCategory] = useState('all')
+    const [loadingPlayerCategories, setLoadingPlayerCategories] = useState(false)
+
     const [questions, setQuestions] = useState([])
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
 
@@ -390,37 +395,85 @@ function App() {
         console.error('Level Progress Error:', error)
     }
 }
+ // Fetch Active Categories for Players
+const fetchPlayerCategories = async (token) => {
+    try {
+        setLoadingPlayerCategories(true)
 
+        const response = await api.get('/categories', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
 
-    const fetchQuestions = async (token, level = selectedLevel) => {
-        try {
-            setLoading(true)
-            setMessage('')
+        setPlayerCategories(
+            response.data.categories || []
+        )
 
-            const response = await api.get(`/questions?level=${level}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            })
+    } catch (error) {
+        console.error(
+            'Player Categories Fetch Error:',
+            error.response?.data || error
+        )
 
-            if (response.data.questions?.length > 0) {
-                setQuestions(response.data.questions)
-                setSelectedLevel(level)
-                resetGame()
-            } else {
-                setQuestions([])
-                setMessage(`No questions available in Level ${level}.`)
-            }
-        } catch (error) {
-            console.error('Question API Error:', error.response?.data || error)
+        setPlayerCategories([])
 
-            setQuestions([])
-            setMessage(
-                error.response?.data?.message ||
-                'Unable to load questions. Please check the API.'
-            )
-        } finally {
-            setLoading(false)
-        }
+    } finally {
+        setLoadingPlayerCategories(false)
     }
+}
+
+    const fetchQuestions = async (
+    token,
+    level = selectedLevel,
+    category = selectedCategory
+) => {
+    try {
+        setLoading(true)
+        setMessage('')
+        setSelectedCategory(category)
+
+        let endpoint = `/questions?level=${level}`
+
+        if (category !== 'all') {
+            endpoint += `&category_id=${category}`
+        }
+
+        const response = await api.get(endpoint, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        })
+
+        if (response.data.questions?.length > 0) {
+            setQuestions(response.data.questions)
+            setSelectedLevel(level)
+            setSelectedCategory(category)
+            resetGame()
+        } else {
+            setQuestions([])
+
+            setMessage(
+                category === 'all'
+                    ? `No questions available in Level ${level}.`
+                    : `No questions available in this category for Level ${level}.`
+            )
+        }
+    } catch (error) {
+        console.error(
+            'Question API Error:',
+            error.response?.data || error
+        )
+
+        setQuestions([])
+        setMessage(
+            error.response?.data?.message ||
+            'Unable to load questions. Please check the API.'
+        )
+    } finally {
+        setLoading(false)
+    }
+}
 
     // CHECK LOGIN
     useEffect(() => {
@@ -461,9 +514,10 @@ function App() {
                     headers: { Authorization: `Bearer ${token}` },
                 })
 
-                setUser(response.data.user)
+               setUser(response.data.user)
                 await fetchDashboard(token)
                 await fetchLevelProgress(token)
+                await fetchPlayerCategories(token)
                 await fetchQuestions(token, 1)
             } catch (error) {
                 console.error('Player Login Check Error:', error)
@@ -518,6 +572,7 @@ function App() {
 
             await fetchDashboard(token)
             await fetchLevelProgress(token)
+            await fetchPlayerCategories(token)
 
             setPassword('')
             setPasswordConfirmation('')
@@ -592,6 +647,9 @@ function App() {
 
             setUser(null)
             setQuestions([])
+            setPlayerCategories([])
+            setSelectedCategory('all')
+            setSelectedLevel(1)
             setAuthMode('login')
             setMessage('')
             setAuthMessage('')
@@ -624,18 +682,18 @@ function App() {
 
     // START LEVEL
     const startLevel = async (level) => {
-        if (level > currentUnlockedLevel) {
-            setMessage('Complete the previous level first.')
-            return
-        }
-
-        const token = localStorage.getItem('brainbuzz_token')
-        setResultSaved(false)
-        setResultError('')
-        setShowDashboard(false)
-
-        await fetchQuestions(token, level)
+    if (level > currentUnlockedLevel) {
+        setMessage('Complete the previous level first.')
+        return
     }
+
+    const token = localStorage.getItem('brainbuzz_token')
+    setResultSaved(false)
+    setResultError('')
+    setShowDashboard(false)
+
+    await fetchQuestions(token, level, selectedCategory)
+}
 
     // CHECK ANSWER
    // CHECK ANSWER
@@ -1130,7 +1188,37 @@ if (showDashboard) {
                     <section className="dashboard-game">
                         <h2>🧠 BrainBuzz Levels</h2>
                         <p>Get at least 3 correct answers out of 5 to unlock the next level.</p>
+                      
+                      <div className="player-category-filter">
+    <label htmlFor="player-category">
+        Choose Category
+    </label>
 
+    <select
+        id="player-category"
+        value={selectedCategory}
+        onChange={(e) =>
+            setSelectedCategory(e.target.value)
+        }
+        disabled={loadingPlayerCategories}
+    >
+        <option value="all">
+            All Categories
+        </option>
+
+        {playerCategories.map((category) => (
+            <option
+                key={category.id}
+                value={String(category.id)}
+            >
+                {category.icon
+                    ? `${category.icon} `
+                    : ''}
+                {category.name}
+            </option>
+        ))}
+    </select>
+</div>
                         <div className="level-cards">
                             {Array.from({ length: maxLevelToShow }, (_, index) => {
                                 const level = index + 1
@@ -1298,6 +1386,16 @@ if (showDashboard) {
                     <p className="subtitle">
                         You have completed all {totalQuestions} questions in Level {selectedLevel}.
                     </p>
+                    <div className="game-category-label">
+    📂 {
+        selectedCategory === 'all'
+            ? 'All Categories'
+            : playerCategories.find(
+                (category) =>
+                    String(category.id) === String(selectedCategory)
+            )?.name || 'Selected Category'
+    }
+</div>
 
                     <h2>{performance}</h2>
 
@@ -1355,6 +1453,7 @@ if (showDashboard) {
                             const token = localStorage.getItem('brainbuzz_token')
                             await fetchDashboard(token)
                             await fetchLevelProgress(token)
+                            await fetchPlayerCategories(token)
                             setShowDashboard(true)
                         }}
                     >
@@ -1395,6 +1494,17 @@ if (showDashboard) {
                 <p className="subtitle">
                     Question {currentQuestionIndex + 1} of {questions.length}
                 </p>
+
+                <div className="game-category-label">
+    📂 {
+        selectedCategory === 'all'
+            ? 'All Categories'
+            : playerCategories.find(
+                (category) =>
+                    String(category.id) === String(selectedCategory)
+            )?.name || 'Selected Category'
+    }
+</div>
 
                 <h1>{question.title}</h1>
 
