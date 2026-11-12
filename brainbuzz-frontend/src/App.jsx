@@ -14,6 +14,7 @@ import ResetPassword from './ResetPassword'
 import Achievements from './Achievements'
 import DailyChallenge from './DailyChallenge'
 import GamesHub from './GamesHub'
+import BrainTraining from './BrainTraining'
 
 const isUsableToken = (token) =>
     typeof token === 'string' &&
@@ -1195,6 +1196,22 @@ if (showGamesHub) {
     )
 }
 
+    // BRAINBUZZ BRAIN TRAINING
+if (selectedGameMode === 'training') {
+    return (
+        <div className={`app ${theme}-theme`}>
+            {navbar}
+
+            <BrainTraining
+                onBack={() => {
+                    setSelectedGameMode(null)
+                    setShowGamesHub(true)
+                }}
+            />
+        </div>
+    )
+}
+  
     // DASHBOARD
 if (showDashboard) {
         const maxLevelToShow = Math.max(10, currentUnlockedLevel + 4)

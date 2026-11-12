@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\DailyChallengeController;
 use App\Http\Controllers\Api\AdminDailyChallengeController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\BrainTrainingResultController;
 
 // Public Authentication Routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -90,4 +91,8 @@ Route::get('/admin/categories', [CategoryController::class, 'index']);
 Route::post('/admin/categories', [CategoryController::class, 'store']);
 Route::put('/admin/categories/{category}', [CategoryController::class, 'update']);
 Route::delete('/admin/categories/{category}', [CategoryController::class, 'destroy']);
+
+// Brain Training Results
+Route::post('/brain-training/results', [BrainTrainingResultController::class, 'store']);
+Route::get('/brain-training/history', [BrainTrainingResultController::class, 'history']);
 });
