@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import api from './services/api'
 import './Feedback.css'
 
@@ -31,6 +31,10 @@ function Feedback({ onBack }) {
             setLoading(true)
 
             const token = localStorage.getItem('brainbuzz_token')
+            if (!token) {
+    setError('Please login to submit feedback.')
+    return
+}
 
             await api.post(
                 '/feedback',
@@ -64,7 +68,8 @@ function Feedback({ onBack }) {
 
             <div className="feedback-topbar">
                 <button className="feedback-back-btn" onClick={onBack}>
-                    <span>←</span> Back to Dashboard
+                    <span>←</span>
+                    Back to Dashboard
                 </button>
 
                 <span className="feedback-brand">
@@ -195,3 +200,7 @@ function Feedback({ onBack }) {
 }
 
 export default Feedback
+
+
+
+

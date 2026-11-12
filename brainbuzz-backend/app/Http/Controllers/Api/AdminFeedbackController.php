@@ -11,13 +11,15 @@ class AdminFeedbackController extends Controller
     // Get all feedback
     public function index(Request $request)
     {
-        if (!$request->user()->is_admin) {
+        // Check admin authorization
+        if (!$request->user() || !$request->user()->is_admin) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized access.',
             ], 403);
         }
 
+        // Get all feedback with user details
         $feedback = Feedback::with('user:id,name,email')
             ->latest()
             ->get();
@@ -31,13 +33,15 @@ class AdminFeedbackController extends Controller
     // Delete feedback
     public function destroy(Request $request, $id)
     {
-        if (!$request->user()->is_admin) {
+        // Check admin authorization
+        if (!$request->user() || !$request->user()->is_admin) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized access.',
             ], 403);
         }
 
+        // Find feedback
         $feedback = Feedback::find($id);
 
         if (!$feedback) {
@@ -47,6 +51,7 @@ class AdminFeedbackController extends Controller
             ], 404);
         }
 
+        // Delete feedback
         $feedback->delete();
 
         return response()->json([

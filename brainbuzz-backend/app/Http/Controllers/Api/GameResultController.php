@@ -212,106 +212,111 @@ class GameResultController extends Controller
 
 
     // Player achievements
-    public function achievements(Request $request)
-    {
-        $userId = $request->user()->id;
+   public function achievements(Request $request)
+{
+    $userId = $request->user()->id;
 
-        $results = GameResult::where('user_id', $userId)->get();
+    $results = GameResult::where('user_id', $userId)->get();
 
-        $dailyAttempts = DailyChallengeAttempt::where('user_id', $userId)
-            ->where('is_completed', true)
-            ->get();
+    $dailyAttempts = DailyChallengeAttempt::where('user_id', $userId)
+        ->where('is_completed', true)
+        ->get();
 
-        $gamesPlayed = $results->count() + $dailyAttempts->count();
+    $gamesPlayed = $results->count() + $dailyAttempts->count();
 
-        $totalScore = $results->sum('score')
-            + $dailyAttempts->sum('score');
+    $totalScore = $results->sum('score')
+        + $dailyAttempts->sum('score');
 
-        $completedLevels = $results
-            ->where('passed', true)
-            ->pluck('level')
-            ->unique()
-            ->count();
+    $completedLevels = $results
+        ->where('passed', true)
+        ->pluck('level')
+        ->unique()
+        ->count();
 
-        $perfectGame = $results->contains(function ($result) {
-            return $result->total_questions > 0 &&
-                $result->correct_answers === $result->total_questions;
-        });
+    $perfectGame = $results->contains(function ($result) {
+        return $result->total_questions > 0 &&
+            $result->correct_answers === $result->total_questions;
+    });
 
-        $perfectDailyChallenge = $dailyAttempts->contains(function ($attempt) {
-            return $attempt->correct_answers === 5;
-        });
+    $perfectDailyChallenge = $dailyAttempts->contains(function ($attempt) {
+        return $attempt->correct_answers === 5;
+    });
 
-        $achievements = [
-            [
-                'id' => 1,
-                'name' => 'First Game',
-                'description' => 'Complete your first game.',
-                'icon' => '🏅',
-                'earned' => $gamesPlayed >= 1,
-            ],
-            [
-                'id' => 2,
-                'name' => '5 Games Played',
-                'description' => 'Complete 5 games.',
-                'icon' => '🎮',
-                'earned' => $gamesPlayed >= 5,
-            ],
-            [
-                'id' => 3,
-                'name' => '100 Points',
-                'description' => 'Earn 100 total points.',
-                'icon' => '💯',
-                'earned' => $totalScore >= 100,
-            ],
-            [
-                'id' => 4,
-                'name' => '500 Points',
-                'description' => 'Earn 500 total points.',
-                'icon' => '⭐',
-                'earned' => $totalScore >= 500,
-            ],
-            [
-                'id' => 5,
-                'name' => 'Perfect Game',
-                'description' => 'Answer every question correctly in one game.',
-                'icon' => '🎯',
-                'earned' => $perfectGame,
-            ],
-            [
-                'id' => 6,
-                'name' => 'Level 1 Completed',
-                'description' => 'Successfully complete Level 1.',
-                'icon' => '🥇',
-                'earned' => $results->contains(function ($result) {
-                    return $result->level == 1 && $result->passed;
-                }),
-            ],
-            [
-                'id' => 7,
-                'name' => '3 Levels Completed',
-                'description' => 'Successfully complete 3 different levels.',
-                'icon' => '🏆',
-                'earned' => $completedLevels >= 3,
-            ],
-            [
-                'id' => 8,
-                'name' => 'Perfect Daily Challenge',
-                'description' => 'Answer all 5 Daily Challenge questions correctly.',
-                'icon' => '🔥',
-                'earned' => $perfectDailyChallenge,
-            ],
-        ];
+    $achievements = [
+        [
+            'id' => 1,
+            'name' => 'First Game',
+            'description' => 'Complete your first game.',
+            'icon' => '🏅',
+            'progress' => min($gamesPlayed, 1),
+            'target' => 1,
+            'earned' => $gamesPlayed >= 1,
+        ],
+        [
+            'id' => 2,
+            'name' => '5 Games Played',
+            'description' => 'Complete 5 games.',
+            'icon' => '🎮',
+            'progress' => min($gamesPlayed, 5),
+            'target' => 5,
+            'earned' => $gamesPlayed >= 5,
+        ],
+        [
+            'id' => 3,
+            'name' => '100 Points',
+            'description' => 'Earn 100 total points.',
+            'icon' => '💯',
+            'progress' => min($totalScore, 100),
+            'target' => 100,
+            'earned' => $totalScore >= 100,
+        ],
+        [
+            'id' => 4,
+            'name' => '500 Points',
+            'description' => 'Earn 500 total points.',
+            'icon' => '⭐',
+            'progress' => min($totalScore, 500),
+            'target' => 500,
+            'earned' => $totalScore >= 500,
+        ],
+        [
+            'id' => 5,
+            'name' => 'Perfect Game',
+            'description' => 'Answer every question correctly in one game.',
+            'icon' => '🎯',
+            'progress' => $perfectGame ? 1 : 0,
+            'target' => 1,
+            'earned' => $perfectGame,
+        ],
+        [
+            'id' => 6,
+            'name' => '3 Levels Completed',
+            'description' => 'Pass 3 different game levels.',
+            'icon' => '🚀',
+            'progress' => min($completedLevels, 3),
+            'target' => 3,
+            'earned' => $completedLevels >= 3,
+        ],
+        [
+            'id' => 8,
+            'name' => 'Perfect Daily Challenge',
+            'description' => 'Answer all 5 Daily Challenge questions correctly.',
+            'icon' => '🔥',
+            'progress' => $perfectDailyChallenge ? 1 : 0,
+            'target' => 1,
+            'earned' => $perfectDailyChallenge,
+        ],
+    ];
 
-        return response()->json([
-            'success' => true,
-            'achievements' => $achievements,
-            'earned_count' => collect($achievements)
-                ->where('earned', true)
-                ->count(),
-            'total_achievements' => count($achievements),
-        ]);
-    }
+    return response()->json([
+        'success' => true,
+        'achievements' => $achievements,
+        'earned_count' => collect($achievements)
+            ->where('earned', true)
+            ->count(),
+        'total_achievements' => count($achievements),
+    ]);
+}
 
 
     // Player level-wise progress

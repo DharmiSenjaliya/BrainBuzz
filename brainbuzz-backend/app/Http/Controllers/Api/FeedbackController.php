@@ -11,17 +11,28 @@ class FeedbackController extends Controller
     // Submit player feedback
     public function store(Request $request)
     {
+        // Check user authentication
+        if (!$request->user()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please login to submit feedback.',
+            ], 401);
+        }
+
+        // Validate feedback data
         $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'message' => 'required|string|min:3|max:1000',
         ]);
 
+        // Save feedback
         $feedback = Feedback::create([
             'user_id' => $request->user()->id,
             'rating' => $validated['rating'],
             'message' => $validated['message'],
         ]);
 
+        // Return success response
         return response()->json([
             'success' => true,
             'message' => 'Thank you! Your feedback has been submitted.',

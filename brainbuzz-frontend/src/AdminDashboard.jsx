@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+﻿import React, { useEffect, useMemo, useState } from 'react'
 import './AdminDashboard.css'
 import api from './services/api'
 
@@ -966,7 +966,7 @@ const handleDeletePlayer = async (id) => {
         }`}
         onClick={() => setActiveTab('overview')}
     >
-        <span>▦</span>
+        <span>â–¦</span>
         Overview
     </button>
 
@@ -990,7 +990,7 @@ const handleDeletePlayer = async (id) => {
             fetchCategories()
         }}
     >
-        <span>📂</span>
+        <span>ðŸ“‚</span>
         Categories
     </button>
 
@@ -1000,7 +1000,7 @@ const handleDeletePlayer = async (id) => {
         }`}
         onClick={() => setActiveTab('feedback')}
     >
-        <span>💬</span>
+        <span>ðŸ’¬</span>
         Feedback
     </button>
 
@@ -1013,7 +1013,7 @@ const handleDeletePlayer = async (id) => {
             fetchPlayers()
         }}
     >
-        <span>👥</span>
+        <span>ðŸ‘¥</span>
         Players
     </button>
 
@@ -1026,7 +1026,7 @@ const handleDeletePlayer = async (id) => {
         fetchLeaderboard()
     }}
 >
-    <span>🏆</span>
+    <span>ðŸ†</span>
     Leaderboard
 </button>
 
@@ -1039,7 +1039,7 @@ const handleDeletePlayer = async (id) => {
         fetchDailyChallenges()
     }}
 >
-    <span>🎯</span>
+    <span>ðŸŽ¯</span>
     Daily Challenges
 </button>
 
@@ -1055,7 +1055,7 @@ const handleDeletePlayer = async (id) => {
                                         DASHBOARD
                                     </span>
 
-                                    <h1>Welcome back, {admin?.name || 'Admin'} 👋</h1>
+                                    <h1>Welcome back, {admin?.name || 'Admin'} ðŸ‘‹</h1>
 
                                     <p>
                                         Manage BrainBuzz content and player feedback from one place.
@@ -1085,7 +1085,7 @@ const handleDeletePlayer = async (id) => {
 
                                 <div className="admin-stat-card">
                                     <div className="admin-stat-icon green">
-                                        ✓
+                                        âœ“
                                     </div>
 
                                     <div>
@@ -1096,7 +1096,7 @@ const handleDeletePlayer = async (id) => {
 
                                 <div className="admin-stat-card">
                                     <div className="admin-stat-icon orange">
-                                        💬
+                                        ðŸ’¬
                                     </div>
 
                                     <div>
@@ -1567,7 +1567,7 @@ const handleDeletePlayer = async (id) => {
 
                                                         <td>
                                                             {category.description ||
-                                                                '—'}
+                                                                'â€”'}
                                                         </td>
 
                                                         <td>
@@ -1991,13 +1991,13 @@ const handleDeletePlayer = async (id) => {
     <div className="leaderboard-summary-grid">
 
         <div className="leaderboard-summary-card">
-            <span className="summary-icon">👥</span>
+            <span className="summary-icon">ðŸ‘¥</span>
             <p>Total Ranked Players</p>
             <h2>{leaderboard.length}</h2>
         </div>
 
         <div className="leaderboard-summary-card">
-            <span className="summary-icon">🎮</span>
+            <span className="summary-icon">ðŸŽ®</span>
             <p>Total Games Played</p>
             <h2>
                 {leaderboard.reduce(
@@ -2009,7 +2009,7 @@ const handleDeletePlayer = async (id) => {
         </div>
 
         <div className="leaderboard-summary-card">
-            <span className="summary-icon">🏆</span>
+            <span className="summary-icon">ðŸ†</span>
             <p>Highest Player Score</p>
             <h2>
                 {leaderboard.length
@@ -2023,7 +2023,7 @@ const handleDeletePlayer = async (id) => {
         </div>
 
         <div className="leaderboard-summary-card">
-            <span className="summary-icon">📊</span>
+            <span className="summary-icon">ðŸ“Š</span>
             <p>Average Accuracy</p>
             <h2>
                 {leaderboard.length
@@ -2084,7 +2084,7 @@ const handleDeletePlayer = async (id) => {
                                 <td>
                                     <strong>
                                         {player.rank <= 3
-                                            ? ['🥇', '🥈', '🥉'][player.rank - 1]
+                                            ? ['ðŸ¥‡', 'ðŸ¥ˆ', 'ðŸ¥‰'][player.rank - 1]
                                             : `#${player.rank}`}
                                     </strong>
                                 </td>
@@ -2258,7 +2258,7 @@ const handleDeletePlayer = async (id) => {
                                         <span>
                                             <strong>{question.title}</strong>
                                             <small>
-                                                Level {question.level} · {question.points} points
+                                                Level {question.level} Â· {question.points} points
                                             </small>
                                         </span>
                                     </label>
@@ -2472,7 +2472,7 @@ const handleDeletePlayer = async (id) => {
                                 className="admin-modal-close"
                                 onClick={resetCategoryForm}
                             >
-                                ×
+                                Ã—
                             </button>
                         </div>
 
@@ -2507,7 +2507,7 @@ const handleDeletePlayer = async (id) => {
                                 name="icon"
                                 value={categoryForm.icon}
                                 onChange={handleCategoryInput}
-                                placeholder="Example: 🧠"
+                                placeholder="Example: ðŸ§ "
                                 maxLength={50}
                             />
 
@@ -2555,7 +2555,7 @@ const handleDeletePlayer = async (id) => {
                                 className="admin-modal-close"
                                 onClick={resetQuestionForm}
                             >
-                                ×
+                                Ã—
                             </button>
                         </div>
 
@@ -2675,7 +2675,7 @@ const handleDeletePlayer = async (id) => {
                                                         )
                                                     }
                                                 >
-                                                    ×
+                                                    Ã—
                                                 </button>
                                             )}
                                         </div>

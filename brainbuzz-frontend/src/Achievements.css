@@ -148,3 +148,91 @@
         grid-template-columns: 1fr;
     }
 }
+
+
+/* Achievements Summary */
+.achievements-summary {
+    margin-bottom: 28px;
+    padding: 22px 25px;
+    border-radius: 15px;
+    background: rgba(108, 76, 228, 0.09);
+}
+
+.achievements-summary > div:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 13px;
+}
+
+.summary-number {
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.summary-label {
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+.summary-progress-track,
+.achievement-progress-track {
+    width: 100%;
+    height: 9px;
+    overflow: hidden;
+    border-radius: 20px;
+    background: rgba(128, 128, 128, 0.2);
+}
+
+.summary-progress-fill,
+.achievement-progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #7654e8, #a78bfa);
+    transition: width 0.4s ease;
+}
+
+.achievement-progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    margin-bottom: 9px;
+    font-size: 13px;
+}
+
+.achievement-progress-info span {
+    opacity: 0.7;
+}
+
+.achievement-progress-info strong {
+    font-weight: 700;
+}
+
+.achievement-progress-track {
+    height: 7px;
+}
+
+.achievement-card.earned .achievement-progress-fill {
+    background: linear-gradient(90deg, #16a34a, #4ade80);
+}
+
+.achievement-card.locked .achievement-progress-fill {
+    background: linear-gradient(90deg, #7654e8, #a78bfa);
+}
+
+@media (max-width: 550px) {
+    .achievements-summary {
+        padding: 18px;
+    }
+
+    .summary-number {
+        font-size: 21px;
+    }
+
+    .summary-label {
+        font-size: 12px;
+    }
+}

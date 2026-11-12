@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -36,14 +36,14 @@ Route::get('/achievements', [GameResultController::class, 'achievements']);
 
 
     Route::post('/logout', [AuthController::class, 'logout']);
-Route::post('/change-password', [AuthController::class, 'changePassword']);
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
 
     Route::get('/me', [AuthController::class, 'me']);
 
     Route::post('/profile/update', [ProfileController::class, 'update']);
 
     Route::get('/questions', [QuestionController::class, 'index']);
-Route::post('/check-answer', [QuestionController::class, 'checkAnswer']);
+    Route::post('/check-answer', [QuestionController::class, 'checkAnswer']);
 
     Route::post('/questions', [QuestionController::class, 'store']);
 
@@ -54,13 +54,13 @@ Route::post('/check-answer', [QuestionController::class, 'checkAnswer']);
     Route::delete('/questions/{question}', [QuestionController::class, 'destroy']);
     Route::post('/feedback', [FeedbackController::class, 'store']);
     Route::get('/admin/feedback', [AdminFeedbackController::class, 'index']);
-Route::delete('/admin/feedback/{id}', [AdminFeedbackController::class, 'destroy']);
+    Route::delete('/admin/feedback/{id}', [AdminFeedbackController::class, 'destroy']);
     // Admin Player Management
     Route::get('/admin/players', [AdminPlayerController::class, 'index']);
     Route::put('/admin/players/{id}/status', [AdminPlayerController::class, 'updateStatus']);
     Route::delete('/admin/players/{id}', [AdminPlayerController::class, 'destroy']);
     // Admin Leaderboard
-Route::get('/admin/leaderboard', [AdminLeaderboardController::class, 'index']);
+    Route::get('/admin/leaderboard', [AdminLeaderboardController::class, 'index']);
 
    // Admin Daily Challenge Management
 Route::get('/admin/daily-challenges', [AdminDailyChallengeController::class, 'index']);

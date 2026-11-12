@@ -1,4 +1,4 @@
-
+﻿
 /* ================================
    BRAINBUZZ ADMIN DASHBOARD
 ================================ */
@@ -555,16 +555,6 @@
     margin-top: 15px;
     color: #64748b;
     font-size: 11px;
-}
-
-.admin-feedback-card button {
-    margin-top: 15px;
-    padding: 9px 14px;
-    border: none;
-    border-radius: 8px;
-    background: #991b1b;
-    color: white;
-    cursor: pointer;
 }
 
 /* EMPTY / ERROR */

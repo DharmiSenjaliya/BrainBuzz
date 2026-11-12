@@ -5,6 +5,8 @@ import './Achievements.css'
 
 function Achievements({ onBack }) {
     const [achievements, setAchievements] = useState([])
+    const [earnedCount, setEarnedCount] = useState(0)
+    const [totalAchievements, setTotalAchievements] = useState(0)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
 
@@ -27,10 +29,17 @@ function Achievements({ onBack }) {
 
             const data = response.data
 
-            setAchievements(
-                Array.isArray(data)
-                    ? data
-                    : data.achievements || data.data || []
+            const achievementList = Array.isArray(data)
+                ? data
+                : data.achievements || data.data || []
+
+            setAchievements(achievementList)
+            setEarnedCount(
+                data.earned_count ??
+                achievementList.filter(item => item.earned).length
+            )
+            setTotalAchievements(
+                data.total_achievements ?? achievementList.length
             )
         } catch (err) {
             console.error('Achievements error:', err)
@@ -46,11 +55,14 @@ function Achievements({ onBack }) {
     return (
         <div className="achievements-page">
             <div className="achievements-header">
-                <button className="achievements-back-btn" onClick={onBack}>
+                <button
+                    className="achievements-back-btn"
+                    onClick={onBack}
+                >
                     ← Back
                 </button>
 
-                <h1>🏅 My Achievements</h1>
+                <h1>My Achievements</h1>
                 <p>Celebrate your BrainBuzz milestones!</p>
             </div>
 
@@ -61,48 +73,106 @@ function Achievements({ onBack }) {
             ) : error ? (
                 <div className="achievements-message achievements-error">
                     <p>{error}</p>
-                    <button onClick={fetchAchievements}>Try Again</button>
-                </div>
-            ) : achievements.length === 0 ? (
-                <div className="achievements-message">
-                    <div className="achievements-empty-icon">🏆</div>
-                    <h3>No Achievements Yet</h3>
-                    <p>Keep playing games to earn your first badge!</p>
+                    <button onClick={fetchAchievements}>
+                        Try Again
+                    </button>
                 </div>
             ) : (
-                <div className="achievements-grid">
-                    {achievements.map((item, index) => {
-                        const earned =
-                            item.earned ??
-                            item.is_earned ??
-                            item.unlocked ??
-                            true
+                <>
+                    <div className="achievements-summary">
+                        <div>
+                            <span className="summary-number">
+                                {earnedCount}/{totalAchievements}
+                            </span>
+                            <span className="summary-label">
+                                Achievements Earned
+                            </span>
+                        </div>
 
-                        return (
+                        <div className="summary-progress-track">
                             <div
-                                className={`achievement-card ${
-                                    earned ? 'earned' : 'locked'
-                                }`}
-                                key={item.id || index}
-                            >
-                                <div className="achievement-icon">
-                                    {item.icon || item.emoji || '🏅'}
-                                </div>
+                                className="summary-progress-fill"
+                                style={{
+                                    width: `${
+                                        totalAchievements > 0
+                                            ? (earnedCount / totalAchievements) * 100
+                                            : 0
+                                    }%`,
+                                }}
+                            />
+                        </div>
+                    </div>
 
-                                <h3>{item.name || item.title || 'Achievement'}</h3>
+                    {achievements.length === 0 ? (
+                        <div className="achievements-message">
+                            <div className="achievements-empty-icon">🏆</div>
+                            <h3>No Achievements Yet</h3>
+                            <p>Keep playing games to earn your first badge!</p>
+                        </div>
+                    ) : (
+                        <div className="achievements-grid">
+                            {achievements.map((item, index) => {
+                                const earned =
+                                    item.earned ??
+                                    item.is_earned ??
+                                    item.unlocked ??
+                                    false
 
-                                <p>
-                                    {item.description ||
-                                        'Keep playing to achieve this milestone.'}
-                                </p>
+                                const target = Number(item.target || 1)
+                                const progress = Math.min(
+                                    Number(item.progress || 0),
+                                    target
+                                )
 
-                                <span className="achievement-status">
-                                    {earned ? '✓ Earned' : '🔒 Locked'}
-                                </span>
-                            </div>
-                        )
-                    })}
-                </div>
+                                const percentage = target > 0
+                                    ? Math.min((progress / target) * 100, 100)
+                                    : 0
+
+                                return (
+                                    <div
+                                        className={`achievement-card ${
+                                            earned ? 'earned' : 'locked'
+                                        }`}
+                                        key={item.id || index}
+                                    >
+                                        <div className="achievement-icon">
+                                            {item.icon || item.emoji || '🏆'}
+                                        </div>
+
+                                        <h3>
+                                            {item.name || item.title || 'Achievement'}
+                                        </h3>
+
+                                        <p>
+                                            {item.description ||
+                                                'Keep playing to achieve this milestone.'}
+                                        </p>
+
+                                        <div className="achievement-progress-info">
+                                            <span>Progress</span>
+                                            <strong>
+                                                {progress}/{target}
+                                            </strong>
+                                        </div>
+
+                                        <div className="achievement-progress-track">
+                                            <div
+                                                className="achievement-progress-fill"
+                                                style={{
+                                                    width: `${percentage}%`,
+                                                }}
+                                            />
+                                        </div>
+
+                                        <span className="achievement-status">
+                                            {earned ? '✓ Earned' : '🔒 Locked'}
+                                        </span>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    )}
+                </>
             )}
         </div>
     )
