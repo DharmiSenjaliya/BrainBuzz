@@ -1,0 +1,173 @@
+﻿<main className="dashboard-container">
+                    <div className="dashboard-welcome">
+                        <p className="level">PLAYER DASHBOARD</p>
+                        <h1>Welcome, {user.name}! ðŸ‘‹</h1>
+                        <p>Ready to challenge your brain today?</p>
+                    </div>
+
+                    <div className="dashboard-stats">
+                        <div className="stat-card">
+                            <span>ðŸŽ®</span>
+                            <h2>{dashboardStats.games_played}</h2>
+                            <p>Games Played</p>
+                        </div>
+
+                        <div className="stat-card">
+                            <span>â­</span>
+                            <h2>{dashboardStats.total_score}</h2>
+                            <p>Total Score</p>
+                        </div>
+
+                        <div className="stat-card">
+                            <span>âœ…</span>
+                            <h2>{dashboardStats.total_correct}</h2>
+                            <p>Correct Answers</p>
+                        </div>
+
+                        <div className="stat-card">
+                            <span>âŒ</span>
+                            <h2>{dashboardStats.total_wrong}</h2>
+                            <p>Wrong Answers</p>
+                        </div>
+
+                        <div className="stat-card">
+                            <span>ðŸ“Š</span>
+                            <h2>{dashboardStats.accuracy}%</h2>
+                            <p>Accuracy</p>
+                        </div>
+                    </div>
+
+                    <section className="dashboard-game">
+                        <h2>ðŸ§  BrainBuzz Levels</h2>
+                        <p>Get at least 3 correct answers out of 5 to unlock the next level.</p>
+                      
+                      <div className="player-category-filter">
+    <label htmlFor="player-category">
+        Choose Category
+    </label>
+
+    <select
+        id="player-category"
+        value={selectedCategory}
+        onChange={(e) =>
+            setSelectedCategory(e.target.value)
+        }
+        disabled={loadingPlayerCategories}
+    >
+        <option value="all">
+            All Categories
+        </option>
+
+        {playerCategories.map((category) => (
+            <option
+                key={category.id}
+                value={String(category.id)}
+            >
+                {category.icon
+                    ? `${category.icon} `
+                    : ''}
+                {category.name}
+            </option>
+        ))}
+    </select>
+</div>
+                        <div className="level-cards">
+                            {Array.from({ length: maxLevelToShow }, (_, index) => {
+                                const level = index + 1
+                                const progress = levelProgress.find(
+                                    (item) => Number(item.level) === level
+                                )
+
+                                const unlocked = level <= currentUnlockedLevel
+                                const isCompleted = Boolean(progress?.is_completed)
+
+                                return (
+                                    <div
+                                        className={`level-card ${
+                                            isCompleted ? 'completed' : ''
+                                        } ${unlocked ? 'unlocked' : 'locked'}`}
+                                        key={level}
+                                    >
+                                        <h3>Level {level}</h3>
+
+                                        <p>
+                                            {isCompleted
+                                                ? 'âœ… Completed'
+                                                : unlocked
+                                                    ? 'ðŸ”“ Unlocked'
+                                                    : 'ðŸ”’ Locked'}
+                                        </p>
+
+                                        {progress && (
+                                            <div className="level-performance">
+                                        <div className="level-stars">
+                                            {progress.stars > 0
+                                                ? 'â­'.repeat(Number(progress.stars)) + 'â˜†'.repeat(3 - Number(progress.stars))
+                                                : 'â˜†â˜†â˜†'}
+                                        </div>
+
+                                        <small>
+                                            Best Correct: {progress.best_correct_answers || 0}/5
+                                        </small>
+
+                                    </div>
+                                        )}
+
+                                        <button
+                                            className="submit-btn"
+                                            disabled={!unlocked}
+                                            onClick={() => startLevel(level)}
+                                        >
+                                            {isCompleted
+                                                ? 'Play Again'
+                                                : unlocked
+                                                    ? 'Start Level'
+                                                    : 'Locked'}
+                                        </button>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                                                <button
+                            className="dashboard-btn"
+                            onClick={() => setShowDailyChallenge(true)}
+                        >
+                            ðŸŽ¯ Daily Challenge
+                        </button>
+                        
+                        <button
+                            className="dashboard-btn"
+                            onClick={() => setShowLeaderboard(true)}
+                        >
+                            ðŸ† View Leaderboard
+                        </button>
+
+                        <button
+                            className="dashboard-btn"
+                            onClick={() => setShowAchievements(true)}
+                        >
+                            ðŸ… View Achievements
+                        </button>
+
+                        <button
+                            className="dashboard-btn"
+                            onClick={() => setShowHowToPlay(true)}
+                        >
+                            ðŸŽ® How to Play
+                        </button>
+
+                        <button
+                            className="dashboard-btn"
+                            onClick={() => setShowProfile(true)}
+                        >
+                            ðŸ‘¤ My Profile & Game History
+                        </button>
+
+                        <button
+                            className="dashboard-btn"
+                            onClick={() => setShowFeedback(true)}
+                        >
+                            ðŸ’¬ Share Feedback
+                        </button>
+                    </section>
+                </main>

@@ -1,0 +1,36 @@
+﻿                    <div className="dashboard-stats">
+                        <div className="stat-card">
+                            <span>🎮</span>
+                            <h2>{dashboardStats.games_played}</h2>
+                            <p>Games Played</p>
+                        </div>
+
+                        <div className="stat-card">
+                            <span>⭐</span>
+                            <h2>{dashboardStats.total_score}</h2>
+                            <p>Total Score</p>
+                        </div>
+
+                        <div className="stat-card">
+                            <span>✅</span>
+                            <h2>{dashboardStats.total_correct}</h2>
+                            <p>Correct Answers</p>
+                        </div>
+
+                        <div className="stat-card">
+                            <span>❌</span>
+                            <h2>{dashboardStats.total_wrong}</h2>
+                            <p>Wrong Answers</p>
+                        </div>
+
+                        <div className="stat-card">
+                            <span>📊</span>
+                            <h2>{dashboardStats.accuracy}%</h2>
+                            <p>Accuracy</p>
+                        </div>
+                    </div>
+
+                    <section className="dashboard-game">
+                        <h2>🧠 BrainBuzz Levels</h2>
+                        <p>Get at least 3 correct answers out of 5 to unlock the next level.</p>
+                      

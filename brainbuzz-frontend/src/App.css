@@ -2521,3 +2521,77 @@ body.dark-theme .auth-page {
     font-weight: 700;
     letter-spacing: 0.4px;
 }
+
+
+/* BRAINBUZZ GAMES HUB PROMO */
+
+.games-hub-promo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    padding: 30px;
+    margin: 28px 0;
+    border-radius: 18px;
+    background: linear-gradient(120deg, #29244f, #403477, #6255d9);
+    border: 1px solid rgba(199, 186, 255, 0.2);
+    color: #ffffff;
+}
+
+.games-hub-promo-content > span {
+    color: #c7baff;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.games-hub-promo-content h2 {
+    margin: 12px 0 8px;
+    font-size: 24px;
+    color: #ffffff;
+}
+
+.games-hub-promo-content p {
+    color: #ded9f8;
+    font-size: 14px;
+    line-height: 1.7;
+    margin: 0;
+    max-width: 600px;
+}
+
+.games-hub-promo-button {
+    flex-shrink: 0;
+    padding: 14px 22px;
+    border: none;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #5143bd;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.games-hub-promo-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 20px rgba(0, 0, 0, 0.2);
+}
+
+.games-hub-promo-button span {
+    margin-left: 8px;
+}
+
+@media (max-width: 650px) {
+    .games-hub-promo {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 23px;
+    }
+
+    .games-hub-promo-button {
+        width: 100%;
+    }
+
+    .games-hub-promo-content h2 {
+        font-size: 21px;
+    }
+}

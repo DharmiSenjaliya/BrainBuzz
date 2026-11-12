@@ -1,0 +1,81 @@
+﻿            setQuestions([])
+
+            setMessage(
+                category === 'all'
+                    ? `No questions available in Level ${level}.`
+                    : `No questions available in this category for Level ${level}.`
+            )
+        }
+    } catch (error) {
+        console.error(
+            'Question API Error:',
+            error.response?.data || error
+        )
+
+        setQuestions([])
+        setMessage(
+            error.response?.data?.message ||
+            'Unable to load questions. Please check the API.'
+        )
+    } finally {
+        setLoading(false)
+    }
+}
+
+    // CHECK LOGIN
+    useEffect(() => {
+        const checkLogin = async () => {
+            const adminToken = localStorage.getItem('brainbuzz_admin_token')
+
+            if (adminToken) {
+                try {
+                    const response = await api.get('/me', {
+                        headers: { Authorization: `Bearer ${adminToken}` },
+                    })
+
+                    const adminUser = response.data.user
+
+                    if (adminUser?.is_admin) {
+                        setAdmin(adminUser)
+                        setShowAdminLogin(false)
+                        setAuthLoading(false)
+                        return
+                    }
+
+                    localStorage.removeItem('brainbuzz_admin_token')
+                } catch (error) {
+                    console.error('Admin Login Check Error:', error)
+                    localStorage.removeItem('brainbuzz_admin_token')
+                }
+            }
+
+            const token = localStorage.getItem('brainbuzz_token')
+
+            if (!token) {
+                setAuthLoading(false)
+                return
+            }
+
+            try {
+                const response = await api.get('/me', {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+
+               setUser(response.data.user)
+                await fetchDashboard(token)
+                await fetchLevelProgress(token)
+                await fetchPlayerCategories(token)
+                await fetchQuestions(token, 1)
+            } catch (error) {
+                console.error('Player Login Check Error:', error)
+                localStorage.removeItem('brainbuzz_token')
+                setUser(null)
+            } finally {
+                setAuthLoading(false)
+            }
+        }
+
+        checkLogin()
+    }, [])
+
+    // LOGIN / REGISTER

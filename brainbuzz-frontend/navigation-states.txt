@@ -1,0 +1,66 @@
+﻿    )
+}
+
+// MAIN APP
+function App() {
+    const [isResetPasswordPage, setIsResetPasswordPage] = useState(
+        () => window.location.pathname === '/reset-password'
+    )
+
+    const theme = 'dark'
+
+    const [showAchievements, setShowAchievements] = useState(false)
+    const [showLeaderboard, setShowLeaderboard] = useState(false)
+    const [showDailyChallenge, setShowDailyChallenge] = useState(false)
+
+    const [dashboardStats, setDashboardStats] = useState({
+        games_played: 0,
+        total_score: 0,
+        total_correct: 0,
+        total_wrong: 0,
+        accuracy: 0,
+    })
+
+    const fetchDashboard = async (token) => {
+        try {
+            const response = await api.get('/dashboard', {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+
+            if (response.data.success) {
+                setDashboardStats(response.data.stats)
+            }
+        } catch (error) {
+            console.error('Dashboard Error:', error)
+        }
+    }
+
+    useEffect(() => {
+    document.body.className = 'dark-theme'
+}, [])
+
+    const [user, setUser] = useState(null)
+    const [authMode, setAuthMode] = useState('login')
+    const [authLoading, setAuthLoading] = useState(true)
+    const [authSubmitting, setAuthSubmitting] = useState(false)
+
+    const [showProfile, setShowProfile] = useState(
+        () => sessionStorage.getItem('brainbuzz_player_page') === 'profile'
+    )
+
+    const [showEditProfile, setShowEditProfile] = useState(false)
+    const [showChangePassword, setShowChangePassword] = useState(false)
+    const [showForgotPassword, setShowForgotPassword] = useState(false)
+
+    useEffect(() => {
+        if (showProfile) {
+            sessionStorage.setItem('brainbuzz_player_page', 'profile')
+        } else {
+            sessionStorage.removeItem('brainbuzz_player_page')
+        }
+    }, [showProfile])
+
+    const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [passwordConfirmation, setPasswordConfirmation] = useState('')

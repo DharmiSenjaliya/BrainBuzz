@@ -1,0 +1,76 @@
+﻿    // LOGIN / REGISTER
+    const handleAuth = async (e) => {
+        e.preventDefault()
+        setAuthMessage('')
+
+        if (authMode === 'register' && password !== passwordConfirmation) {
+            setAuthMessage('Passwords do not match!')
+            return
+        }
+
+        try {
+            setAuthSubmitting(true)
+
+            const endpoint = authMode === 'register' ? '/register' : '/login'
+
+            const payload = authMode === 'register'
+                ? {
+                    name,
+                    email,
+                    password,
+                    password_confirmation: passwordConfirmation,
+                }
+                : { email, password }
+
+            const response = await api.post(endpoint, payload)
+
+            if (authMode === 'register') {
+                setAuthMode('login')
+                setPassword('')
+                setPasswordConfirmation('')
+                setAuthMessage('Registration successful! Please login now.')
+                return
+            }
+
+            const token = response.data.token
+
+            localStorage.setItem('brainbuzz_token', token)
+            setUser(response.data.user)
+
+            await fetchDashboard(token)
+            await fetchLevelProgress(token)
+            await fetchPlayerCategories(token)
+
+            setPassword('')
+            setPasswordConfirmation('')
+            setAuthMessage('')
+
+            await fetchQuestions(token, 1)
+        } catch (error) {
+            console.error('Authentication Error:', error)
+
+            const errors = error.response?.data?.errors
+
+            if (errors) {
+                const firstError = Object.values(errors)[0]
+                setAuthMessage(firstError?.[0] || 'Please check your details.')
+            } else {
+                setAuthMessage(
+                    error.response?.data?.message ||
+                    'Something went wrong. Please try again.'
+                )
+            }
+        } finally {
+            setAuthSubmitting(false)
+        }
+    }
+
+    const handleAdminLogin = async (adminData) => {
+    try {
+        const response = await api.post('/admin/login', adminData)
+
+        const token = response.data.token
+
+        localStorage.setItem('brainbuzz_admin_token', token)
+
+        setAdmin(response.data.user)

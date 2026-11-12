@@ -13,6 +13,12 @@ import ForgotPassword from './ForgotPassword'
 import ResetPassword from './ResetPassword'
 import Achievements from './Achievements'
 import DailyChallenge from './DailyChallenge'
+import GamesHub from './GamesHub'
+
+const isUsableToken = (token) =>
+    typeof token === 'string' &&
+    token.trim() !== '' &&
+    !['undefined', 'null'].includes(token.trim().toLowerCase())
 
 // NAVBAR COMPONENT
 function Navbar({ user, onLogout }) {
@@ -257,6 +263,8 @@ function App() {
     const [showAchievements, setShowAchievements] = useState(false)
     const [showLeaderboard, setShowLeaderboard] = useState(false)
     const [showDailyChallenge, setShowDailyChallenge] = useState(false)
+    const [showGamesHub, setShowGamesHub] = useState(false)
+    const [selectedGameMode, setSelectedGameMode] = useState(null)
 
     const [dashboardStats, setDashboardStats] = useState({
         games_played: 0,
@@ -504,7 +512,8 @@ const fetchPlayerCategories = async (token) => {
 
             const token = localStorage.getItem('brainbuzz_token')
 
-            if (!token) {
+            if (!isUsableToken(token)) {
+                localStorage.removeItem('brainbuzz_token')
                 setAuthLoading(false)
                 return
             }
@@ -565,10 +574,21 @@ const fetchPlayerCategories = async (token) => {
                 return
             }
 
-            const token = response.data.token
+            const authResponse = response.data?.data ?? response.data
+            const token = authResponse?.token
+
+            if (!isUsableToken(token)) {
+                localStorage.removeItem('brainbuzz_token')
+                console.error(
+                    'Login response is missing a token. Response fields:',
+                    Object.keys(response.data || {})
+                )
+                setAuthMessage('Login response did not include a valid token. Please try again.')
+                return
+            }
 
             localStorage.setItem('brainbuzz_token', token)
-            setUser(response.data.user)
+            setUser(authResponse.user || response.data.user)
 
             await fetchDashboard(token)
             await fetchLevelProgress(token)
@@ -1138,6 +1158,43 @@ const checkAnswer = async () => {
         )
     }
 
+
+    // BRAINBUZZ GAMES HUB
+if (showGamesHub) {
+    return (
+        <div className={`app ${theme}-theme`}>
+            {navbar}
+
+           
+<GamesHub
+    onBack={() => setShowGamesHub(false)}
+    onSelectMode={(modeId) => {
+        setSelectedGameMode(modeId)
+
+        if (modeId === 'iq') {
+            setShowGamesHub(false)
+            startLevel(selectedLevel)
+            return
+        }
+
+        if (modeId === 'training') {
+            setShowGamesHub(false)
+            setMessage('Brain Training mode is coming next.')
+            return
+        }
+
+        if (modeId === 'knowledge') {
+            setShowGamesHub(false)
+            setMessage('Knowledge Challenge mode is coming next.')
+            return
+        }
+    }}
+/>
+
+        </div>
+    )
+}
+
     // DASHBOARD
 if (showDashboard) {
         const maxLevelToShow = Math.max(10, currentUnlockedLevel + 4)
@@ -1185,6 +1242,24 @@ if (showDashboard) {
                         </div>
                     </div>
 
+{/* BRAINBUZZ GAMES HUB */}
+<section className="games-hub-promo">
+    <div className="games-hub-promo-content">
+        <span>🧠 EXPLORE MORE</span>
+        <h2>Discover BrainBuzz Games</h2>
+        <p>
+            Challenge your logic, train your memory and expand
+            your knowledge with three exciting game modes.
+        </p>
+    </div>
+
+    <button
+        className="games-hub-promo-button"
+        onClick={() => setShowGamesHub(true)}
+    >
+        Explore Games <span>→</span>
+    </button>
+</section>
                     <section className="dashboard-game">
                         <h2>🧠 BrainBuzz Levels</h2>
                         <p>Get at least 3 correct answers out of 5 to unlock the next level.</p>
