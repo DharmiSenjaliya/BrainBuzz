@@ -9,6 +9,7 @@ class GameResult extends Model
 {
     protected $fillable = [
         'user_id',
+        'game_mode',
         'level',
         'score',
         'correct_answers',
@@ -20,6 +21,7 @@ class GameResult extends Model
     protected function casts(): array
     {
         return [
+            'game_mode' => 'string',
             'passed' => 'boolean',
         ];
     }

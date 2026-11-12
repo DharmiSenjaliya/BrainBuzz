@@ -14,6 +14,7 @@ class GameResultController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'game_mode' => 'sometimes|in:iq,knowledge',
             'level' => 'required|integer|min:1',
             'score' => 'required|integer|min:0',
             'correct_answers' => 'required|integer|min:0|max:5',
@@ -33,15 +34,16 @@ class GameResultController extends Controller
         }
 
         $user = $request->user();
+        $validated['game_mode'] = $validated['game_mode'] ?? 'iq';
 
         $result = GameResult::create([
             ...$validated,
             'user_id' => $user->id,
         ]);
 
-        $status = $result->passed
-            ? 'Level Passed!'
-            : 'Keep Practicing!';
+        $status = $result->game_mode === 'knowledge'
+            ? 'Knowledge Challenge Complete'
+            : ($result->passed ? 'Level Passed!' : 'Keep Practicing!');
 
         $user->notifications()->create([
             'id' => (string) \Illuminate\Support\Str::uuid(),
@@ -49,7 +51,9 @@ class GameResultController extends Controller
             'data' => [
                 'type' => 'game',
                 'title' => $status,
-                'message' => "You completed Level {$result->level} with {$result->score} points and {$result->correct_answers} correct answers.",
+                'message' => $result->game_mode === 'knowledge'
+                    ? "You scored {$result->score} points with {$result->correct_answers} correct answers in Knowledge Challenge."
+                    : "You completed Level {$result->level} with {$result->score} points and {$result->correct_answers} correct answers.",
             ],
         ]);
 
@@ -325,6 +329,7 @@ class GameResultController extends Controller
         $userId = $request->user()->id;
 
         $results = GameResult::where('user_id', $userId)
+            ->where('game_mode', 'iq')
             ->get()
             ->groupBy('level');
 

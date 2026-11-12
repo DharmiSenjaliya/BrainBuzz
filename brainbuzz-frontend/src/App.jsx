@@ -15,6 +15,7 @@ import Achievements from './Achievements'
 import DailyChallenge from './DailyChallenge'
 import GamesHub from './GamesHub'
 import BrainTraining from './BrainTraining'
+import KnowledgeChallenge from './KnowledgeChallenge'
 
 const isUsableToken = (token) =>
     typeof token === 'string' &&
@@ -1186,7 +1187,7 @@ if (showGamesHub) {
 
         if (modeId === 'knowledge') {
             setShowGamesHub(false)
-            setMessage('Knowledge Challenge mode is coming next.')
+            setSelectedGameMode('knowledge')
             return
         }
     }}
@@ -1207,6 +1208,22 @@ if (selectedGameMode === 'training') {
                     setSelectedGameMode(null)
                     setShowGamesHub(true)
                 }}
+            />
+        </div>
+    )
+}
+
+if (selectedGameMode === 'knowledge') {
+    return (
+        <div className={`app ${theme}-theme`}>
+            {navbar}
+
+            <KnowledgeChallenge
+                onBack={() => {
+                    setSelectedGameMode(null)
+                    setShowGamesHub(true)
+                }}
+                onChallengeComplete={fetchDashboard}
             />
         </div>
     )
