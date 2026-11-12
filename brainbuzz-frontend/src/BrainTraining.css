@@ -94,6 +94,227 @@
     transform: translateY(-2px);
 }
 
+.training-dashboard {
+    margin-bottom: 42px;
+}
+
+.training-dashboard-heading,
+.training-panel-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.training-dashboard-heading {
+    margin-bottom: 20px;
+}
+
+.training-dashboard-heading span {
+    color: #a78bfa;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+}
+
+.training-dashboard-heading h2 {
+    margin: 6px 0 0;
+    font-size: 25px;
+}
+
+.training-dashboard-heading p,
+.training-panel-heading > span,
+.training-panel-heading p {
+    margin: 0;
+    color: #a5b4c8;
+    font-size: 13px;
+}
+
+.training-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.training-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-width: 0;
+    padding: 17px 19px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    background: rgba(30, 41, 59, 0.62);
+}
+
+.training-summary span {
+    color: #a5b4c8;
+    font-size: 13px;
+}
+
+.training-summary strong {
+    color: #f8fafc;
+    font-size: 28px;
+    line-height: 1;
+    overflow-wrap: anywhere;
+}
+
+.training-summary strong small {
+    color: #94a3b8;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.training-dashboard-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.training-dashboard-panel {
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 12px;
+    background: rgba(30, 41, 59, 0.48);
+}
+
+.training-panel-heading {
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.training-panel-heading h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.training-panel-heading p {
+    margin-top: 5px;
+}
+
+.training-best-list,
+.training-history-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.training-best-row,
+.training-history-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 48px;
+    border-top: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.training-best-icon {
+    width: 28px;
+    flex: 0 0 28px;
+    font-size: 19px;
+    text-align: center;
+}
+
+.training-best-name,
+.training-history-row strong {
+    min-width: 0;
+    color: #e2e8f0;
+    font-size: 13px;
+}
+
+.training-best-row > strong {
+    margin-left: auto;
+    color: #a7f3d0;
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+}
+
+.training-history-row {
+    justify-content: space-between;
+}
+
+.training-history-row > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.training-history-row time {
+    color: #94a3b8;
+    font-size: 12px;
+}
+
+.training-history-row > span {
+    flex: 0 0 auto;
+    color: #a7f3d0;
+    font-size: 13px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.training-progress-panel {
+    margin-bottom: 0;
+}
+
+.training-trend-chart {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 10px;
+    min-height: 150px;
+    padding-top: 8px;
+}
+
+.training-trend-column {
+    display: grid;
+    grid-template-rows: 18px 1fr 18px;
+    justify-items: center;
+    gap: 6px;
+    min-width: 0;
+    color: #a5b4c8;
+}
+
+.training-trend-column strong {
+    color: #e2e8f0;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+.training-trend-track {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+.training-trend-track span {
+    display: block;
+    width: min(100%, 34px);
+    min-height: 5px;
+    border-radius: 5px 5px 0 0;
+    background: linear-gradient(180deg, #34d399, #0f766e);
+}
+
+.training-trend-column small {
+    max-width: 100%;
+    overflow: hidden;
+    color: #94a3b8;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.training-empty-state {
+    margin: 0;
+    padding: 14px 0 4px;
+    color: #a5b4c8;
+    font-size: 13px;
+}
+
 .training-play {
     max-width: 650px;
     margin: 0 auto;
@@ -209,6 +430,41 @@
 }
 
 @media (max-width: 650px) {
+    .training-dashboard-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .training-summary-grid {
+        grid-template-columns: 1fr;
+        gap: 9px;
+    }
+
+    .training-summary {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+    }
+
+    .training-summary strong {
+        font-size: 23px;
+    }
+
+    .training-dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .training-dashboard-panel {
+        padding: 16px;
+    }
+
+    .training-trend-chart {
+        gap: 5px;
+    }
+
     .training-grid {
         grid-template-columns: 1fr;
     }

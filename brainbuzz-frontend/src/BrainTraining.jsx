@@ -1,13 +1,50 @@
 
-import { useState, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import api from './services/api'
 import './BrainTraining.css'
 
 const shuffle = (items) => [...items].sort(() => Math.random() - 0.5)
+const fetchTrainingHistory = async (token) => {
+    const response = await api.get('/brain-training/history', {
+        headers: { Authorization: `Bearer ${token}` },
+    })
+
+    return response.data.results || []
+}
 
 function BrainTraining({ onBack }) {
     const [activeGame, setActiveGame] = useState(null)
+    const [trainingResults, setTrainingResults] = useState([])
+    const [historyLoading, setHistoryLoading] = useState(true)
+    const [historyError, setHistoryError] = useState('')
     const memorySavedRef = useRef(false)
+
+    useEffect(() => {
+        let isMounted = true
+
+        const loadHistory = async () => {
+            const token = localStorage.getItem('brainbuzz_token')
+
+            if (!token) {
+                setHistoryError('Log in to see your training progress.')
+                setHistoryLoading(false)
+                return
+            }
+
+            try {
+                const results = await fetchTrainingHistory(token)
+                if (isMounted) setTrainingResults(results)
+            } catch (error) {
+                console.error('Brain Training History Error:', error)
+                if (isMounted) setHistoryError('Unable to load training history.')
+            } finally {
+                if (isMounted) setHistoryLoading(false)
+            }
+        }
+
+        loadHistory()
+        return () => { isMounted = false }
+    }, [])
    
     // SCORE SAVING
 const [saveMessage, setSaveMessage] = useState('')
@@ -28,6 +65,13 @@ const saveResult = async (gameData) => {
         })
 
         setSaveMessage('Score saved successfully! 🎉')
+
+        try {
+            setTrainingResults(await fetchTrainingHistory(token))
+            setHistoryError('')
+        } catch (error) {
+            console.error('Brain Training History Refresh Error:', error)
+        }
     } catch (error) {
         console.error('Score save error:', error)
         setSaveMessage('Unable to save score. Please try again.')
@@ -246,6 +290,17 @@ const saveResult = async (gameData) => {
         { id: 'reaction', icon: '⚡', title: 'Reaction Test', description: 'Test how quickly you react.' },
         { id: 'pattern', icon: '🎨', title: 'Pattern Recall', description: 'Remember and repeat the color sequence.' },
     ]
+    const completedResults = trainingResults.filter((result) => result.completed)
+    const bestScores = games.map((game) => {
+        const scores = completedResults
+            .filter((result) => result.game_type === game.id)
+            .map((result) => Number(result.score) || 0)
+
+        return { ...game, bestScore: scores.length ? Math.max(...scores) : null }
+    })
+    const scoreTrend = completedResults.slice(0, 8).reverse()
+    const highestRecentScore = Math.max(1, ...scoreTrend.map((result) => Number(result.score) || 0))
+    const gameTitles = Object.fromEntries(games.map((game) => [game.id, game.title]))
 
     return (
         <main className="brain-training">
@@ -260,6 +315,105 @@ const saveResult = async (gameData) => {
             </header>
 
             {!activeGame && (
+                <>
+                <section className="training-dashboard" aria-label="Brain training dashboard">
+                    <header className="training-dashboard-heading">
+                        <div>
+                            <span>YOUR PERFORMANCE</span>
+                            <h2>Training dashboard</h2>
+                        </div>
+                        <p>Every session adds to your progress.</p>
+                    </header>
+
+                    <div className="training-summary-grid">
+                        <article className="training-summary">
+                            <span>Total games played</span>
+                            <strong>{completedResults.length}</strong>
+                        </article>
+                        <article className="training-summary">
+                            <span>Total score</span>
+                            <strong>{completedResults.reduce((total, result) => total + (Number(result.score) || 0), 0)}</strong>
+                        </article>
+                        <article className="training-summary">
+                            <span>Games practiced</span>
+                            <strong>{bestScores.filter((game) => game.bestScore !== null).length}<small> / {games.length}</small></strong>
+                        </article>
+                    </div>
+
+                    <div className="training-dashboard-grid">
+                        <section className="training-dashboard-panel">
+                            <div className="training-panel-heading">
+                                <h3>Best score by game</h3>
+                                <span>Personal bests</span>
+                            </div>
+                            <div className="training-best-list">
+                                {bestScores.map((game) => (
+                                    <div className="training-best-row" key={game.id}>
+                                        <span className="training-best-icon">{game.icon}</span>
+                                        <span className="training-best-name">{game.title}</span>
+                                        <strong>{game.bestScore ?? '—'}</strong>
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
+                        <section className="training-dashboard-panel">
+                            <div className="training-panel-heading">
+                                <h3>Recent game history</h3>
+                                <span>Latest 5 sessions</span>
+                            </div>
+                            {historyLoading ? (
+                                <p className="training-empty-state">Loading your sessions...</p>
+                            ) : historyError ? (
+                                <p className="training-empty-state">{historyError}</p>
+                            ) : completedResults.length ? (
+                                <div className="training-history-list">
+                                    {completedResults.slice(0, 5).map((result) => (
+                                        <article className="training-history-row" key={result.id}>
+                                            <div>
+                                                <strong>{gameTitles[result.game_type] || result.game_type}</strong>
+                                                <time dateTime={result.created_at}>
+                                                    {new Date(result.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                                </time>
+                                            </div>
+                                            <span>+{result.score} pts</span>
+                                        </article>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="training-empty-state">Finish a training game to start your history.</p>
+                            )}
+                        </section>
+                    </div>
+
+                    <section className="training-dashboard-panel training-progress-panel">
+                        <div className="training-panel-heading">
+                            <div>
+                                <h3>Score progress</h3>
+                                <p>Your last 8 completed sessions</p>
+                            </div>
+                            {scoreTrend.length > 0 && <span>{scoreTrend.length} sessions</span>}
+                        </div>
+                        {scoreTrend.length ? (
+                            <div className="training-trend-chart" role="img" aria-label="Scores from the last eight completed sessions, oldest to newest">
+                                {scoreTrend.map((result) => (
+                                    <div className="training-trend-column" key={result.id}>
+                                        <strong>{result.score}</strong>
+                                        <div className="training-trend-track">
+                                            <span style={{ height: `${Math.max(8, ((Number(result.score) || 0) / highestRecentScore) * 100)}%` }} />
+                                        </div>
+                                        <small>{gameTitles[result.game_type]?.split(' ')[0] || 'Game'}</small>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="training-empty-state">
+                                {historyLoading ? 'Loading your progress...' : 'Your score trend will appear after your first game.'}
+                            </p>
+                        )}
+                    </section>
+                </section>
+
                 <section className="training-grid">
                     {games.map((game) => (
                         <article className="training-card" key={game.id}>
@@ -275,6 +429,7 @@ const saveResult = async (gameData) => {
                         </article>
                     ))}
                 </section>
+                </>
             )}
 
             {activeGame === 'memory' && (
