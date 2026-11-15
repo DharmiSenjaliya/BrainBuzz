@@ -1,0 +1,308 @@
+/* DAILY MINI GAMES - PLAYER UI */
+
+.mini-player-page {
+    min-height: 100vh;
+    padding: 28px;
+    background: #0f172a;
+    color: #f1f5f9;
+    box-sizing: border-box;
+}
+
+.mini-player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.mini-player-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.mini-player-page button {
+    cursor: pointer;
+    border: 0;
+    border-radius: 9px;
+    padding: 11px 17px;
+    font-weight: 700;
+    background: #334155;
+    color: white;
+}
+
+.mini-player-page button:hover {
+    filter: brightness(1.15);
+}
+
+.mini-player-page button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.mini-player-panel {
+    max-width: 1050px;
+    margin: 0 auto;
+    padding: 25px;
+    border: 1px solid #334155;
+    border-radius: 18px;
+    background: #1e293b;
+}
+
+.mini-player-stats {
+    max-width: 1050px;
+    margin: 0 auto 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.mini-player-stats > div {
+    padding: 17px;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    background: #1e293b;
+    font-weight: 700;
+}
+
+.mini-player-game-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.mini-player-game-heading h2 {
+    font-size: 25px;
+    margin: 10px 0;
+}
+
+.mini-player-game-heading p,
+.mini-player-question p {
+    color: #cbd5e1;
+    line-height: 1.7;
+}
+
+.mini-game-type {
+    color: #a78bfa;
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.mini-player-timer {
+    padding: 13px 18px;
+    border-radius: 12px;
+    background: #312e81;
+    color: #c4b5fd;
+    font-size: 21px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.mini-player-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+.mini-player-questions {
+    display: grid;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.mini-player-question {
+    padding: 20px;
+    border: 1px solid #475569;
+    border-radius: 13px;
+    background: #172235;
+}
+
+.mini-player-question h3 {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 0 0 15px;
+}
+
+.mini-player-question h3 span {
+    color: #a78bfa;
+    font-size: 13px;
+}
+
+.mini-player-question input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 13px;
+    border: 1px solid #475569;
+    border-radius: 9px;
+    background: #0f172a;
+    color: white;
+    outline: none;
+}
+
+.mini-player-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.mini-player-options button {
+    text-align: left;
+    border: 1px solid #475569;
+    background: #273449;
+}
+
+.mini-player-options button.selected {
+    border-color: #a78bfa;
+    background: #4c1d95;
+}
+
+.mini-scrambled-word {
+    display: inline-block;
+    padding: 12px 20px;
+    margin: 10px 0;
+    border-radius: 10px;
+    background: #312e81;
+    color: #c4b5fd;
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 5px;
+}
+
+.mini-question-image {
+    display: block;
+    max-width: 100%;
+    max-height: 250px;
+    object-fit: contain;
+    border-radius: 12px;
+    margin: 12px 0;
+}
+
+.mini-submit-btn {
+    width: 100%;
+    margin-top: 22px;
+    padding: 15px !important;
+    background: #7c3aed !important;
+    font-size: 16px;
+}
+
+.mini-result {
+    margin-top: 25px;
+    padding: 25px;
+    border-radius: 14px;
+    background: #172235;
+    text-align: center;
+}
+
+.mini-result h1 {
+    color: #a78bfa;
+    font-size: 42px;
+}
+
+.mini-result-details {
+    display: grid;
+    gap: 12px;
+    margin-top: 20px;
+    text-align: left;
+}
+
+.mini-result-details > div,
+.mini-history-card {
+    padding: 16px;
+    border: 1px solid #475569;
+    border-radius: 10px;
+    background: #1e293b;
+}
+
+.mini-history-card {
+    margin: 12px 0;
+}
+
+.mini-player-error {
+    color: #f87171;
+    margin: 15px 0;
+}
+
+.mini-empty {
+    text-align: center;
+}
+
+@media (max-width: 700px) {
+    .mini-player-page {
+        padding: 15px;
+    }
+
+    .mini-player-header {
+        flex-wrap: wrap;
+    }
+
+    .mini-player-header h1 {
+        font-size: 21px;
+    }
+
+    .mini-player-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .mini-player-game-heading {
+        flex-direction: column;
+    }
+
+    .mini-player-options {
+        grid-template-columns: 1fr;
+    }
+
+    .mini-player-panel {
+        padding: 16px;
+    }
+}
+
+
+.mini-game-clues,
+.mini-game-sequence {
+    margin: 15px 0;
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.mini-game-clues h4,
+.mini-game-sequence h4 {
+    margin: 0 0 10px;
+    color: #a78bfa;
+    font-size: 15px;
+}
+
+.mini-game-clues p,
+.mini-game-sequence p {
+    margin: 0;
+    line-height: 1.7;
+    white-space: pre-line;
+}
+
+.mini-game-math {
+    margin: 15px 0;
+    padding: 18px;
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    border-radius: 12px;
+    background: rgba(167, 139, 250, 0.08);
+}
+
+.mini-game-math h4 {
+    margin: 0 0 10px;
+    color: #a78bfa;
+    font-size: 16px;
+}
+
+.mini-game-math p {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    white-space: pre-line;
+}   

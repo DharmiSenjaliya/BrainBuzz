@@ -13,6 +13,7 @@ import ForgotPassword from './ForgotPassword'
 import ResetPassword from './ResetPassword'
 import Achievements from './Achievements'
 import DailyChallenge from './DailyChallenge'
+import DailyMiniGames from './DailyMiniGames'
 import GamesHub from './GamesHub'
 import BrainTraining from './BrainTraining'
 import KnowledgeChallenge from './KnowledgeChallenge'
@@ -265,6 +266,7 @@ function App() {
     const [showAchievements, setShowAchievements] = useState(false)
     const [showLeaderboard, setShowLeaderboard] = useState(false)
     const [showDailyChallenge, setShowDailyChallenge] = useState(false)
+    const [showDailyMiniGames, setShowDailyMiniGames] = useState(false)
     const [showGamesHub, setShowGamesHub] = useState(false)
     const [selectedGameMode, setSelectedGameMode] = useState(null)
 
@@ -1094,6 +1096,18 @@ const checkAnswer = async () => {
     )
 }
 
+
+if (showDailyMiniGames) {
+    return (
+        <div className={`app ${theme}-theme`}>
+            {navbar}
+            <DailyMiniGames
+                onBack={() => setShowDailyMiniGames(false)}
+            />
+        </div>
+    )
+}
+
     if (showLeaderboard) {
         return (
             <div className={`app ${theme}-theme`}>
@@ -1399,6 +1413,13 @@ if (showDashboard) {
                         >
                             🎯 Daily Challenge
                         </button>
+
+                        <button
+                        className="dashboard-btn"
+                        onClick={() => setShowDailyMiniGames(true)}
+                    >
+                        🕹️ Daily Mini Games
+                    </button>
                         
                         <button
                             className="dashboard-btn"

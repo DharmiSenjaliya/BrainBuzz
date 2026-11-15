@@ -30,3 +30,5 @@ return Application::configure(basePath: dirname(__DIR__))
                 $request->is('api/*') || $request->expectsJson()
         );
     })->create();
+
+    

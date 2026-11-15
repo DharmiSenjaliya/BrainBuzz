@@ -18,6 +18,7 @@ import {
     X,
     Plus,
 } from 'lucide-react'
+import AdminDailyMiniGames from './AdminDailyMiniGames'
 
 function AdminDashboard({ admin, onLogout }) {
     const [activeTab, setActiveTab] = useState('overview')
@@ -1463,6 +1464,16 @@ const handleDeletePlayer = async (id) => {
 >
    <span><Target size={18} /></span>
     Daily Challenges
+</button>
+
+<button
+    className={`admin-nav-btn ${
+        activeTab === 'daily-mini-games' ? 'active' : ''
+    }`}
+    onClick={() => setActiveTab('daily-mini-games')}
+>
+    <span><Gamepad2 size={18} /></span>
+    Daily Mini Games
 </button>
 
 </aside>
@@ -3121,6 +3132,11 @@ const handleDeletePlayer = async (id) => {
 
         </section>
     )}
+    {activeTab === 'daily-mini-games' && (
+    <section className="admin-section">
+        <AdminDailyMiniGames />
+    </section>
+)}
                     </main>
                 </div>
 

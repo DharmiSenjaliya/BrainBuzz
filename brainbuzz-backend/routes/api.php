@@ -13,6 +13,8 @@ use App\Http\Controllers\Api\AdminLeaderboardController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\DailyChallengeController;
 use App\Http\Controllers\Api\AdminDailyChallengeController;
+use App\Http\Controllers\Api\DailyGamePlayerController;
+use App\Http\Controllers\Api\AdminDailyGameController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\BrainTrainingResultController;
 use App\Http\Controllers\Api\KnowledgeChallengeController;
@@ -54,10 +56,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
 
-    // Player Daily Challenge
+    // Existing Player Daily Challenge - PRESERVED
     Route::get('/daily-challenge', [DailyChallengeController::class, 'index']);
     Route::post('/daily-challenge/submit', [DailyChallengeController::class, 'submit']);
     Route::get('/daily-challenge/history', [DailyChallengeController::class, 'history']);
+
+    // NEW Player Daily Mini Games
+    Route::get('/daily-mini-game', [DailyGamePlayerController::class, 'index']);
+    Route::post('/daily-mini-game/submit', [DailyGamePlayerController::class, 'submit']);
+    Route::get('/daily-mini-game/history', [DailyGamePlayerController::class, 'history']);
 
     // Player Categories
     Route::get('/categories', [CategoryController::class, 'playerIndex']);
@@ -94,11 +101,24 @@ Route::middleware('auth:sanctum')->group(function () {
         // Admin Leaderboard
         Route::get('/admin/leaderboard', [AdminLeaderboardController::class, 'index']);
 
-        // Daily Challenge Management
+        // Existing Daily Challenge Management - PRESERVED
         Route::get('/admin/daily-challenges', [AdminDailyChallengeController::class, 'index']);
         Route::post('/admin/daily-challenges', [AdminDailyChallengeController::class, 'store']);
         Route::put('/admin/daily-challenges/{id}', [AdminDailyChallengeController::class, 'update']);
         Route::delete('/admin/daily-challenges/{id}', [AdminDailyChallengeController::class, 'destroy']);
+
+        // NEW Daily Mini Game Management
+        Route::get('/admin/daily-mini-games', [AdminDailyGameController::class, 'index']);
+        Route::post('/admin/daily-mini-games', [AdminDailyGameController::class, 'store']);
+        Route::post('/admin/daily-mini-games/generate-ai', [AdminDailyGameController::class, 'generateWithAi']);
+        Route::put('/admin/daily-mini-games/{id}', [AdminDailyGameController::class, 'update']);
+
+        Route::post('/admin/daily-mini-games/{id}/submit-for-approval', [AdminDailyGameController::class, 'submitForApproval']);
+        Route::post('/admin/daily-mini-games/{id}/approve', [AdminDailyGameController::class, 'approve']);
+        Route::post('/admin/daily-mini-games/{id}/reject', [AdminDailyGameController::class, 'reject']);
+        Route::post('/admin/daily-mini-games/{id}/publish', [AdminDailyGameController::class, 'publish']);
+        Route::post('/admin/daily-mini-games/{id}/unpublish', [AdminDailyGameController::class, 'unpublish']);
+        Route::delete('/admin/daily-mini-games/{id}', [AdminDailyGameController::class, 'destroy']);
 
         // Category Management
         Route::get('/admin/categories', [CategoryController::class, 'index']);
