@@ -88,10 +88,16 @@ class AuthController extends Controller
         }
 
         if (!$user->is_admin) {
-            return response()->json([
-                'message' => 'Access denied. Admin account required.',
-            ], 403);
-        }
+    return response()->json([
+        'message' => 'Access denied. Admin account required.',
+    ], 403);
+}
+
+if (!$user->is_active) {
+    return response()->json([
+        'message' => 'Your Super Admin account is inactive.',
+    ], 403);
+}
 
         $token = $user->createToken('brainbuzz-admin')->plainTextToken;
 

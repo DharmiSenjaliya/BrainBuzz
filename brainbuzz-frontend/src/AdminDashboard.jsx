@@ -1,11 +1,30 @@
-﻿import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import './AdminDashboard.css'
 import api from './services/api'
+import {
+    LayoutDashboard,
+    FileQuestion,
+    Folder,
+    MessageCircle,
+    Users,
+    Trophy,
+    Target,
+    Sparkles,
+    CheckCircle2,
+    Star,
+    Gamepad2,
+    ChartNoAxesColumnIncreasing,
+    Medal,
+    X,
+    Plus,
+} from 'lucide-react'
 
 function AdminDashboard({ admin, onLogout }) {
     const [activeTab, setActiveTab] = useState('overview')
     // Daily Challenge Management
 const [dailyChallenges, setDailyChallenges] = useState([])
+const [dailyChallengeCurrentPage, setDailyChallengeCurrentPage] = useState(1)
+const DAILY_CHALLENGES_PER_PAGE = 5
 const [loadingDailyChallenges, setLoadingDailyChallenges] = useState(false)
 const [dailyChallengeError, setDailyChallengeError] = useState('')
 const [dailyChallengeSuccess, setDailyChallengeSuccess] = useState('')
@@ -29,6 +48,8 @@ const [savingCategory, setSavingCategory] = useState(false)
 const [showCategoryForm, setShowCategoryForm] = useState(false)
 const [editingCategory, setEditingCategory] = useState(null)
 const [searchCategory, setSearchCategory] = useState('')
+const [categoryCurrentPage, setCategoryCurrentPage] = useState(1)
+const CATEGORIES_PER_PAGE = 5
 
 const [categoryForm, setCategoryForm] = useState({
     name: '',
@@ -41,11 +62,15 @@ const [categoryForm, setCategoryForm] = useState({
     const [loadingPlayers, setLoadingPlayers] = useState(true)
     const [playersError, setPlayersError] = useState('')
     const [searchPlayer, setSearchPlayer] = useState('')
+    const [playerCurrentPage, setPlayerCurrentPage] = useState(1)
+const PLAYERS_PER_PAGE = 5
     // Leaderboard Management
     const [leaderboard, setLeaderboard] = useState([])
     const [loadingLeaderboard, setLoadingLeaderboard] = useState(false)
     const [leaderboardError, setLeaderboardError] = useState('')
     const [searchLeaderboard, setSearchLeaderboard] = useState('')
+    const [leaderboardCurrentPage, setLeaderboardCurrentPage] = useState(1)
+    const LEADERBOARD_PER_PAGE = 5
 
     const [loadingQuestions, setLoadingQuestions] = useState(true)
     const [loadingFeedback, setLoadingFeedback] = useState(true)
@@ -57,6 +82,10 @@ const [categoryForm, setCategoryForm] = useState({
     const [questionLevelFilter, setQuestionLevelFilter] = useState('all')
     const [questionCategoryFilter, setQuestionCategoryFilter] = useState('all')
     const [feedbackRatingFilter, setFeedbackRatingFilter] = useState('all')
+    const [feedbackCurrentPage, setFeedbackCurrentPage] = useState(1)
+const FEEDBACK_PER_PAGE = 5
+    const [questionCurrentPage, setQuestionCurrentPage] = useState(1)
+const QUESTIONS_PER_PAGE = 5
 
     const [showQuestionForm, setShowQuestionForm] = useState(false)
     const [editingQuestion, setEditingQuestion] = useState(null)
@@ -92,8 +121,11 @@ const [categoryForm, setCategoryForm] = useState({
                 authConfig
             )
 
-            setQuestions(response.data.questions || [])
-        } catch (error) {
+setQuestions(
+    Array.isArray(response.data.questions)
+        ? response.data.questions
+        : []
+)        } catch (error) {
             console.error('Questions Fetch Error:', error)
 
             setQuestionError(
@@ -543,6 +575,138 @@ useEffect(() => {
     return () => clearTimeout(searchTimer)
 }, [searchLeaderboard, activeTab])
 
+
+    // LEADERBOARD PAGINATION
+
+const totalLeaderboardPages = Math.ceil(
+    leaderboard.length / LEADERBOARD_PER_PAGE
+)
+
+const leaderboardPageNumbers = useMemo(() => {
+    if (totalLeaderboardPages <= 3) {
+        return Array.from(
+            { length: totalLeaderboardPages },
+            (_, index) => index + 1
+        )
+    }
+
+    if (leaderboardCurrentPage <= 2) {
+        return [1, 2, 3, '...', totalLeaderboardPages]
+    }
+
+    if (leaderboardCurrentPage >= totalLeaderboardPages - 1) {
+        return [
+            1,
+            '...',
+            totalLeaderboardPages - 2,
+            totalLeaderboardPages - 1,
+            totalLeaderboardPages
+        ]
+    }
+
+    return [
+        1,
+        '...',
+        leaderboardCurrentPage - 1,
+        leaderboardCurrentPage,
+        leaderboardCurrentPage + 1,
+        '...',
+        totalLeaderboardPages
+    ]
+}, [totalLeaderboardPages, leaderboardCurrentPage])
+
+const paginatedLeaderboard = useMemo(() => {
+    const startIndex =
+        (leaderboardCurrentPage - 1) * LEADERBOARD_PER_PAGE
+
+    return leaderboard.slice(
+        startIndex,
+        startIndex + LEADERBOARD_PER_PAGE
+    )
+}, [leaderboard, leaderboardCurrentPage])
+
+useEffect(() => {
+    setLeaderboardCurrentPage(1)
+}, [searchLeaderboard])
+
+useEffect(() => {
+    if (
+        totalLeaderboardPages === 0 &&
+        leaderboardCurrentPage !== 1
+    ) {
+        setLeaderboardCurrentPage(1)
+    } else if (
+        leaderboardCurrentPage > totalLeaderboardPages
+    ) {
+        setLeaderboardCurrentPage(totalLeaderboardPages)
+    }
+}, [totalLeaderboardPages, leaderboardCurrentPage])
+
+
+         // DAILY CHALLENGES PAGINATION
+
+    const totalDailyChallengePages = Math.ceil(
+        dailyChallenges.length / DAILY_CHALLENGES_PER_PAGE
+    )
+
+    const dailyChallengePageNumbers = useMemo(() => {
+        if (totalDailyChallengePages <= 3) {
+            return Array.from(
+                { length: totalDailyChallengePages },
+                (_, index) => index + 1
+            )
+        }
+
+        if (dailyChallengeCurrentPage <= 2) {
+            return [1, 2, 3, '...', totalDailyChallengePages]
+        }
+
+        if (dailyChallengeCurrentPage >= totalDailyChallengePages - 1) {
+            return [
+                1,
+                '...',
+                totalDailyChallengePages - 2,
+                totalDailyChallengePages - 1,
+                totalDailyChallengePages
+            ]
+        }
+
+        return [
+            1,
+            '...',
+            dailyChallengeCurrentPage - 1,
+            dailyChallengeCurrentPage,
+            dailyChallengeCurrentPage + 1,
+            '...',
+            totalDailyChallengePages
+        ]
+    }, [totalDailyChallengePages, dailyChallengeCurrentPage])
+
+    const paginatedDailyChallenges = useMemo(() => {
+        const startIndex =
+            (dailyChallengeCurrentPage - 1) * DAILY_CHALLENGES_PER_PAGE
+
+        return dailyChallenges.slice(
+            startIndex,
+            startIndex + DAILY_CHALLENGES_PER_PAGE
+        )
+    }, [dailyChallenges, dailyChallengeCurrentPage])
+
+    useEffect(() => {
+        setDailyChallengeCurrentPage(1)
+    }, [dailyChallenges.length])
+
+    useEffect(() => {
+        if (
+            totalDailyChallengePages === 0 &&
+            dailyChallengeCurrentPage !== 1
+        ) {
+            setDailyChallengeCurrentPage(1)
+        } else if (dailyChallengeCurrentPage > totalDailyChallengePages) {
+            setDailyChallengeCurrentPage(totalDailyChallengePages)
+        }
+    }, [totalDailyChallengePages, dailyChallengeCurrentPage])
+
     const activeQuestions = questions.filter(
         (question) => Boolean(question.is_active)
     ).length
@@ -589,6 +753,139 @@ useEffect(() => {
         questionLevelFilter,
         questionCategoryFilter,
     ])
+
+        const totalQuestionPages = Math.ceil(
+        filteredQuestions.length / QUESTIONS_PER_PAGE
+    )
+
+const questionPageNumbers = useMemo(() => {
+    if (totalQuestionPages <= 3) {
+        return Array.from(
+            { length: totalQuestionPages },
+            (_, index) => index + 1
+        )
+    }
+
+    if (questionCurrentPage <= 2) {
+        return [1, 2, 3, '...', totalQuestionPages]
+    }
+
+    if (questionCurrentPage >= totalQuestionPages - 1) {
+        return [
+            1,
+            '...',
+            totalQuestionPages - 2,
+            totalQuestionPages - 1,
+            totalQuestionPages
+        ]
+    }
+
+    return [
+        1,
+        '...',
+        questionCurrentPage - 1,
+        questionCurrentPage,
+        questionCurrentPage + 1,
+        '...',
+        totalQuestionPages
+    ]
+}, [totalQuestionPages, questionCurrentPage])
+
+
+
+    const paginatedQuestions = useMemo(() => {
+        const startIndex =
+            (questionCurrentPage - 1) * QUESTIONS_PER_PAGE
+
+        return filteredQuestions.slice(
+            startIndex,
+            startIndex + QUESTIONS_PER_PAGE
+        )
+    }, [filteredQuestions, questionCurrentPage])
+
+    useEffect(() => {
+        setQuestionCurrentPage(1)
+    }, [
+        searchQuestion,
+        questionLevelFilter,
+        questionCategoryFilter,
+    ])
+
+
+    // CATEGORY PAGINATION
+
+    const filteredCategories = useMemo(() => {
+        const search = searchCategory.toLowerCase().trim()
+
+        return categories.filter((category) => {
+            return (
+                !search ||
+                category.name?.toLowerCase().includes(search) ||
+                category.description?.toLowerCase().includes(search)
+            )
+        })
+    }, [categories, searchCategory])
+
+    const totalCategoryPages = Math.ceil(
+        filteredCategories.length / CATEGORIES_PER_PAGE
+    )
+
+    const categoryPageNumbers = useMemo(() => {
+        if (totalCategoryPages <= 3) {
+            return Array.from(
+                { length: totalCategoryPages },
+                (_, index) => index + 1
+            )
+        }
+
+        if (categoryCurrentPage <= 2) {
+            return [1, 2, 3, '...', totalCategoryPages]
+        }
+
+        if (categoryCurrentPage >= totalCategoryPages - 1) {
+            return [
+                1,
+                '...',
+                totalCategoryPages - 2,
+                totalCategoryPages - 1,
+                totalCategoryPages
+            ]
+        }
+
+        return [
+            1,
+            '...',
+            categoryCurrentPage - 1,
+            categoryCurrentPage,
+            categoryCurrentPage + 1,
+            '...',
+            totalCategoryPages
+        ]
+    }, [totalCategoryPages, categoryCurrentPage])
+
+    const paginatedCategories = useMemo(() => {
+        const startIndex =
+            (categoryCurrentPage - 1) * CATEGORIES_PER_PAGE
+
+        return filteredCategories.slice(
+            startIndex,
+            startIndex + CATEGORIES_PER_PAGE
+        )
+    }, [filteredCategories, categoryCurrentPage])
+
+    useEffect(() => {
+        setCategoryCurrentPage(1)
+    }, [searchCategory])
+
+    useEffect(() => {
+        if (totalCategoryPages === 0 && categoryCurrentPage !== 1) {
+            setCategoryCurrentPage(1)
+        } else if (categoryCurrentPage > totalCategoryPages) {
+            setCategoryCurrentPage(totalCategoryPages)
+        }
+    }, [totalCategoryPages, categoryCurrentPage])
+
+    
     const filteredFeedback = useMemo(() => {
         return feedback.filter((item) => {
             if (feedbackRatingFilter === 'all') {
@@ -598,6 +895,131 @@ useEffect(() => {
             return String(item.rating) === String(feedbackRatingFilter)
         })
     }, [feedback, feedbackRatingFilter])
+
+
+// FEEDBACK PAGINATION
+
+const totalFeedbackPages = Math.ceil(
+    filteredFeedback.length / FEEDBACK_PER_PAGE
+)
+
+const feedbackPageNumbers = useMemo(() => {
+    if (totalFeedbackPages <= 3) {
+        return Array.from(
+            { length: totalFeedbackPages },
+            (_, index) => index + 1
+        )
+    }
+
+    if (feedbackCurrentPage <= 2) {
+        return [1, 2, 3, '...', totalFeedbackPages]
+    }
+
+    if (feedbackCurrentPage >= totalFeedbackPages - 1) {
+        return [
+            1,
+            '...',
+            totalFeedbackPages - 2,
+            totalFeedbackPages - 1,
+            totalFeedbackPages
+        ]
+    }
+
+    return [
+        1,
+        '...',
+        feedbackCurrentPage - 1,
+        feedbackCurrentPage,
+        feedbackCurrentPage + 1,
+        '...',
+        totalFeedbackPages
+    ]
+}, [totalFeedbackPages, feedbackCurrentPage])
+
+const paginatedFeedback = useMemo(() => {
+    const startIndex =
+        (feedbackCurrentPage - 1) * FEEDBACK_PER_PAGE
+
+    return filteredFeedback.slice(
+        startIndex,
+        startIndex + FEEDBACK_PER_PAGE
+    )
+}, [filteredFeedback, feedbackCurrentPage])
+
+useEffect(() => {
+    setFeedbackCurrentPage(1)
+}, [feedbackRatingFilter])
+
+useEffect(() => {
+    if (totalFeedbackPages === 0 && feedbackCurrentPage !== 1) {
+        setFeedbackCurrentPage(1)
+    } else if (feedbackCurrentPage > totalFeedbackPages) {
+        setFeedbackCurrentPage(totalFeedbackPages)
+    }
+}, [totalFeedbackPages, feedbackCurrentPage])
+
+
+// PLAYER PAGINATION
+
+const totalPlayerPages = Math.ceil(
+    players.length / PLAYERS_PER_PAGE
+)
+
+const playerPageNumbers = useMemo(() => {
+    if (totalPlayerPages <= 3) {
+        return Array.from(
+            { length: totalPlayerPages },
+            (_, index) => index + 1
+        )
+    }
+
+    if (playerCurrentPage <= 2) {
+        return [1, 2, 3, '...', totalPlayerPages]
+    }
+
+    if (playerCurrentPage >= totalPlayerPages - 1) {
+        return [
+            1,
+            '...',
+            totalPlayerPages - 2,
+            totalPlayerPages - 1,
+            totalPlayerPages
+        ]
+    }
+
+    return [
+        1,
+        '...',
+        playerCurrentPage - 1,
+        playerCurrentPage,
+        playerCurrentPage + 1,
+        '...',
+        totalPlayerPages
+    ]
+}, [totalPlayerPages, playerCurrentPage])
+
+const paginatedPlayers = useMemo(() => {
+    const startIndex =
+        (playerCurrentPage - 1) * PLAYERS_PER_PAGE
+
+    return players.slice(
+        startIndex,
+        startIndex + PLAYERS_PER_PAGE
+    )
+}, [players, playerCurrentPage])
+
+useEffect(() => {
+    setPlayerCurrentPage(1)
+}, [searchPlayer])
+
+useEffect(() => {
+    if (totalPlayerPages === 0 && playerCurrentPage !== 1) {
+        setPlayerCurrentPage(1)
+    } else if (playerCurrentPage > totalPlayerPages) {
+        setPlayerCurrentPage(totalPlayerPages)
+    }
+}, [totalPlayerPages, playerCurrentPage])
+
 
         const resetQuestionForm = () => {
         setQuestionForm({
@@ -966,7 +1388,7 @@ const handleDeletePlayer = async (id) => {
         }`}
         onClick={() => setActiveTab('overview')}
     >
-        <span>â–¦</span>
+        <span><LayoutDashboard size={18} /></span>
         Overview
     </button>
 
@@ -976,7 +1398,7 @@ const handleDeletePlayer = async (id) => {
         }`}
         onClick={() => setActiveTab('questions')}
     >
-        <span>?</span>
+        <span><FileQuestion size={18} /></span>
         Questions
     </button>
 
@@ -990,7 +1412,7 @@ const handleDeletePlayer = async (id) => {
             fetchCategories()
         }}
     >
-        <span>ðŸ“‚</span>
+        <span><Folder size={18} /></span>
         Categories
     </button>
 
@@ -1000,7 +1422,7 @@ const handleDeletePlayer = async (id) => {
         }`}
         onClick={() => setActiveTab('feedback')}
     >
-        <span>ðŸ’¬</span>
+        <span><MessageCircle size={18} /></span>
         Feedback
     </button>
 
@@ -1013,7 +1435,7 @@ const handleDeletePlayer = async (id) => {
             fetchPlayers()
         }}
     >
-        <span>ðŸ‘¥</span>
+        <span><Users size={18} /></span>
         Players
     </button>
 
@@ -1026,7 +1448,7 @@ const handleDeletePlayer = async (id) => {
         fetchLeaderboard()
     }}
 >
-    <span>ðŸ†</span>
+    <span><Trophy size={18} /></span>
     Leaderboard
 </button>
 
@@ -1039,7 +1461,7 @@ const handleDeletePlayer = async (id) => {
         fetchDailyChallenges()
     }}
 >
-    <span>ðŸŽ¯</span>
+   <span><Target size={18} /></span>
     Daily Challenges
 </button>
 
@@ -1074,8 +1496,8 @@ const handleDeletePlayer = async (id) => {
 
                                 <div className="admin-stat-card">
                                     <div className="admin-stat-icon purple">
-                                        ?
-                                    </div>
+                                    <FileQuestion size={22} />
+                                </div>
 
                                     <div>
                                         <span>Total Questions</span>
@@ -1085,7 +1507,7 @@ const handleDeletePlayer = async (id) => {
 
                                 <div className="admin-stat-card">
                                     <div className="admin-stat-icon green">
-                                        âœ“
+                                        <CheckCircle2 size={22} />
                                     </div>
 
                                     <div>
@@ -1096,7 +1518,7 @@ const handleDeletePlayer = async (id) => {
 
                                 <div className="admin-stat-card">
                                     <div className="admin-stat-icon orange">
-                                        ðŸ’¬
+                                        <MessageCircle size={22} />
                                     </div>
 
                                     <div>
@@ -1107,7 +1529,7 @@ const handleDeletePlayer = async (id) => {
 
                                 <div className="admin-stat-card">
                                     <div className="admin-stat-icon blue">
-                                        ★
+                                        <Star size={22} />
                                     </div>
 
                                     <div>
@@ -1347,8 +1769,9 @@ const handleDeletePlayer = async (id) => {
                                 <div className="admin-empty-state">
                                     No questions found.
                                 </div>
-                            ) : (
-                                <div className="admin-table-wrapper">
+                          ) : (
+                        <>
+                            <div className="admin-table-wrapper">
 
                                     <table className="admin-table">
 
@@ -1365,7 +1788,7 @@ const handleDeletePlayer = async (id) => {
                                         </thead>
 
                                         <tbody>
-                                 {filteredQuestions.map(
+                                 {paginatedQuestions.map(
                                                 (question) => (
                                                     <tr key={question.id}>
 
@@ -1378,9 +1801,9 @@ const handleDeletePlayer = async (id) => {
                                                                 {question.title}
                                                             </div>
 
-                                                            <small>
-                                                                Answer: {question.answer}
-                                                            </small>
+                                                            <div className="admin-question-answer">
+                                                                <strong>Answer:</strong> {question.answer}
+                                                            </div>
                                                         </td>
 
                                                         <td>
@@ -1470,6 +1893,67 @@ const handleDeletePlayer = async (id) => {
                                     </table>
 
                                 </div>
+
+                                <div className="admin-pagination">
+                                    <span className="admin-pagination-info">
+                                        Showing {
+                                            filteredQuestions.length === 0
+                                                ? 0
+                                                : (questionCurrentPage - 1) * QUESTIONS_PER_PAGE + 1
+                                        } - {
+                                            Math.min(
+                                                questionCurrentPage * QUESTIONS_PER_PAGE,
+                                                filteredQuestions.length
+                                            )
+                                        } of {filteredQuestions.length} questions
+                                    </span>
+
+                                    <div className="admin-pagination-buttons">
+                                        <button
+                                            type="button"
+                                            disabled={questionCurrentPage === 1}
+                                            onClick={() => setQuestionCurrentPage(page => page - 1)}
+                                        >
+                                            Previous
+                                        </button>
+
+                                      
+{questionPageNumbers.map((page, index) =>
+    page === '...' ? (
+        <span
+            key={`ellipsis-${index}`}
+            className="admin-pagination-ellipsis"
+        >
+            ...
+        </span>
+    ) : (
+        <button
+            type="button"
+            key={page}
+            className={questionCurrentPage === page ? 'active' : ''}
+            onClick={() => setQuestionCurrentPage(page)}
+        >
+            {page}
+        </button>
+    )
+)}
+
+
+                                        <button
+                                            type="button"
+                                            disabled={
+                                                questionCurrentPage >= totalQuestionPages ||
+                                                totalQuestionPages === 0
+                                            }
+                                            onClick={() => setQuestionCurrentPage(page =>
+                                                Math.min(page + 1, totalQuestionPages)
+                                            )}
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                </div>
+                              </>
                             )}
 
                         </section>
@@ -1523,6 +2007,7 @@ const handleDeletePlayer = async (id) => {
                                     Loading categories...
                                 </div>
                             ) : (
+                                <>
                                 <div className="admin-table-wrapper">
                                     <table className="admin-table">
                                         <thead>
@@ -1537,257 +2022,282 @@ const handleDeletePlayer = async (id) => {
                                         </thead>
 
                                         <tbody>
-                                            {categories
-                                                .filter((category) => {
-                                                    const search =
-                                                        searchCategory
-                                                            .toLowerCase()
-                                                            .trim()
+                                          
+{paginatedCategories.map((category) => (
+    <tr key={category.id}>
+        <td>{category.id}</td>
 
-                                                    return (
-                                                        !search ||
-                                                        category.name
-                                                            ?.toLowerCase()
-                                                            .includes(search) ||
-                                                        category.description
-                                                            ?.toLowerCase()
-                                                            .includes(search)
-                                                    )
-                                                })
-                                                .map((category) => (
-                                                    <tr key={category.id}>
-                                                        <td>{category.id}</td>
+        <td>
+            {category.icon ? `${category.icon} ` : ''}
+            {category.name}
+        </td>
 
-                                                        <td>
-                                                            {category.icon
-                                                                ? `${category.icon} `
-                                                                : ''}
-                                                            {category.name}
-                                                        </td>
+        <td>
+            {category.description || '—'}
+        </td>
 
-                                                        <td>
-                                                            {category.description ||
-                                                                'â€”'}
-                                                        </td>
+        <td>
+            {category.questions_count || 0}
+        </td>
 
-                                                        <td>
-                                                            {category.questions_count || 0}
-                                                        </td>
+        <td>
+            <span
+                className={
+                    category.is_active
+                        ? 'admin-status-active'
+                        : 'admin-status-inactive'
+                }
+            >
+                {category.is_active ? 'Active' : 'Inactive'}
+            </span>
+        </td>
 
-                                                        <td>
-                                                            <span
-                                                                className={
-                                                                    category.is_active
-                                                                        ? 'admin-status-active'
-                                                                        : 'admin-status-inactive'
-                                                                }
-                                                            >
-                                                                {category.is_active
-                                                                    ? 'Active'
-                                                                    : 'Inactive'}
-                                                            </span>
-                                                        </td>
+        <td>
+            <button
+                className="admin-edit-btn"
+                onClick={() => openEditCategory(category)}
+            >
+                Edit
+            </button>
 
-                                                        <td>
-                                                            <button
-                                                                className="admin-edit-btn"
-                                                                onClick={() =>
-                                                                    openEditCategory(category)
-                                                                }
-                                                            >
-                                                                Edit
-                                                            </button>
+            <button
+                className="admin-delete-btn"
+                onClick={() => handleDeleteCategory(category)}
+            >
+                Delete
+            </button>
+        </td>
+    </tr>
+))}
 
-                                                            <button
-                                                                className="admin-delete-btn"
-                                                                onClick={() =>
-                                                                    handleDeleteCategory(category)
-                                                                }
-                                                            >
-                                                                Delete
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                ))}
+{filteredCategories.length === 0 && (
+    <tr>
+        <td colSpan="6">
+            No categories found.
+        </td>
+    </tr>
+)}
 
-                                            {categories.filter((category) => {
-                                                const search =
-                                                    searchCategory
-                                                        .toLowerCase()
-                                                        .trim()
-
-                                                return (
-                                                    !search ||
-                                                    category.name
-                                                        ?.toLowerCase()
-                                                        .includes(search) ||
-                                                    category.description
-                                                        ?.toLowerCase()
-                                                        .includes(search)
-                                                )
-                                            }).length === 0 && (
-                                                <tr>
-                                                    <td colSpan="6">
-                                                        No categories found.
-                                                    </td>
-                                                </tr>
-                                            )}
                                         </tbody>
                                     </table>
                                 </div>
+
+<div className="admin-pagination">
+    <div className="admin-pagination-info">
+        Showing {filteredCategories.length === 0 ? 0 : (categoryCurrentPage - 1) * CATEGORIES_PER_PAGE + 1} - {Math.min(categoryCurrentPage * CATEGORIES_PER_PAGE, filteredCategories.length)} of {filteredCategories.length} categories
+    </div>
+
+    <div className="admin-pagination-buttons">
+        <button
+            type="button"
+            disabled={categoryCurrentPage === 1}
+            onClick={() => setCategoryCurrentPage(page => page - 1)}
+        >
+            Previous
+        </button>
+
+        {categoryPageNumbers.map((page, index) =>
+            page === '...' ? (
+                <span
+                    className="admin-pagination-ellipsis"
+                    key={`category-ellipsis-${index}`}
+                >
+                    ...
+                </span>
+            ) : (
+                <button
+                    type="button"
+                    key={page}
+                    className={categoryCurrentPage === page ? 'active' : ''}
+                    onClick={() => setCategoryCurrentPage(page)}
+                >
+                    {page}
+                </button>
+            )
+        )}
+
+        <button
+            type="button"
+            disabled={categoryCurrentPage >= totalCategoryPages || totalCategoryPages === 0}
+            onClick={() => setCategoryCurrentPage(page => Math.min(page + 1, totalCategoryPages))}
+        >
+            Next
+        </button>
+    </div>
+</div>
+
+                                </>
                             )}
                         </section>
                     )}
 
 
-                    {activeTab === 'feedback' && (
-                        <section>
+                   
+{activeTab === 'feedback' && (
+    <section>
+        <div className="admin-page-heading">
+            <div>
+                <span className="admin-eyebrow">PLAYER VOICE</span>
+                <h1>Feedback</h1>
+                <p>Review what players think about BrainBuzz.</p>
+            </div>
 
-                            <div className="admin-page-heading">
-                                <div>
-                                    <span className="admin-eyebrow">
-                                        PLAYER VOICE
-                                    </span>
+            <div className="admin-feedback-total">
+                {feedback.length} Responses
+            </div>
+        </div>
 
-                                    <h1>Feedback</h1>
+        <div className="admin-toolbar">
+            <select
+                value={feedbackRatingFilter}
+                onChange={(e) => setFeedbackRatingFilter(e.target.value)}
+            >
+                <option value="all">All Ratings</option>
+                {[5, 4, 3, 2, 1].map((rating) => (
+                    <option key={rating} value={rating}>
+                        {rating} Stars
+                    </option>
+                ))}
+            </select>
 
-                                    <p>
-                                        Review what players think about BrainBuzz.
-                                    </p>
+            <button
+                className="admin-refresh-btn"
+                onClick={fetchFeedback}
+            >
+                Refresh
+            </button>
+        </div>
+
+        {loadingFeedback ? (
+            <div className="admin-empty-state">
+                Loading feedback...
+            </div>
+        ) : feedbackError ? (
+            <div className="admin-error-box">
+                {feedbackError}
+            </div>
+        ) : filteredFeedback.length === 0 ? (
+            <div className="admin-empty-state">
+                No feedback found.
+            </div>
+        ) : (
+            <>
+                <div className="admin-feedback-grid">
+                    {paginatedFeedback.map((item) => (
+                        <div
+                            className="admin-feedback-card"
+                            key={item.id}
+                        >
+                            <div className="admin-feedback-top">
+                                <div className="admin-feedback-user">
+                                    <div className="admin-feedback-avatar">
+                                        {(item.user?.name || 'U')
+                                            .charAt(0)
+                                            .toUpperCase()}
+                                    </div>
+
+                                    <div>
+                                        <h3>
+                                            {item.user?.name || 'Unknown User'}
+                                        </h3>
+                                        <p>
+                                            {item.user?.email || 'No email'}
+                                        </p>
+                                    </div>
                                 </div>
-
-                                <div className="admin-feedback-total">
-                                    {feedback.length} Responses
-                                </div>
-                            </div>
-
-                            <div className="admin-toolbar">
-
-                                <select
-                                    value={feedbackRatingFilter}
-                                    onChange={(e) =>
-                                        setFeedbackRatingFilter(
-                                            e.target.value
-                                        )
-                                    }
-                                >
-                                    <option value="all">
-                                        All Ratings
-                                    </option>
-
-                                    {[5, 4, 3, 2, 1].map((rating) => (
-                                        <option
-                                            key={rating}
-                                            value={rating}
-                                        >
-                                            {rating} Stars
-                                        </option>
-                                    ))}
-                                </select>
 
                                 <button
-                                    className="admin-refresh-btn"
-                                    onClick={fetchFeedback}
+                                    className="admin-delete-btn"
+                                    onClick={() => handleDeleteFeedback(item.id)}
+                                    disabled={deletingFeedbackId === item.id}
                                 >
-                                    ↻ Refresh
+                                    {deletingFeedbackId === item.id
+                                        ? 'Deleting...'
+                                        : 'Delete'}
                                 </button>
-
                             </div>
 
-                            {loadingFeedback ? (
-                                <div className="admin-empty-state">
-                                    Loading feedback...
-                                </div>
-                            ) : feedbackError ? (
-                                <div className="admin-error-box">
-                                    {feedbackError}
-                                </div>
-                            ) : filteredFeedback.length === 0 ? (
-                                <div className="admin-empty-state">
-                                    No feedback found.
-                                </div>
+                            <div className="admin-feedback-stars">
+                                {'★'.repeat(Number(item.rating))}
+                                {'☆'.repeat(5 - Number(item.rating))}
+                            </div>
+
+                            <p className="admin-feedback-message">
+                                {item.message}
+                            </p>
+
+                            <small className="admin-feedback-date">
+                                {new Date(item.created_at).toLocaleString()}
+                            </small>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="admin-pagination">
+                    <div className="admin-pagination-info">
+                        Showing {(feedbackCurrentPage - 1) * FEEDBACK_PER_PAGE + 1}
+                        {' - '}
+                        {Math.min(
+                            feedbackCurrentPage * FEEDBACK_PER_PAGE,
+                            filteredFeedback.length
+                        )}
+                        {' of '}
+                        {filteredFeedback.length} feedback
+                    </div>
+
+                    <div className="admin-pagination-buttons">
+                        <button
+                            type="button"
+                            disabled={feedbackCurrentPage === 1}
+                            onClick={() =>
+                                setFeedbackCurrentPage((page) => page - 1)
+                            }
+                        >
+                            Previous
+                        </button>
+
+                        {feedbackPageNumbers.map((page, index) =>
+                            page === '...' ? (
+                                <span
+                                    className="admin-pagination-ellipsis"
+                                    key={`feedback-ellipsis-${index}`}
+                                >
+                                    ...
+                                </span>
                             ) : (
-                                <div className="admin-feedback-grid">
+                                <button
+                                    type="button"
+                                    key={page}
+                                    className={
+                                        feedbackCurrentPage === page ? 'active' : ''
+                                    }
+                                    onClick={() => setFeedbackCurrentPage(page)}
+                                >
+                                    {page}
+                                </button>
+                            )
+                        )}
 
-                                    {filteredFeedback.map((item) => (
-                                        <div
-                                            className="admin-feedback-card"
-                                            key={item.id}
-                                        >
-                                            <div className="admin-feedback-top">
-
-                                                <div className="admin-feedback-user">
-
-                                                    <div className="admin-feedback-avatar">
-                                                        {(item.user?.name ||
-                                                            'U')
-                                                            .charAt(0)
-                                                            .toUpperCase()}
-                                                    </div>
-
-                                                    <div>
-                                                        <h3>
-                                                            {item.user?.name ||
-                                                                'Unknown User'}
-                                                        </h3>
-
-                                                        <p>
-                                                            {item.user?.email ||
-                                                                'No email'}
-                                                        </p>
-                                                    </div>
-
-                                                </div>
-
-                                                <button
-                                                    className="admin-delete-btn"
-                                                    onClick={() =>
-                                                        handleDeleteFeedback(
-                                                            item.id
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        deletingFeedbackId ===
-                                                        item.id
-                                                    }
-                                                >
-                                                    {deletingFeedbackId ===
-                                                    item.id
-                                                        ? 'Deleting...'
-                                                        : 'Delete'}
-                                                </button>
-
-                                            </div>
-
-                                            <div className="admin-feedback-stars">
-                                                {'★'.repeat(
-                                                    Number(item.rating)
-                                                )}
-                                                {'☆'.repeat(
-                                                    5 -
-                                                    Number(item.rating)
-                                                )}
-                                            </div>
-
-                                            <p className="admin-feedback-message">
-                                                {item.message}
-                                            </p>
-
-                                            <small className="admin-feedback-date">
-                                                {new Date(
-                                                    item.created_at
-                                                ).toLocaleString()}
-                                            </small>
-
-                                        </div>
-                                    ))}
-
-                                </div>
-                            )}
-
-                        </section>
-                    )}
-                 
+                        <button
+                            type="button"
+                            disabled={
+                                feedbackCurrentPage >= totalFeedbackPages ||
+                                totalFeedbackPages === 0
+                            }
+                            onClick={() =>
+                                setFeedbackCurrentPage((page) =>
+                                    Math.min(page + 1, totalFeedbackPages)
+                                )
+                            }
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            </>
+        )}
+    </section>
+)}              
 
                     {/* PLAYERS MANAGEMENT SECTION */}
                     {activeTab === 'players' && (
@@ -1852,7 +2362,7 @@ const handleDeletePlayer = async (id) => {
                                         </thead>
 
                                         <tbody>
-                                            {players.map((player) => (
+                                            {paginatedPlayers.map((player) => (
                                                 <tr key={player.id}>
 
                                                     <td>
@@ -1896,857 +2406,1058 @@ const handleDeletePlayer = async (id) => {
                                                                 player.created_at
                                                             ).toLocaleDateString()
                                                             : 'N/A'}
-                                                    </td>
+                                                        </td>
 
-                                                    <td>
-                                                        <span
-                                                            className={`admin-player-status ${
-                                                                player.is_active
-                                                                    ? 'active'
-                                                                    : 'inactive'
-                                                            }`}
-                                                        >
-                                                            {player.is_active
-                                                                ? 'Active'
-                                                                : 'Inactive'}
-                                                        </span>
-                                                    </td>
-
-                                                    <td>
-                                                        <div className="admin-player-actions">
-
-                                                            <button
-                                                                className={`admin-player-toggle ${
+                                                        <td>
+                                                            <span
+                                                                className={`admin-player-status ${
                                                                     player.is_active
-                                                                        ? 'deactivate'
-                                                                        : 'activate'
+                                                                        ? 'active'
+                                                                        : 'inactive'
                                                                 }`}
-                                                                onClick={() =>
-                                                                    handlePlayerStatusToggle(player)
-                                                                }
                                                             >
                                                                 {player.is_active
-                                                                    ? 'Deactivate'
-                                                                    : 'Activate'}
-                                                            </button>
+                                                                    ? 'Active'
+                                                                    : 'Inactive'}
+                                                            </span>
+                                                        </td>
 
-                                                            <button
-                                                                className="admin-delete-btn"
-                                                                onClick={() =>
-                                                                    handleDeletePlayer(player.id)
-                                                                }
-                                                            >
-                                                                Delete
-                                                            </button>
+                                                        <td>
+                                                            <div className="admin-player-actions">
 
-                                                        </div>
-                                                    </td>
+                                                                <button
+                                                                    className={`admin-player-toggle ${
+                                                                        player.is_active
+                                                                            ? 'deactivate'
+                                                                            : 'activate'
+                                                                    }`}
+                                                                    onClick={() =>
+                                                                        handlePlayerStatusToggle(player)
+                                                                    }
+                                                                >
+                                                                    {player.is_active
+                                                                        ? 'Deactivate'
+                                                                        : 'Activate'}
+                                                                </button>
 
-                                                </tr>
-                                            ))}
-                                        </tbody>
+                                                                <button
+                                                                    className="admin-delete-btn"
+                                                                    onClick={() =>
+                                                                        handleDeletePlayer(player.id)
+                                                                    }
+                                                                >
+                                                                    Delete
+                                                                </button>
 
-                                    </table>
+                                                            </div>
+                                                        </td>
 
-                                </div>
-                            )}
+                                                    </tr>
+                                                ))}
+                                            </tbody>
 
-                        </section>
-                    )}
-
-                {/* ADMIN LEADERBOARD SECTION */}
-{activeTab === 'leaderboard' && (
-    <section className="admin-section">
-
-        <div className="admin-page-heading">
-            <div>
-                <span className="admin-eyebrow">
-                    PERFORMANCE ANALYTICS
-                </span>
-
-                <h1>Leaderboard Management</h1>
-
-                <p>
-                    Track player rankings and game performance.
-                </p>
-            </div>
-        </div>
-
-        {/* Search */}
-        <div className="admin-player-toolbar">
-            <div className="admin-player-search">
-                <input
-                    type="text"
-                    placeholder="Search player by name or email..."
-                    value={searchLeaderboard}
-                    onChange={(e) =>
-                        setSearchLeaderboard(e.target.value)
-                    }
-                />
-            </div>
-        </div>
-
-        {/* LEADERBOARD SUMMARY CARDS */}
-{!loadingLeaderboard && !leaderboardError && (
-    <div className="leaderboard-summary-grid">
-
-        <div className="leaderboard-summary-card">
-            <span className="summary-icon">ðŸ‘¥</span>
-            <p>Total Ranked Players</p>
-            <h2>{leaderboard.length}</h2>
-        </div>
-
-        <div className="leaderboard-summary-card">
-            <span className="summary-icon">ðŸŽ®</span>
-            <p>Total Games Played</p>
-            <h2>
-                {leaderboard.reduce(
-                    (total, player) =>
-                        total + Number(player.games_played || 0),
-                    0
-                )}
-            </h2>
-        </div>
-
-        <div className="leaderboard-summary-card">
-            <span className="summary-icon">ðŸ†</span>
-            <p>Highest Player Score</p>
-            <h2>
-                {leaderboard.length
-                    ? Math.max(
-                        ...leaderboard.map(
-                            (player) => Number(player.total_score || 0)
-                        )
-                    )
-                    : 0}
-            </h2>
-        </div>
-
-        <div className="leaderboard-summary-card">
-            <span className="summary-icon">ðŸ“Š</span>
-            <p>Average Accuracy</p>
-            <h2>
-                {leaderboard.length
-                    ? (
-                        leaderboard.reduce(
-                            (total, player) =>
-                                total + Number(player.accuracy || 0),
-                            0
-                        ) / leaderboard.length
-                    ).toFixed(2)
-                    : '0.00'}%
-            </h2>
-        </div>
-
+                                        </table>
+                                      
+<div className="admin-pagination">
+    <div className="admin-pagination-info">
+        Showing {(playerCurrentPage - 1) * PLAYERS_PER_PAGE + 1}
+        {' - '}
+        {Math.min(
+            playerCurrentPage * PLAYERS_PER_PAGE,
+            players.length
+        )}
+        {' of '}
+        {players.length} players
     </div>
-)}
 
+    <div className="admin-pagination-buttons">
+        <button
+            type="button"
+            disabled={playerCurrentPage === 1}
+            onClick={() =>
+                setPlayerCurrentPage((page) => page - 1)
+            }
+        >
+            Previous
+        </button>
 
-        {/* Leaderboard Table */}
-        {loadingLeaderboard ? (
-            <div className="admin-empty-state">
-                Loading leaderboard...
-            </div>
-        ) : leaderboardError ? (
-            <div className="admin-error-message">
-                {leaderboardError}
-            </div>
-        ) : leaderboard.length === 0 ? (
-            <div className="admin-empty-state">
-                <h3>No Leaderboard Data</h3>
-                <p>
-                    Players' game results will appear here.
-                </p>
-            </div>
-        ) : (
-            <div className="admin-players-table-wrapper">
-
-                <table className="admin-players-table">
-
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Player</th>
-                            <th>Total Score</th>
-                            <th>Games Played</th>
-                            <th>Correct</th>
-                            <th>Wrong</th>
-                            <th>Accuracy</th>
-                            <th>Highest Score</th>
-                            <th>Levels Passed</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {leaderboard.map((player) => (
-                            <tr key={player.user_id}>
-
-                                <td>
-                                    <strong>
-                                        {player.rank <= 3
-                                            ? ['ðŸ¥‡', 'ðŸ¥ˆ', 'ðŸ¥‰'][player.rank - 1]
-                                            : `#${player.rank}`}
-                                    </strong>
-                                </td>
-
-                                <td>
-                                    <div className="admin-player-info">
-                                        <div className="admin-player-avatar">
-                                            {(player.name || 'U')
-                                                .charAt(0)
-                                                .toUpperCase()}
-                                        </div>
-
-                                        <div>
-                                            <strong>{player.name}</strong>
-                                            <div>
-                                                <small>{player.email}</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <strong>{player.total_score}</strong>
-                                </td>
-
-                                <td>{player.games_played}</td>
-
-                                <td>{player.correct_answers}</td>
-
-                                <td>{player.wrong_answers}</td>
-
-                                <td>
-                                    <strong>
-                                        {player.accuracy}%
-                                    </strong>
-                                </td>
-
-                                <td>{player.highest_score}</td>
-
-                                <td>{player.levels_passed}</td>
-
-                            </tr>
-                        ))}
-                    </tbody>
-
-                </table>
-
-            </div>
-        )}
-
-    </section>
-)}
-
-{/* DAILY CHALLENGE MANAGEMENT */}
-{activeTab === 'daily-challenges' && (
-    <section className="admin-section">
-
-        <div className="admin-page-heading">
-            <div>
-                <span className="admin-eyebrow">GAME MANAGEMENT</span>
-                <h1>Daily Challenges</h1>
-                <p>Create and manage daily challenges for players.</p>
-            </div>
-
-            <button
-                className="admin-primary-btn"
-                onClick={resetDailyChallengeForm}
-            >
-                + New Challenge
-            </button>
-        </div>
-
-        {dailyChallengeError && (
-            <div className="admin-error-message">
-                {dailyChallengeError}
-            </div>
-        )}
-
-        {dailyChallengeSuccess && (
-            <div className="admin-success-message">
-                {dailyChallengeSuccess}
-            </div>
-        )}
-
-        {/* CREATE / EDIT FORM */}
-        <div className="admin-content-card admin-daily-form">
-
-            <h2>
-                {editingDailyChallenge
-                    ? 'Edit Daily Challenge'
-                    : 'Create Daily Challenge'}
-            </h2>
-
-            <form onSubmit={handleDailyChallengeSubmit}>
-
-                <div className="admin-daily-form-grid">
-
-                    <div>
-                        <label>Challenge Date</label>
-                        <input
-                            type="date"
-                            name="challenge_date"
-                            value={dailyChallengeForm.challenge_date}
-                            onChange={handleDailyChallengeInput}
-                            required
-                        />
-                    </div>
-
-                    <div>
-                        <label>Bonus Points</label>
-                        <input
-                            type="number"
-                            name="bonus_points"
-                            min="0"
-                            max="10000"
-                            value={dailyChallengeForm.bonus_points}
-                            onChange={handleDailyChallengeInput}
-                            required
-                        />
-                    </div>
-
-                </div>
-
-                <label className="admin-checkbox-label">
-                    <input
-                        type="checkbox"
-                        name="is_active"
-                        checked={dailyChallengeForm.is_active}
-                        onChange={handleDailyChallengeInput}
-                    />
-                    <span>Challenge is active</span>
-                </label>
-
-                <div className="admin-daily-question-heading">
-                    <h3>Select 5 Questions</h3>
-                    <strong>
-                        {dailyChallengeForm.question_ids.length}/5 Selected
-                    </strong>
-                </div>
-
-                {loadingQuestions ? (
-                    <p>Loading questions...</p>
-                ) : (
-                    <div className="admin-daily-question-list">
-
-                        {questions
-                            .filter((question) => Boolean(question.is_active))
-                            .map((question) => {
-                                const selected =
-                                    dailyChallengeForm.question_ids.includes(
-                                        Number(question.id)
-                                    )
-
-                                return (
-                                    <label
-                                        key={question.id}
-                                        className={`admin-daily-question-option ${
-                                            selected ? 'selected' : ''
-                                        }`}
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            checked={selected}
-                                            onChange={() =>
-                                                toggleDailyChallengeQuestion(
-                                                    Number(question.id)
-                                                )
-                                            }
-                                        />
-
-                                        <span>
-                                            <strong>{question.title}</strong>
-                                            <small>
-                                                Level {question.level} Â· {question.points} points
-                                            </small>
-                                        </span>
-                                    </label>
-                                )
-                            })}
-
-                    </div>
-                )}
-
-                <div className="admin-modal-actions">
-
-                    {editingDailyChallenge && (
-                        <button
-                            type="button"
-                            className="admin-cancel-btn"
-                            onClick={resetDailyChallengeForm}
-                        >
-                            Cancel Edit
-                        </button>
-                    )}
-
-                    <button
-                        type="submit"
-                        className="admin-primary-btn"
-                        disabled={
-                            savingDailyChallenge ||
-                            dailyChallengeForm.question_ids.length !== 5
-                        }
-                    >
-                        {savingDailyChallenge
-                            ? 'Saving...'
-                            : editingDailyChallenge
-                                ? 'Update Challenge'
-                                : 'Create Challenge'}
-                    </button>
-
-                </div>
-
-            </form>
-        </div>
-
-        {/* CHALLENGE LIST */}
-        <div className="admin-content-card">
-
-            <div className="admin-daily-list-heading">
-                <h2>All Daily Challenges</h2>
-
-                <button
-                    className="admin-refresh-btn"
-                    onClick={fetchDailyChallenges}
-                    disabled={loadingDailyChallenges}
+        {playerPageNumbers.map((page, index) =>
+            page === '...' ? (
+                <span
+                    className="admin-pagination-ellipsis"
+                    key={`player-ellipsis-${index}`}
                 >
-                    {loadingDailyChallenges ? 'Loading...' : 'Refresh'}
+                    ...
+                </span>
+            ) : (
+                <button
+                    type="button"
+                    key={page}
+                    className={
+                        playerCurrentPage === page ? 'active' : ''
+                    }
+                    onClick={() => setPlayerCurrentPage(page)}
+                >
+                    {page}
                 </button>
+            )
+        )}
+
+        <button
+            type="button"
+            disabled={playerCurrentPage >= totalPlayerPages}
+            onClick={() =>
+                setPlayerCurrentPage((page) =>
+                    Math.min(page + 1, totalPlayerPages)
+                )
+            }
+        >
+            Next
+        </button>
+    </div>
+</div>
+                                    </div>
+                                )}
+
+                            </section>
+                        )}
+
+                    {/* ADMIN LEADERBOARD SECTION */}
+    {activeTab === 'leaderboard' && (
+        <section className="admin-section">
+
+            <div className="admin-page-heading">
+                <div>
+                    <span className="admin-eyebrow">
+                        PERFORMANCE ANALYTICS
+                    </span>
+
+                    <h1>Leaderboard Management</h1>
+
+                    <p>
+                        Track player rankings and game performance.
+                    </p>
+                </div>
             </div>
 
-            {loadingDailyChallenges ? (
-                <div className="admin-empty-state">
-                    Loading daily challenges...
+            {/* Search */}
+            <div className="admin-player-toolbar">
+                <div className="admin-player-search">
+                    <input
+                        type="text"
+                        placeholder="Search player by name or email..."
+                        value={searchLeaderboard}
+                        onChange={(e) =>
+                            setSearchLeaderboard(e.target.value)
+                        }
+                    />
                 </div>
-            ) : dailyChallenges.length === 0 ? (
+            </div>
+
+            {/* LEADERBOARD SUMMARY CARDS */}
+    {!loadingLeaderboard && !leaderboardError && (
+        <div className="leaderboard-summary-grid">
+
+            <div className="leaderboard-summary-card">
+                <span className="summary-icon"><Users size={22} /></span>
+                <p>Total Ranked Players</p>
+                <h2>{leaderboard.length}</h2>
+            </div>
+
+            <div className="leaderboard-summary-card">
+                <span className="summary-icon"><Gamepad2 size={22} /></span>
+                <p>Total Games Played</p>
+                <h2>
+                    {leaderboard.reduce(
+                        (total, player) =>
+                            total + Number(player.games_played || 0),
+                        0
+                    )}
+                </h2>
+            </div>
+
+            <div className="leaderboard-summary-card">
+                <span className="summary-icon"><Medal size={22} /></span>
+                <p>Highest Player Score</p>
+                <h2>
+                    {leaderboard.length
+                        ? Math.max(
+                            ...leaderboard.map(
+                                (player) => Number(player.total_score || 0)
+                            )
+                        )
+                        : 0}
+                </h2>
+            </div>
+
+            <div className="leaderboard-summary-card">
+                <span className="summary-icon"><ChartNoAxesColumnIncreasing size={22} /></span>
+                <p>Average Accuracy</p>
+                <h2>
+                    {leaderboard.length
+                        ? (
+                            leaderboard.reduce(
+                                (total, player) =>
+                                    total + Number(player.accuracy || 0),
+                                0
+                            ) / leaderboard.length
+                        ).toFixed(2)
+                        : '0.00'}%
+                </h2>
+            </div>
+
+        </div>
+        
+    )}
+
+
+            {/* Leaderboard Table */}
+            {loadingLeaderboard ? (
                 <div className="admin-empty-state">
-                    No daily challenges created yet.
+                    Loading leaderboard...
+                </div>
+            ) : leaderboardError ? (
+                <div className="admin-error-message">
+                    {leaderboardError}
+                </div>
+            ) : leaderboard.length === 0 ? (
+                <div className="admin-empty-state">
+                    <h3>No Leaderboard Data</h3>
+                    <p>
+                        Players' game results will appear here.
+                    </p>
                 </div>
             ) : (
-                <div className="admin-table-wrapper">
-                    <table className="admin-table">
+                <div className="admin-players-table-wrapper">
+
+                    <table className="admin-players-table">
 
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Questions</th>
-                                <th>Bonus</th>
-                                <th>Attempts</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>Rank</th>
+                                <th>Player</th>
+                                <th>Total Score</th>
+                                <th>Games Played</th>
+                                <th>Correct</th>
+                                <th>Wrong</th>
+                                <th>Accuracy</th>
+                                <th>Highest Score</th>
+                                <th>Levels Passed</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            {dailyChallenges.map((challenge) => (
-                                <tr key={challenge.id}>
+                            {paginatedLeaderboard.map((player) => (
+                                <tr key={player.user_id}>
 
                                     <td>
                                         <strong>
-                                            {String(challenge.challenge_date).slice(0, 10)}
+                                            {player.rank <= 3
+                                                ? <Medal size={20} />
+                                                : `#${player.rank}`}
                                         </strong>
                                     </td>
 
                                     <td>
-                                        {(challenge.question_ids || []).length} Questions
-                                    </td>
+                                        <div className="admin-player-info">
+                                            <div className="admin-player-avatar">
+                                                {(player.name || 'U')
+                                                    .charAt(0)
+                                                    .toUpperCase()}
+                                            </div>
 
-                                    <td>
-                                        +{challenge.bonus_points}
-                                    </td>
-
-                                    <td>
-                                        {challenge.attempts_count || 0}
-                                    </td>
-
-                                    <td>
-                                        <span className={`admin-daily-status ${
-                                            challenge.is_active ? 'active' : 'inactive'
-                                        }`}>
-                                            {challenge.is_active ? 'Active' : 'Inactive'}
-                                        </span>
-                                    </td>
-
-                                    <td>
-                                        <div className="admin-daily-actions">
-
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    handleEditDailyChallenge(challenge)
-                                                }
-                                                disabled={
-                                                    Number(challenge.attempts_count || 0) > 0
-                                                }
-                                            >
-                                                Edit
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                className="delete"
-                                                onClick={() =>
-                                                    handleDeleteDailyChallenge(challenge)
-                                                }
-                                                disabled={
-                                                    Number(challenge.attempts_count || 0) > 0
-                                                }
-                                            >
-                                                Delete
-                                            </button>
-
+                                            <div>
+                                                <strong>{player.name}</strong>
+                                                <div>
+                                                    <small>{player.email}</small>
+                                                </div>
+                                            </div>
                                         </div>
                                     </td>
+
+                                    <td>
+                                        <strong>{player.total_score}</strong>
+                                    </td>
+
+                                    <td>{player.games_played}</td>
+
+                                    <td>{player.correct_answers}</td>
+
+                                    <td>{player.wrong_answers}</td>
+
+                                    <td>
+                                        <strong>
+                                            {player.accuracy}%
+                                        </strong>
+                                    </td>
+
+                                    <td>{player.highest_score}</td>
+
+                                    <td>{player.levels_passed}</td>
 
                                 </tr>
                             ))}
                         </tbody>
 
                     </table>
-                </div>
-            )}
 
-        </div>
+                    {/* LEADERBOARD PAGINATION */}
+                    <div className="admin-pagination">
 
-    </section>
-)}
-                </main>
-            </div>
+                        <div className="admin-pagination-info">
+                            Showing {(leaderboardCurrentPage - 1) * LEADERBOARD_PER_PAGE + 1}
+                            {' - '}
+                            {Math.min(
+                                leaderboardCurrentPage * LEADERBOARD_PER_PAGE,
+                                leaderboard.length
+                            )}
+                            {' of '}
+                            {leaderboard.length} players
+                        </div>
 
-            {showQuestionForm && (
-                <div
-                    className="admin-modal-overlay"
-                    onClick={(e) => {
-                        if (e.target === e.currentTarget) {
-                            resetQuestionForm()
-                        }
-                    }}
-                >
-
-                    <div className="admin-question-modal">
-
-                        <div className="admin-modal-header">
-                            <div>
-                                <span className="admin-eyebrow">
-                                    {editingQuestion
-                                        ? 'EDIT QUESTION'
-                                        : 'NEW QUESTION'}
-                                </span>
-
-                                <h2>
-                                    {editingQuestion
-                                        ? 'Edit Question'
-                                        : 'Add Question'}
-                                </h2>
-                            </div>
-
-                                    {showCategoryForm && (
-                <div
-                    className="admin-modal-overlay"
-                    onClick={(e) => {
-                        if (e.target === e.currentTarget) {
-                            resetCategoryForm()
-                        }
-                    }}
-                >
-                    <div className="admin-question-modal">
-
-                        <div className="admin-modal-header">
-                            <div>
-                                <span className="admin-eyebrow">
-                                    {editingCategory
-                                        ? 'EDIT CATEGORY'
-                                        : 'NEW CATEGORY'}
-                                </span>
-
-                                <h2>
-                                    {editingCategory
-                                        ? 'Edit Category'
-                                        : 'Add Category'}
-                                </h2>
-                            </div>
+                        <div className="admin-pagination-buttons">
 
                             <button
                                 type="button"
-                                className="admin-modal-close"
-                                onClick={resetCategoryForm}
+                                disabled={leaderboardCurrentPage === 1}
+                                onClick={() =>
+                                    setLeaderboardCurrentPage((page) => page - 1)
+                                }
                             >
-                                Ã—
+                                Previous
                             </button>
+
+                            {leaderboardPageNumbers.map((page, index) =>
+                                page === '...' ? (
+                                    <span
+                                        className="admin-pagination-ellipsis"
+                                        key={`leaderboard-ellipsis-${index}`}
+                                    >
+                                        ...
+                                    </span>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        key={page}
+                                        className={
+                                            leaderboardCurrentPage === page
+                                                ? 'active'
+                                                : ''
+                                        }
+                                        onClick={() =>
+                                            setLeaderboardCurrentPage(page)
+                                        }
+                                    >
+                                        {page}
+                                    </button>
+                                )
+                            )}
+
+                            <button
+                                type="button"
+                                disabled={
+                                    leaderboardCurrentPage >= totalLeaderboardPages
+                                }
+                                onClick={() =>
+                                    setLeaderboardCurrentPage((page) =>
+                                        Math.min(page + 1, totalLeaderboardPages)
+                                    )
+                                }
+                            >
+                                Next
+                            </button>
+
                         </div>
+                    </div>
 
-                        <form onSubmit={handleCategorySubmit}>
+                </div>
+            )}
 
-                            <label>Category Name</label>
+        </section>
+    )}
 
+    {/* DAILY CHALLENGE MANAGEMENT */}
+    {activeTab === 'daily-challenges' && (
+        <section className="admin-section">
+
+            <div className="admin-page-heading">
+                <div>
+                    <span className="admin-eyebrow">GAME MANAGEMENT</span>
+                    <h1>Daily Challenges</h1>
+                    <p>Create and manage daily challenges for players.</p>
+                </div>
+
+                <button
+                    className="admin-primary-btn"
+                    onClick={resetDailyChallengeForm}
+                >
+                    + New Challenge
+                </button>
+            </div>
+
+            {dailyChallengeError && (
+                <div className="admin-error-message">
+                    {dailyChallengeError}
+                </div>
+            )}
+
+            {dailyChallengeSuccess && (
+                <div className="admin-success-message">
+                    {dailyChallengeSuccess}
+                </div>
+            )}
+
+            {/* CREATE / EDIT FORM */}
+            <div className="admin-content-card admin-daily-form">
+
+                <h2>
+                    {editingDailyChallenge
+                        ? 'Edit Daily Challenge'
+                        : 'Create Daily Challenge'}
+                </h2>
+
+                <form onSubmit={handleDailyChallengeSubmit}>
+
+                    <div className="admin-daily-form-grid">
+
+                        <div>
+                            <label>Challenge Date</label>
                             <input
-                                type="text"
-                                name="name"
-                                value={categoryForm.name}
-                                onChange={handleCategoryInput}
-                                placeholder="Example: General Knowledge"
-                                maxLength={255}
+                                type="date"
+                                name="challenge_date"
+                                value={dailyChallengeForm.challenge_date}
+                                onChange={handleDailyChallengeInput}
                                 required
                             />
+                        </div>
 
-                            <label>Description</label>
-
-                            <textarea
-                                name="description"
-                                value={categoryForm.description}
-                                onChange={handleCategoryInput}
-                                placeholder="Enter category description"
-                                rows="3"
-                            />
-
-                            <label>Category Icon (Emoji)</label>
-
+                        <div>
+                            <label>Bonus Points</label>
                             <input
-                                type="text"
-                                name="icon"
-                                value={categoryForm.icon}
-                                onChange={handleCategoryInput}
-                                placeholder="Example: ðŸ§ "
-                                maxLength={50}
+                                type="number"
+                                name="bonus_points"
+                                min="0"
+                                max="10000"
+                                value={dailyChallengeForm.bonus_points}
+                                onChange={handleDailyChallengeInput}
+                                required
                             />
+                        </div>
 
-                            <label className="admin-checkbox-label">
-                                <input
-                                    type="checkbox"
-                                    name="is_active"
-                                    checked={categoryForm.is_active}
-                                    onChange={handleCategoryInput}
-                                />
+                    </div>
 
-                                <span>Category is active</span>
-                            </label>
+                    <label className="admin-checkbox-label">
+                        <input
+                            type="checkbox"
+                            name="is_active"
+                            checked={dailyChallengeForm.is_active}
+                            onChange={handleDailyChallengeInput}
+                        />
+                        <span>Challenge is active</span>
+                    </label>
 
-                            <div className="admin-modal-actions">
+                    <div className="admin-daily-question-heading">
+                        <h3>Select 5 Questions</h3>
+                        <strong>
+                            {dailyChallengeForm.question_ids.length}/5 Selected
+                        </strong>
+                    </div>
+
+                    {loadingQuestions ? (
+                        <p>Loading questions...</p>
+                    ) : (
+                        <div className="admin-daily-question-list">
+
+                            {questions
+                                .filter((question) => Boolean(question.is_active))
+                                .map((question) => {
+                                    const selected =
+                                        dailyChallengeForm.question_ids.includes(
+                                            Number(question.id)
+                                        )
+
+                                    return (
+                                        <label
+                                            key={question.id}
+                                            className={`admin-daily-question-option ${
+                                                selected ? 'selected' : ''
+                                            }`}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={selected}
+                                                onChange={() =>
+                                                    toggleDailyChallengeQuestion(
+                                                        Number(question.id)
+                                                    )
+                                                }
+                                            />
+
+                                            <span>
+                                                <strong>{question.title}</strong>
+                                                <small>
+                                                    Level {question.level} Â· {question.points} points
+                                                </small>
+                                            </span>
+                                        </label>
+                                    )
+                                })}
+
+                        </div>
+                    )}
+
+                    <div className="admin-modal-actions">
+
+                        {editingDailyChallenge && (
+                            <button
+                                type="button"
+                                className="admin-cancel-btn"
+                                onClick={resetDailyChallengeForm}
+                            >
+                                Cancel Edit
+                            </button>
+                        )}
+
+                        <button
+                            type="submit"
+                            className="admin-primary-btn"
+                            disabled={
+                                savingDailyChallenge ||
+                                dailyChallengeForm.question_ids.length !== 5
+                            }
+                        >
+                            {savingDailyChallenge
+                                ? 'Saving...'
+                                : editingDailyChallenge
+                                    ? 'Update Challenge'
+                                    : 'Create Challenge'}
+                        </button>
+
+                    </div>
+
+                </form>
+            </div>
+
+            {/* CHALLENGE LIST */}
+            <div className="admin-content-card">
+
+                <div className="admin-daily-list-heading">
+                    <h2>All Daily Challenges</h2>
+
+                    <button
+                        className="admin-refresh-btn"
+                        onClick={fetchDailyChallenges}
+                        disabled={loadingDailyChallenges}
+                    >
+                        {loadingDailyChallenges ? 'Loading...' : 'Refresh'}
+                    </button>
+                </div>
+
+                {loadingDailyChallenges ? (
+                    <div className="admin-empty-state">
+                        Loading daily challenges...
+                    </div>
+                ) : dailyChallenges.length === 0 ? (
+                    <div className="admin-empty-state">
+                        No daily challenges created yet.
+                    </div>
+                ) : (
+                        <>
+                    <div className="admin-table-wrapper">
+                        <table className="admin-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Questions</th>
+                                    <th>Bonus</th>
+                                    <th>Attempts</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {paginatedDailyChallenges.map((challenge) => (
+                                    <tr key={challenge.id}>
+
+                                        <td>
+                                            <strong>
+                                                {String(challenge.challenge_date).slice(0, 10)}
+                                            </strong>
+                                        </td>
+
+                                        <td>
+                                            {(challenge.question_ids || []).length} Questions
+                                        </td>
+
+                                        <td>
+                                            +{challenge.bonus_points}
+                                        </td>
+
+                                        <td>
+                                            {challenge.attempts_count || 0}
+                                        </td>
+
+                                        <td>
+                                            <span className={`admin-daily-status ${
+                                                challenge.is_active ? 'active' : 'inactive'
+                                            }`}>
+                                                {challenge.is_active ? 'Active' : 'Inactive'}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <div className="admin-daily-actions">
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        handleEditDailyChallenge(challenge)
+                                                    }
+                                                    disabled={
+                                                        Number(challenge.attempts_count || 0) > 0
+                                                    }
+                                                >
+                                                    Edit
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    className="delete"
+                                                    onClick={() =>
+                                                        handleDeleteDailyChallenge(challenge)
+                                                    }
+                                                    disabled={
+                                                        Number(challenge.attempts_count || 0) > 0
+                                                    }
+                                                >
+                                                    Delete
+                                                </button>
+
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                ))}
+                            </tbody>
+
+                                                </table>
+                    </div>
+
+                    {/* DAILY CHALLENGES PAGINATION */}
+                    <div className="admin-pagination">
+
+                        <div className="admin-pagination-info">
+                            Showing {(dailyChallengeCurrentPage - 1) * DAILY_CHALLENGES_PER_PAGE + 1}
+                            {' - '}
+                            {Math.min(
+                                dailyChallengeCurrentPage * DAILY_CHALLENGES_PER_PAGE,
+                                dailyChallenges.length
+                            )}
+                            {' of '}
+                            {dailyChallenges.length} challenges
+                        </div>
+
+                        <div className="admin-pagination-buttons">
+
+                            <button
+                                type="button"
+                                disabled={dailyChallengeCurrentPage === 1}
+                                onClick={() =>
+                                    setDailyChallengeCurrentPage((page) => page - 1)
+                                }
+                            >
+                                Previous
+                            </button>
+
+                            {dailyChallengePageNumbers.map((page, index) =>
+                                page === '...' ? (
+                                    <span
+                                        className="admin-pagination-ellipsis"
+                                        key={`daily-challenge-ellipsis-${index}`}
+                                    >
+                                        ...
+                                    </span>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        key={page}
+                                        className={
+                                            dailyChallengeCurrentPage === page
+                                                ? 'active'
+                                                : ''
+                                        }
+                                        onClick={() =>
+                                            setDailyChallengeCurrentPage(page)
+                                        }
+                                    >
+                                        {page}
+                                    </button>
+                                )
+                            )}
+
+                            <button
+                                type="button"
+                                disabled={
+                                    dailyChallengeCurrentPage >= totalDailyChallengePages
+                                }
+                                onClick={() =>
+                                    setDailyChallengeCurrentPage((page) =>
+                                        Math.min(page + 1, totalDailyChallengePages)
+                                    )
+                                }
+                            >
+                                Next
+                            </button>
+
+                        </div>
+                    </div>
+
+                   </>
+                )}
+           
+            </div>
+
+        </section>
+    )}
+                    </main>
+                </div>
+
+                {showQuestionForm && (
+                    <div
+                        className="admin-modal-overlay"
+                        onClick={(e) => {
+                            if (e.target === e.currentTarget) {
+                                resetQuestionForm()
+                            }
+                        }}
+                    >
+
+                        <div className="admin-question-modal">
+
+                            <div className="admin-modal-header">
+                                <div>
+                                    <span className="admin-eyebrow">
+                                        {editingQuestion
+                                            ? 'EDIT QUESTION'
+                                            : 'NEW QUESTION'}
+                                    </span>
+
+                                    <h2>
+                                        {editingQuestion
+                                            ? 'Edit Question'
+                                            : 'Add Question'}
+                                    </h2>
+                                </div>
+
+                                        {showCategoryForm && (
+                    <div
+                        className="admin-modal-overlay"
+                        onClick={(e) => {
+                            if (e.target === e.currentTarget) {
+                                resetCategoryForm()
+                            }
+                        }}
+                    >
+                        <div className="admin-question-modal">
+
+                            <div className="admin-modal-header">
+                                <div>
+                                    <span className="admin-eyebrow">
+                                        {editingCategory
+                                            ? 'EDIT CATEGORY'
+                                            : 'NEW CATEGORY'}
+                                    </span>
+
+                                    <h2>
+                                        {editingCategory
+                                            ? 'Edit Category'
+                                            : 'Add Category'}
+                                    </h2>
+                                </div>
 
                                 <button
                                     type="button"
-                                    className="admin-cancel-btn"
+                                    className="admin-modal-close"
                                     onClick={resetCategoryForm}
                                 >
-                                    Cancel
+                                    <X size={18} />
                                 </button>
-
-                                <button
-                                    type="submit"
-                                    className="admin-primary-btn"
-                                    disabled={savingCategory}
-                                >
-                                    {savingCategory
-                                        ? 'Saving...'
-                                        : editingCategory
-                                            ? 'Update Category'
-                                            : 'Create Category'}
-                                </button>
-
                             </div>
 
-                        </form>
+                            <form onSubmit={handleCategorySubmit}>
 
-                    </div>
-                </div>
-            )}
-                            <button
-                                className="admin-modal-close"
-                                onClick={resetQuestionForm}
-                            >
-                                Ã—
-                            </button>
+                                <label>Category Name</label>
+
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={categoryForm.name}
+                                    onChange={handleCategoryInput}
+                                    placeholder="Example: General Knowledge"
+                                    maxLength={255}
+                                    required
+                                />
+
+                                <label>Description</label>
+
+                                <textarea
+                                    name="description"
+                                    value={categoryForm.description}
+                                    onChange={handleCategoryInput}
+                                    placeholder="Enter category description"
+                                    rows="3"
+                                />
+
+                                <label>Category Icon (Emoji)</label>
+
+                                <input
+                                    type="text"
+                                    name="icon"
+                                    value={categoryForm.icon}
+                                    onChange={handleCategoryInput}
+                                    placeholder="Example: BookOpen"
+                                    maxLength={50}
+                                />
+
+                                <label className="admin-checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        name="is_active"
+                                        checked={categoryForm.is_active}
+                                        onChange={handleCategoryInput}
+                                    />
+
+                                    <span>Category is active</span>
+                                </label>
+
+                                <div className="admin-modal-actions">
+
+                                    <button
+                                        type="button"
+                                        className="admin-cancel-btn"
+                                        onClick={resetCategoryForm}
+                                    >
+                                        Cancel
+                                    </button>
+
+                                    <button
+                                        type="submit"
+                                        className="admin-primary-btn"
+                                        disabled={savingCategory}
+                                    >
+                                        {savingCategory
+                                            ? 'Saving...'
+                                            : editingCategory
+                                                ? 'Update Category'
+                                                : 'Create Category'}
+                                    </button>
+
+                                </div>
+
+                            </form>
+
                         </div>
-
-                        <form onSubmit={handleQuestionSubmit}>
-
-                                                    <label>Category</label>
-
-                            <select
-                                name="category_id"
-                                value={questionForm.category_id}
-                                onChange={handleQuestionInput}
-                            >
-                                <option value="">Uncategorized</option>
-
-                                {categories
-                                    .filter((category) =>
-                                        Boolean(category.is_active)
-                                    )
-                                    .map((category) => (
-                                        <option
-                                            key={category.id}
-                                            value={String(category.id)}
-                                        >
-                                            {category.icon
-                                                ? `${category.icon} `
-                                                : ''}
-                                            {category.name}
-                                        </option>
-                                    ))}
-                            </select>
-
-                            <label>Question</label>
-
-                            <input
-                                type="text"
-                                name="title"
-                                value={questionForm.title}
-                                onChange={handleQuestionInput}
-                                placeholder="Enter question"
-                                required
-                                maxLength={255}
-                            />
-
-                            <label>Answer</label>
-
-                            <input
-                                type="text"
-                                name="answer"
-                                value={questionForm.answer}
-                                onChange={handleQuestionInput}
-                                placeholder="Enter correct answer"
-                                required
-                                maxLength={255}
-                            />
-
-                            <div className="admin-form-row">
-
-                                <div>
-                                    <label>Level</label>
-
-                                    <input
-                                        type="number"
-                                        name="level"
-                                        min="1"
-                                        step="1"
-                                        value={questionForm.level}
-                                        onChange={handleQuestionInput}
-                                        placeholder="Enter level number"
-                                        required
-                                    />
-                                </div>
-
-                                <div>
-                                    <label>Points</label>
-
-                                    <input
-                                        type="number"
-                                        name="points"
-                                        min="0"
-                                        value={questionForm.points}
-                                        onChange={handleQuestionInput}
-                                    />
-                                </div>
-
+                    </div>
+                )}
+                                <button
+                                    className="admin-modal-close"
+                                    onClick={resetQuestionForm}
+                                >
+                                <X size={20} />
+                                </button>
                             </div>
 
-                            <label>Clues</label>
+                            <form onSubmit={handleQuestionSubmit}>
 
-                            <div className="admin-clues">
+                                                        <label>Category</label>
 
-                                {questionForm.clues.map(
-                                    (clue, index) => (
-                                        <div
-                                            className="admin-clue-row"
-                                            key={index}
-                                        >
-                                            <input
-                                                type="text"
-                                                value={clue}
-                                                onChange={(e) =>
-                                                    handleClueChange(
-                                                        index,
-                                                        e.target.value
-                                                    )
-                                                }
-                                                placeholder={`Clue ${index + 1}`}
-                                            />
+                                <select
+                                    name="category_id"
+                                    value={questionForm.category_id}
+                                    onChange={handleQuestionInput}
+                                >
+                                    <option value="">Uncategorized</option>
 
-                                            {questionForm.clues.length >
-                                                1 && (
-                                                <button
-                                                    type="button"
-                                                    className="admin-remove-clue"
-                                                    onClick={() =>
-                                                        removeClue(
-                                                            index
+                                    {categories
+                                        .filter((category) =>
+                                            Boolean(category.is_active)
+                                        )
+                                        .map((category) => (
+                                            <option
+                                                key={category.id}
+                                                value={String(category.id)}
+                                            >
+                                                {category.icon
+                                                    ? `${category.icon} `
+                                                    : ''}
+                                                {category.name}
+                                            </option>
+                                        ))}
+                                </select>
+
+                                <label>Question</label>
+
+                                <input
+                                    type="text"
+                                    name="title"
+                                    value={questionForm.title}
+                                    onChange={handleQuestionInput}
+                                    placeholder="Enter question"
+                                    required
+                                    maxLength={255}
+                                />
+
+                                <label>Answer</label>
+
+                                <input
+                                    type="text"
+                                    name="answer"
+                                    value={questionForm.answer}
+                                    onChange={handleQuestionInput}
+                                    placeholder="Enter correct answer"
+                                    required
+                                    maxLength={255}
+                                />
+
+                                <div className="admin-form-row">
+
+                                    <div>
+                                        <label>Level</label>
+
+                                        <input
+                                            type="number"
+                                            name="level"
+                                            min="1"
+                                            step="1"
+                                            value={questionForm.level}
+                                            onChange={handleQuestionInput}
+                                            placeholder="Enter level number"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label>Points</label>
+
+                                        <input
+                                            type="number"
+                                            name="points"
+                                            min="0"
+                                            value={questionForm.points}
+                                            onChange={handleQuestionInput}
+                                        />
+                                    </div>
+
+                                </div>
+
+                                <label>Clues</label>
+
+                                <div className="admin-clues">
+
+                                    {questionForm.clues.map(
+                                        (clue, index) => (
+                                            <div
+                                                className="admin-clue-row"
+                                                key={index}
+                                            >
+                                                <input
+                                                    type="text"
+                                                    value={clue}
+                                                    onChange={(e) =>
+                                                        handleClueChange(
+                                                            index,
+                                                            e.target.value
                                                         )
                                                     }
-                                                >
-                                                    Ã—
-                                                </button>
-                                            )}
-                                        </div>
-                                    )
-                                )}
+                                                    placeholder={`Clue ${index + 1}`}
+                                                />
 
-                            </div>
+                                                {questionForm.clues.length >
+                                                    1 && (
+                                                    <button
+                                                        type="button"
+                                                        className="admin-remove-clue"
+                                                        onClick={() =>
+                                                            removeClue(
+                                                                index
+                                                            )
+                                                        }
+                                                    >
+                                                        <X size={18} />
+                                                    </button>
+                                                )}
+                                            </div>
+                                        )
+                                    )}
 
-                            {questionForm.clues.length < 5 && (
-                                <button
+                                </div>
+
+                                {questionForm.clues.length < 5 && (
+                                    <button
                                     type="button"
                                     className="admin-add-clue"
                                     onClick={addClue}
                                 >
-                                    + Add Clue
+                                    <Plus size={16} />
+                                    <span>Add Clue</span>
                                 </button>
-                            )}
+                                )}
 
-                            <label>Hint</label>
+                                <label>Hint</label>
 
-                            <textarea
-                                name="hint"
-                                value={questionForm.hint}
-                                onChange={handleQuestionInput}
-                                placeholder="Optional hint"
-                                rows="3"
-                            ></textarea>
-
-                            <label className="admin-checkbox-label">
-                                <input
-                                    type="checkbox"
-                                    name="is_active"
-                                    checked={questionForm.is_active}
+                                <textarea
+                                    name="hint"
+                                    value={questionForm.hint}
                                     onChange={handleQuestionInput}
-                                />
+                                    placeholder="Optional hint"
+                                    rows="3"
+                                ></textarea>
 
-                                <span>
-                                    Question is active
-                                </span>
-                            </label>
+                                <label className="admin-checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        name="is_active"
+                                        checked={questionForm.is_active}
+                                        onChange={handleQuestionInput}
+                                    />
 
-                            <div className="admin-modal-actions">
+                                    <span>
+                                        Question is active
+                                    </span>
+                                </label>
 
-                                <button
-                                    type="button"
-                                    className="admin-cancel-btn"
-                                    onClick={resetQuestionForm}
-                                >
-                                    Cancel
-                                </button>
+                                <div className="admin-modal-actions">
 
-                                <button
-                                    type="submit"
-                                    className="admin-primary-btn"
-                                >
-                                    {editingQuestion
-                                        ? 'Update Question'
-                                        : 'Create Question'}
-                                </button>
+                                    <button
+                                        type="button"
+                                        className="admin-cancel-btn"
+                                        onClick={resetQuestionForm}
+                                    >
+                                        Cancel
+                                    </button>
 
-                            </div>
+                                    <button
+                                        type="submit"
+                                        className="admin-primary-btn"
+                                    >
+                                        {editingQuestion
+                                            ? 'Update Question'
+                                            : 'Create Question'}
+                                    </button>
 
-                        </form>
+                                </div>
+
+                            </form>
+
+                        </div>
 
                     </div>
+                )}
 
-                </div>
-            )}
+            </div>
+        )
+    }
 
-        </div>
-    )
-}
-
-export default AdminDashboard
+    export default AdminDashboard

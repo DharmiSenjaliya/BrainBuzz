@@ -9,6 +9,7 @@ function KnowledgeChallenge({ onBack, onChallengeComplete }) {
     const [categories, setCategories] = useState([])
     const [categoriesLoading, setCategoriesLoading] = useState(true)
     const [selectedCategory, setSelectedCategory] = useState('all')
+    const [challengeId, setChallengeId] = useState(null)
     const [questions, setQuestions] = useState([])
     const [currentIndex, setCurrentIndex] = useState(0)
     const [answer, setAnswer] = useState('')
@@ -34,7 +35,7 @@ function KnowledgeChallenge({ onBack, onChallengeComplete }) {
 
         const loadCategories = async () => {
             try {
-                const response = await api.get('/categories', {
+                const response = await api.get('/knowledge-challenges/categories', {
                     headers: { Authorization: `Bearer ${token}` },
                 })
                 if (isMounted) setCategories(response.data.categories || [])
@@ -64,10 +65,9 @@ function KnowledgeChallenge({ onBack, onChallengeComplete }) {
         setQuestions([])
 
         try {
-            const query = new URLSearchParams({ level: '1' })
-            if (selectedCategory !== 'all') query.set('category_id', selectedCategory)
-
-            const response = await api.get(`/questions?${query.toString()}`, {
+            const response = await api.post('/knowledge-challenges', {
+                category_id: selectedCategory === 'all' ? null : Number(selectedCategory),
+            }, {
                 headers: { Authorization: `Bearer ${token}` },
             })
             const challengeQuestions = response.data.questions || []
@@ -77,6 +77,7 @@ function KnowledgeChallenge({ onBack, onChallengeComplete }) {
                 return
             }
 
+            setChallengeId(response.data.challenge_id)
             setQuestions(challengeQuestions.slice(0, QUESTION_COUNT))
             setStarted(true)
         } catch (requestError) {
@@ -96,31 +97,27 @@ function KnowledgeChallenge({ onBack, onChallengeComplete }) {
         setFeedbackType('neutral')
 
         try {
-            const response = await api.post('/check-answer', {
+            const response = await api.post(`/knowledge-challenges/${challengeId}/answer`, {
                 question_id: question.id,
                 answer: answer.trim(),
             }, {
                 headers: { Authorization: `Bearer ${token}` },
             })
 
+            setAttempts(Number(response.data.attempts_remaining))
             if (response.data.correct) {
-                setScore((previous) => previous + Number(response.data.points || 0))
+                setScore(Number(response.data.score || 0))
                 setCorrectCount((previous) => previous + 1)
                 setFeedback(`Correct! +${response.data.points} points`)
                 setFeedbackType('success')
-                setQuestionResolved(true)
                 setAnswer('')
-                return
+            } else {
+                setAnswer('')
+                setFeedback(response.data.message || 'Wrong answer. Try again.')
+                setFeedbackType('error')
             }
 
-            const remainingAttempts = attempts - 1
-            setAttempts(remainingAttempts)
-            setAnswer('')
-            setFeedback(remainingAttempts
-                ? `Not quite. ${remainingAttempts} ${remainingAttempts === 1 ? 'try' : 'tries'} left.`
-                : 'No tries left. Move on to the next question.')
-            setFeedbackType('error')
-            if (!remainingAttempts) setQuestionResolved(true)
+            if (response.data.resolved) setQuestionResolved(true)
         } catch (requestError) {
             console.error('Knowledge Challenge Answer Error:', requestError)
             setFeedback(requestError.response?.data?.message || 'Unable to check your answer.')
@@ -131,23 +128,20 @@ function KnowledgeChallenge({ onBack, onChallengeComplete }) {
     }
 
     const saveChallenge = async () => {
-        const totalQuestions = questions.length
-        const wrongCount = totalQuestions - correctCount
+        if (!challengeId) {
+            setError('Challenge session is missing. Please start a new round.')
+            return
+        }
+
         setSaving(true)
         setError('')
 
         try {
-            await api.post('/game-results', {
-                game_mode: 'knowledge',
-                level: 1,
-                score,
-                correct_answers: correctCount,
-                wrong_answers: wrongCount,
-                total_questions: totalQuestions,
-                passed: correctCount >= Math.ceil(totalQuestions * 0.6),
-            }, {
+            const response = await api.post(`/knowledge-challenges/${challengeId}/complete`, {}, {
                 headers: { Authorization: `Bearer ${token}` },
             })
+            setScore(Number(response.data.result.score))
+            setCorrectCount(Number(response.data.result.correct_answers))
             setSaved(true)
             await onChallengeComplete?.(token)
         } catch (requestError) {
@@ -177,6 +171,7 @@ function KnowledgeChallenge({ onBack, onChallengeComplete }) {
         setStarted(false)
         setCompleted(false)
         setQuestions([])
+        setChallengeId(null)
         setError('')
         setFeedback('')
         setScore(0)

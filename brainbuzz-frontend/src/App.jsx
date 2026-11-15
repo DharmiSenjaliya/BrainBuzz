@@ -745,11 +745,14 @@ const checkAnswer = async () => {
         setMessage('Checking your answer...')
 
         const response = await api.post(
-            '/check-answer',
-            {
-                question_id: question.id,
-                answer: answer.trim(),
-            },
+    '/check-answer',
+    {
+        question_id: question.id,
+        answer: answer.trim(),
+        category_id: selectedCategory === 'all'
+            ? null
+            : Number(selectedCategory),
+    },
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -1307,12 +1310,17 @@ if (showDashboard) {
         id="player-category"
         value={selectedCategory}
         onChange={(e) =>
-            setSelectedCategory(e.target.value)
-        }
+    fetchQuestions(
+        localStorage.getItem('brainbuzz_token'),
+        selectedLevel,
+        e.target.value
+    )
+}
         disabled={loadingPlayerCategories}
     >
         <option value="all">
-            All Categories
+            All Categories        
+
         </option>
 
         {playerCategories.map((category) => (

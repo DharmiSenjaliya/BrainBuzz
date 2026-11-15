@@ -219,3 +219,16 @@
         flex-wrap: wrap;
     }
 }
+
+.admin-question-answer {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #a78bfa;
+    font-weight: 500;
+}
+
+.admin-question-answer strong {
+    color: #c4b5fd;
+    font-weight: 700;
+}

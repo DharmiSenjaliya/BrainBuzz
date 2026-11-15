@@ -19,6 +19,10 @@ return Application::configure(basePath: dirname(__DIR__))
             ? null
             : '/login'
     );
+
+    $middleware->alias([
+        'superadmin' => \App\Http\Middleware\SuperAdminMiddleware::class,
+    ]);
 })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

@@ -22,48 +22,44 @@ class QuestionController extends Controller
         return null;
     }
 
-    // Get 5 random active questions for selected level
+    // Get 5 random active questions for selected level and category
     public function index(Request $request)
-{
-    $validated = $request->validate([
-        'level' => 'required|integer|min:1',
-        'category_id' => 'nullable|integer|exists:categories,id',
-    ]);
-
-    $query = Question::where('level', $validated['level'])
-        ->where('is_active', true);
-
-        $query->where(function ($categoryQuery) {
-    $categoryQuery->whereNull('category_id')
-        ->orWhereHas('category', function ($activeCategory) {
-            $activeCategory->where('is_active', true);
-        });
-});
-
-    if (!empty($validated['category_id'])) {
-        $query->where('category_id', $validated['category_id'])
-            ->whereHas('category', function ($categoryQuery) {
-                $categoryQuery->where('is_active', true);
-            });
-    }
-
-    $questions = $query
-        ->inRandomOrder()
-        ->limit(5)
-        ->get([
-            'id',
-            'category_id',
-            'title',
-            'clues',
-            'hint',
-            'level',
-            'points',
+    {
+        $validated = $request->validate([
+            'level' => 'required|integer|min:1',
+            'category_id' => 'nullable|integer|exists:categories,id',
         ]);
 
-    return response()->json([
-        'questions' => $questions,
-    ]);
-}
+        $query = Question::where('level', $validated['level'])
+            ->where('is_active', true)
+            ->where(function ($categoryQuery) {
+                $categoryQuery->whereNull('category_id')
+                    ->orWhereHas('category', function ($activeCategory) {
+                        $activeCategory->where('is_active', true);
+                    });
+            });
+
+        if (!empty($validated['category_id'])) {
+            $query->where('category_id', $validated['category_id']);
+        }
+
+        $questions = $query
+            ->inRandomOrder()
+            ->limit(5)
+            ->get([
+                'id',
+                'category_id',
+                'title',
+                'clues',
+                'hint',
+                'level',
+                'points',
+            ]);
+
+        return response()->json([
+            'questions' => $questions,
+        ]);
+    }
 
     // Check player's answer
     public function checkAnswer(Request $request)
@@ -71,17 +67,24 @@ class QuestionController extends Controller
         $validated = $request->validate([
             'question_id' => 'required|integer|exists:questions,id',
             'answer' => 'required|string|max:255',
+            'category_id' => 'nullable|integer|exists:categories,id',
         ]);
 
         $question = Question::where('id', $validated['question_id'])
-    ->where('is_active', true)
-    ->where(function ($categoryQuery) {
-        $categoryQuery->whereNull('category_id')
-            ->orWhereHas('category', function ($activeCategory) {
-                $activeCategory->where('is_active', true);
-            });
-    })
-    ->first();
+            ->where('is_active', true)
+            ->where(function ($categoryQuery) {
+                $categoryQuery->whereNull('category_id')
+                    ->orWhereHas('category', function ($activeCategory) {
+                        $activeCategory->where('is_active', true);
+                    });
+            })
+            ->when(
+                !empty($validated['category_id']),
+                function ($query) use ($validated) {
+                    $query->where('category_id', $validated['category_id']);
+                }
+            )
+            ->first();
 
         if (!$question) {
             return response()->json([
