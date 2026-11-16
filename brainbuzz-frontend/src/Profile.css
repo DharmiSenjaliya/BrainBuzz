@@ -1,373 +1,1195 @@
-
 .profile-page {
+    --profile-panel: rgba(18, 24, 47, 0.9);
+    --profile-border: rgba(147, 160, 219, 0.15);
+    --profile-text: #f5f6ff;
+    --profile-muted: #9da9c9;
+    position: relative;
+    isolation: isolate;
     width: 100%;
-    max-width: 1100px;
+    max-width: 1280px;
+    min-height: calc(100vh - 70px);
     margin: 0 auto;
-    padding: 35px 20px 60px;
-    color: inherit;
+    padding: 38px 34px 70px;
+    overflow: hidden;
+    color: var(--profile-text);
+    font-family: Inter, system-ui, sans-serif;
+}
+
+.profile-page::before,
+.profile-page::after {
+    position: absolute;
+    z-index: -1;
+    width: 470px;
+    height: 470px;
+    border-radius: 50%;
+    content: "";
+    pointer-events: none;
+}
+
+.profile-page::before {
+    top: -245px;
+    right: -170px;
+    background: radial-gradient(circle, rgba(106, 72, 239, 0.19), transparent 68%);
+}
+
+.profile-page::after {
+    top: 480px;
+    left: -380px;
+    background: radial-gradient(circle, rgba(34, 196, 232, 0.1), transparent 70%);
 }
 
 .profile-header {
-    text-align: center;
     position: relative;
-    margin-bottom: 30px;
+    display: flex;
+    min-height: 194px;
+    align-items: flex-start;
+    justify-content: center;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.profile-hero-copy {
+    max-width: 740px;
+    padding: 22px 110px 0;
+}
+
+.profile-eyebrow,
+.profile-section-kicker {
+    display: inline-flex;
+    align-items: center;
+    color: #b7a3ff;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 0.18em;
+}
+
+.profile-live-dot {
+    width: 7px;
+    height: 7px;
+    margin-right: 9px;
+    border-radius: 50%;
+    background: #5de7c0;
+    box-shadow: 0 0 11px rgba(93, 231, 192, 0.75);
 }
 
 .profile-header h1 {
-    font-size: 32px;
-    font-weight: 800;
-    margin: 15px 0 8px;
+    margin: 11px 0 8px;
+    color: #f7f6ff;
+    font-size: clamp(35px, 4.7vw, 55px);
+    font-weight: 950;
+    letter-spacing: -0.07em;
+    line-height: 1.06;
+}
+
+.profile-header h1 > span {
+    color: #b49aff;
+    text-shadow: 0 0 32px rgba(155, 123, 255, 0.36);
 }
 
 .profile-header p {
-    opacity: 0.7;
-    font-size: 14px;
+    margin: 0;
+    color: var(--profile-muted);
+    font-size: 12px;
+    line-height: 1.65;
 }
 
-.profile-back-btn {
+.profile-header .profile-back-btn {
     position: absolute;
-    left: 0;
     top: 0;
-    padding: 10px 18px;
-    border: 1px solid rgba(128, 128, 128, 0.25);
-    border-radius: 8px;
+    left: 0;
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    gap: 8px;
+    padding: 0 14px;
+    border: 1px solid var(--profile-border);
+    border-radius: 12px;
+    background: rgba(19, 25, 48, 0.75);
+    color: #e6e9ff;
     cursor: pointer;
-    font-weight: 600;
-    background: rgba(128, 128, 128, 0.12);
-    color: inherit;
+    font: inherit;
+    font-size: 11px;
+    font-weight: 750;
+    transition: 180ms ease;
 }
 
+.profile-back-btn > span {
+    color: #b8a4ff;
+    font-size: 16px;
+}
+
+.profile-header .profile-back-btn:hover {
+    transform: translateX(-3px);
+    border-color: rgba(173, 145, 255, 0.6);
+    background: rgba(84, 57, 153, 0.24);
+}
+
+.profile-hero-mark {
+    position: absolute;
+    top: 35px;
+    right: 12%;
+    color: #ffd879;
+    font-size: 25px;
+    filter: drop-shadow(0 0 13px rgba(255, 216, 121, 0.65));
+}
+
+/* Player account card */
 .profile-card {
-    max-width: 650px;
-    margin: 0 auto 45px;
-    padding: 35px;
-    border-radius: 18px;
-    background: rgba(128, 128, 128, 0.08);
-    border: 1px solid rgba(128, 128, 128, 0.15);
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
-    text-align: center;
+    position: relative;
+    max-width: none;
+    margin: 0 0 39px;
+    padding: 27px 30px 0;
+    overflow: hidden;
+    border: 1px solid rgba(164, 143, 255, 0.26);
+    border-radius: 24px;
+    background:
+        radial-gradient(ellipse at 86% 0, rgba(79, 205, 229, 0.1), transparent 34%),
+        linear-gradient(112deg, rgba(32, 29, 68, 0.96), rgba(17, 29, 50, 0.96));
+    box-shadow: 0 20px 52px rgba(4, 6, 18, 0.28), inset 0 1px rgba(255, 255, 255, 0.06);
+    text-align: left;
+}
+
+.profile-card-backdrop {
+    position: absolute;
+    top: -116px;
+    left: 21%;
+    width: 440px;
+    height: 195px;
+    border: 1px solid rgba(190, 177, 255, 0.09);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: rotate(-15deg);
+}
+
+.profile-identity {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 90px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 19px;
+    padding-bottom: 24px;
 }
 
 .profile-avatar {
-    width: 110px;
-    height: 110px;
-    margin: 0 auto 18px;
-    border-radius: 50%;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #6c4ce4;
+    position: relative;
+    display: grid;
+    width: 82px;
+    height: 82px;
+    margin: 0;
+    place-items: center;
+    overflow: visible;
+    border: 2px solid rgba(195, 175, 255, 0.7);
+    border-radius: 27px;
+    background: linear-gradient(145deg, #a27bff, #6541d9 62%, #3b2b9c);
+    box-shadow: 0 9px 28px rgba(122, 82, 231, 0.33), inset 0 1px rgba(255, 255, 255, 0.38);
     color: white;
-    font-size: 42px;
-    font-weight: 800;
+    font-size: 34px;
+    font-weight: 900;
+    transform: rotate(-5deg);
 }
 
 .profile-avatar img {
     width: 100%;
     height: 100%;
+    border-radius: 24px;
     object-fit: cover;
+    transform: rotate(5deg) scale(1.04);
 }
 
-.profile-card h2 {
-    font-size: 24px;
-    margin: 10px 0 5px;
+.profile-avatar-status {
+    position: absolute;
+    right: -5px;
+    bottom: -3px;
+    width: 14px;
+    height: 14px;
+    border: 3px solid #252147;
+    border-radius: 50%;
+    background: #60e3b2;
+    box-shadow: 0 0 11px rgba(96, 227, 178, 0.6);
+}
+
+.profile-identity-copy {
+    min-width: 0;
+}
+
+.profile-player-tag {
+    color: #b6a2ff;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.17em;
+}
+
+.profile-identity-copy h2 {
+    margin: 5px 0 4px;
+    overflow-wrap: anywhere;
+    color: #fff;
+    font-size: clamp(23px, 3vw, 32px);
+    font-weight: 900;
+    letter-spacing: -0.045em;
 }
 
 .profile-email {
-    opacity: 0.7;
-    font-size: 14px;
-    margin-bottom: 28px;
-}
-
-.profile-details {
-    text-align: left;
-    border-top: 1px solid rgba(128, 128, 128, 0.2);
-}
-
-.profile-detail-item {
-    display: flex;
-    justify-content: space-between;
-    gap: 15px;
-    padding: 17px 5px;
-    border-bottom: 1px solid rgba(128, 128, 128, 0.2);
-}
-
-.profile-detail-item span {
-    opacity: 0.7;
-    font-size: 14px;
-}
-
-.profile-detail-item strong {
-    font-size: 14px;
-    text-align: right;
+    margin: 0;
     overflow-wrap: anywhere;
+    color: #aab5d2;
+    font-size: 11px;
 }
 
 .profile-actions {
     display: flex;
-    gap: 12px;
-    margin-top: 28px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 9px;
+    margin: 0;
 }
 
 .profile-actions button {
-    flex: 1;
-    padding: 13px 15px;
-    border: none;
-    border-radius: 9px;
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 14px;
+    border: 1px solid rgba(185, 162, 255, 0.31);
+    border-radius: 12px;
+    background: linear-gradient(135deg, #8461ec, #5c46c1);
+    box-shadow: 0 8px 20px rgba(85, 59, 182, 0.18), inset 0 1px rgba(255, 255, 255, 0.13);
+    color: white;
     cursor: pointer;
+    font: inherit;
+    font-size: 10px;
+    font-weight: 850;
+    transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.profile-actions button > span {
     font-size: 14px;
-    font-weight: 700;
-    transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
 .profile-actions button:hover {
     transform: translateY(-2px);
-    opacity: 0.9;
+    box-shadow: 0 12px 25px rgba(85, 59, 182, 0.3);
+    opacity: 1;
 }
 
-.profile-edit-btn {
-    background: #6c4ce4;
-    color: white;
+.profile-actions .profile-password-btn {
+    border-color: rgba(205, 215, 241, 0.16);
+    background: rgba(12, 18, 37, 0.55);
+    color: #d7ddf0;
 }
 
-.profile-password-btn {
-    background: #25243a;
-    color: white;
+.profile-details {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr) auto;
+    align-items: center;
+    gap: 22px;
+    padding: 16px 0 17px;
+    border-top: 1px solid rgba(190, 197, 232, 0.12);
+    text-align: left;
 }
 
-/* Game Statistics */
+.profile-detail-item {
+    display: grid;
+    min-width: 0;
+    gap: 6px;
+    padding: 0;
+    border: 0;
+}
 
+.profile-detail-item > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #9ca8c6;
+    font-size: 8px;
+    font-weight: 850;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.profile-detail-item > span i {
+    color: #b6a2ff;
+    font-size: 11px;
+    font-style: normal;
+}
+
+.profile-detail-item strong {
+    overflow: hidden;
+    color: #e4e8f7;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.profile-account-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 10px;
+    border: 1px solid rgba(96, 227, 178, 0.17);
+    border-radius: 99px;
+    background: rgba(49, 171, 129, 0.1);
+    color: #8ce3c0;
+    font-size: 7px;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+}
+
+.profile-account-chip > span {
+    width: 5px;
+    height: 5px;
+    margin-right: 7px;
+    border-radius: 50%;
+    background: #60e3b2;
+    box-shadow: 0 0 8px rgba(96, 227, 178, 0.55);
+}
+
+/* Player statistics */
 .profile-stats-section {
-    margin: 40px 0;
+    margin: 0 0 43px;
 }
 
-.profile-stats-section h2,
-.game-history-section h2 {
+.profile-section-heading,
+.game-history-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 17px;
+}
+
+.profile-section-kicker {
+    color: #93a2c5;
+    font-size: 8px;
+}
+
+.profile-section-heading h2,
+.game-history-header h2 {
+    margin: 5px 0 0;
+    color: #f4f4ff;
     font-size: 23px;
-    font-weight: 800;
-    margin-bottom: 22px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+}
+
+.profile-section-loading {
+    padding-bottom: 3px;
+    color: #9c8ce0;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.15em;
 }
 
 .profile-stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
 }
 
 .profile-stat-card {
-    padding: 25px 15px;
-    text-align: center;
-    border-radius: 15px;
-    background: rgba(128, 128, 128, 0.08);
-    border: 1px solid rgba(128, 128, 128, 0.16);
-    transition: transform 0.2s ease;
+    --stat-accent: #a78bfa;
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 153px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 18px 17px;
+    overflow: hidden;
+    border: 1px solid var(--profile-border);
+    border-radius: 18px;
+    background:
+        radial-gradient(ellipse at 100% 0, color-mix(in srgb, var(--stat-accent) 12%, transparent), transparent 51%),
+        linear-gradient(145deg, rgba(19, 26, 49, 0.94), rgba(12, 17, 34, 0.98));
+    box-shadow: 0 12px 27px rgba(3, 5, 15, 0.18), inset 0 1px rgba(255, 255, 255, 0.04);
+    transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 
 .profile-stat-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--stat-accent) 45%, transparent);
+    box-shadow: 0 17px 32px rgba(3, 5, 15, 0.27);
 }
 
-.profile-stat-card span {
-    display: block;
-    font-size: 30px;
-    margin-bottom: 12px;
+.profile-stat-gold {
+    --stat-accent: #ffd36e;
 }
 
-.profile-stat-card h3 {
-    font-size: 27px;
+.profile-stat-mint {
+    --stat-accent: #6de0b0;
+}
+
+.profile-stat-pink {
+    --stat-accent: #f08fb6;
+}
+
+.profile-stat-cyan {
+    --stat-accent: #69dce9;
+}
+
+.profile-stat-icon {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    margin-bottom: 13px;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--stat-accent) 24%, transparent);
+    border-radius: 13px;
+    background: color-mix(in srgb, var(--stat-accent) 12%, rgba(12, 17, 35, 0.7));
+    font-size: 19px;
+}
+
+.profile-stat-label {
+    color: #9da9c7;
+    font-size: 8px;
+    font-weight: 750;
+}
+
+.profile-stat-card > strong {
+    max-width: 100%;
+    margin-top: 4px;
+    overflow: hidden;
+    color: var(--stat-accent);
+    font-size: clamp(20px, 2.4vw, 27px);
+    font-weight: 950;
+    letter-spacing: -0.04em;
+    text-overflow: ellipsis;
+}
+
+.profile-section-state {
+    display: flex;
+    min-height: 100px;
+    align-items: center;
+    justify-content: center;
+    gap: 11px;
+    padding: 20px;
+    border: 1px solid var(--profile-border);
+    border-radius: 17px;
+    background: rgba(17, 23, 44, 0.83);
+    color: #aab5d2;
+    font-size: 11px;
+    text-align: center;
+}
+
+.profile-state-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(162, 137, 255, 0.22);
+    border-top-color: #b7a3ff;
+    border-radius: 50%;
+    animation: profile-spin 0.8s linear infinite;
+}
+
+@keyframes profile-spin {
+    to { transform: rotate(360deg); }
+}
+
+.profile-error {
+    border-color: rgba(255, 121, 145, 0.22);
+    color: #ff9aab;
+}
+
+.profile-error button {
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 121, 145, 0.24);
+    border-radius: 9px;
+    background: rgba(197, 58, 95, 0.17);
+    color: #ffc0ca;
+    cursor: pointer;
+    font: inherit;
+    font-size: 10px;
     font-weight: 800;
-    margin: 0 0 6px;
-    color: #8b70ff;
 }
 
-.profile-stat-card p {
-    font-size: 13px;
-    opacity: 0.7;
-    margin: 0;
-}
-
-/* Game History */
-
+/* Game history */
 .game-history-section {
-    margin-top: 45px;
+    margin-top: 0;
 }
 
 .game-history-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.game-history-header h2 {
-    margin: 0;
+    margin-bottom: 17px;
 }
 
 .game-history-header button {
-    padding: 10px 17px;
-    border: none;
-    border-radius: 8px;
-    background: #6c4ce4;
-    color: white;
-    font-weight: 700;
+    display: inline-flex;
+    min-height: 39px;
+    align-items: center;
+    gap: 7px;
+    padding: 0 13px;
+    border: 1px solid rgba(185, 162, 255, 0.26);
+    border-radius: 11px;
+    background: rgba(111, 81, 209, 0.17);
+    color: #d8ceff;
     cursor: pointer;
+    font: inherit;
+    font-size: 10px;
+    font-weight: 850;
+    transition: 180ms ease;
+}
+
+.game-history-header button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    border-color: rgba(185, 162, 255, 0.5);
+    background: rgba(111, 81, 209, 0.28);
 }
 
 .game-history-header button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+    cursor: wait;
+    opacity: 0.65;
+}
+
+.game-history-header button > span {
+    font-size: 16px;
+}
+
+.profile-refresh-spinning {
+    animation: profile-spin 0.8s linear infinite;
 }
 
 .game-history-list {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 10px;
 }
 
 .game-history-card {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(150px, 1.1fr) minmax(160px, 1fr) minmax(150px, 0.9fr) auto;
     align-items: center;
-    gap: 20px;
-    padding: 20px;
-    border-radius: 13px;
-    background: rgba(128, 128, 128, 0.08);
-    border: 1px solid rgba(128, 128, 128, 0.16);
+    gap: 18px;
+    min-height: 85px;
+    padding: 14px 18px;
+    border: 1px solid rgba(147, 160, 219, 0.12);
+    border-radius: 16px;
+    background:
+        linear-gradient(100deg, rgba(20, 27, 51, 0.96), rgba(13, 18, 36, 0.97));
+    box-shadow: 0 9px 23px rgba(3, 5, 15, 0.14);
+    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
 }
 
-.game-history-info h3 {
-    font-size: 17px;
-    margin: 0 0 7px;
+.game-history-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(166, 140, 255, 0.31);
+    background:
+        linear-gradient(100deg, rgba(28, 31, 62, 0.98), rgba(16, 25, 45, 0.98));
+}
+
+.game-history-level {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 11px;
+}
+
+.game-history-game-icon {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    place-items: center;
+    border: 1px solid rgba(165, 139, 255, 0.23);
+    border-radius: 14px;
+    background: rgba(119, 88, 224, 0.14);
+    font-size: 20px;
+}
+
+.game-history-level > span:last-child {
+    display: grid;
+    min-width: 0;
+    gap: 4px;
+}
+
+.game-history-level small,
+.game-history-date-label {
+    color: #8794b4;
+    font-size: 7px;
+    font-weight: 900;
+    letter-spacing: 0.13em;
+}
+
+.game-history-level strong {
+    overflow: hidden;
+    color: #eff0ff;
+    font-size: 13px;
+    font-weight: 850;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.game-history-info {
+    min-width: 0;
 }
 
 .game-history-info p {
-    font-size: 12px;
-    opacity: 0.65;
-    margin: 0;
+    margin: 5px 0 0;
+    overflow: hidden;
+    color: #a8b2cf;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .game-history-score {
     display: flex;
+    min-width: 0;
     flex-direction: column;
-    gap: 6px;
-    text-align: center;
+    gap: 5px;
+    text-align: left;
 }
 
-.game-history-score strong {
-    font-size: 16px;
-    color: #8b70ff;
+.game-history-score > strong {
+    color: #c2aaff;
+    font-size: 15px;
+    font-weight: 950;
 }
 
-.game-history-score span {
-    font-size: 12px;
-    opacity: 0.7;
+.game-history-score > strong > span {
+    color: #9ca8c7;
+    font-size: 8px;
+    font-weight: 850;
+    letter-spacing: 0.1em;
+}
+
+.game-history-answer-counts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px 9px;
+    color: #9da9c7;
+    font-size: 8px;
+}
+
+.game-history-answer-counts i {
+    font-style: normal;
+}
+
+.game-history-answer-counts i:first-child {
+    color: #7cdbb3;
+}
+
+.game-history-answer-counts i:last-child {
+    color: #e99ba9;
+}
+
+.game-history-status {
+    justify-self: end;
 }
 
 .game-passed,
 .game-failed {
-    display: inline-block;
-    padding: 7px 13px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
+    display: inline-flex;
+    min-height: 29px;
+    align-items: center;
+    gap: 5px;
+    padding: 0 9px;
+    border: 1px solid rgba(83, 218, 164, 0.16);
+    border-radius: 99px;
+    background: rgba(34, 197, 94, 0.1);
+    color: #8de6bd;
+    font-size: 8px;
+    font-weight: 900;
+    white-space: nowrap;
 }
 
-.game-passed {
-    background: rgba(34, 197, 94, 0.15);
-    color: #22c55e;
+.game-passed > i,
+.game-failed > i {
+    font-size: 10px;
+    font-style: normal;
 }
 
 .game-failed {
-    background: rgba(239, 68, 68, 0.15);
-    color: #ef4444;
+    border-color: rgba(239, 119, 145, 0.17);
+    background: rgba(239, 68, 68, 0.1);
+    color: #f29cae;
 }
 
 .no-game-history {
+    display: grid;
+    min-height: 245px;
+    justify-items: center;
+    align-content: center;
+    padding: 30px 20px;
+    border: 1px dashed rgba(160, 173, 215, 0.2);
+    border-radius: 20px;
+    background: linear-gradient(145deg, rgba(18, 24, 47, 0.9), rgba(11, 16, 33, 0.94));
     text-align: center;
-    padding: 45px 20px;
-    border-radius: 15px;
-    background: rgba(128, 128, 128, 0.08);
-    border: 1px solid rgba(128, 128, 128, 0.16);
 }
 
-.no-game-history span {
-    font-size: 42px;
+.no-history-icon {
+    margin-bottom: 12px;
+    font-size: 38px;
+    filter: drop-shadow(0 6px 17px rgba(140, 113, 255, 0.33));
 }
 
 .no-game-history h3 {
-    margin: 12px 0 8px;
+    margin: 7px 0;
+    color: #f5f6ff;
+    font-size: 20px;
+    font-weight: 900;
 }
 
 .no-game-history p {
-    opacity: 0.7;
-    font-size: 14px;
+    max-width: 420px;
+    margin: 0;
+    color: #9da9c9;
+    font-size: 11px;
+    line-height: 1.7;
 }
 
-.profile-error {
-    color: #ef4444;
-    padding: 12px;
+/* Keep the custom profile design above shared player-theme defaults. */
+.app.dark-theme .profile-page .profile-header h1 {
+    color: #f7f6ff;
+    font-size: clamp(35px, 4.7vw, 55px);
+    letter-spacing: -0.07em;
 }
 
-/* Responsive */
+.app.dark-theme .profile-page .profile-header p {
+    color: var(--profile-muted);
+    opacity: 1;
+}
 
-@media (max-width: 600px) {
+.app.dark-theme .profile-page .profile-header .profile-back-btn {
+    min-height: 40px;
+    padding: 0 14px;
+    border: 1px solid var(--profile-border);
+    border-radius: 12px;
+    background: rgba(19, 25, 48, 0.75);
+    color: #e6e9ff;
+}
+
+.app.dark-theme .profile-page .profile-header .profile-back-btn:hover:not(:disabled) {
+    transform: translateX(-3px);
+    border-color: rgba(173, 145, 255, 0.6);
+    background: rgba(84, 57, 153, 0.24);
+}
+
+.app.dark-theme .profile-page .profile-card {
+    max-width: none;
+    padding: 27px 30px 0;
+    border: 1px solid rgba(164, 143, 255, 0.26);
+    border-radius: 24px;
+    background:
+        radial-gradient(ellipse at 86% 0, rgba(79, 205, 229, 0.1), transparent 34%),
+        linear-gradient(112deg, rgba(32, 29, 68, 0.96), rgba(17, 29, 50, 0.96));
+    box-shadow: 0 20px 52px rgba(4, 6, 18, 0.28), inset 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.app.dark-theme .profile-page .profile-identity-copy h2,
+.app.dark-theme .profile-page .profile-detail-item strong {
+    color: #fff;
+}
+
+.app.dark-theme .profile-page .profile-email,
+.app.dark-theme .profile-page .profile-detail-item > span {
+    color: #aab5d2;
+    opacity: 1;
+}
+
+.app.dark-theme .profile-page .profile-detail-item {
+    border: 0;
+}
+
+.app.dark-theme .profile-page .profile-actions button {
+    min-height: 42px;
+    border: 1px solid rgba(185, 162, 255, 0.31);
+    border-radius: 12px;
+    background: linear-gradient(135deg, #8461ec, #5c46c1);
+    color: white;
+}
+
+.app.dark-theme .profile-page .profile-actions .profile-password-btn {
+    border-color: rgba(205, 215, 241, 0.16) !important;
+    background: rgba(12, 18, 37, 0.55) !important;
+    color: #d7ddf0 !important;
+}
+
+.app.dark-theme .profile-page .profile-section-heading h2,
+.app.dark-theme .profile-page .game-history-header h2 {
+    color: #f4f4ff;
+}
+
+.app.dark-theme .profile-page .profile-stat-card {
+    border: 1px solid var(--profile-border);
+    border-radius: 18px;
+    background:
+        radial-gradient(ellipse at 100% 0, color-mix(in srgb, var(--stat-accent) 12%, transparent), transparent 51%),
+        linear-gradient(145deg, rgba(19, 26, 49, 0.94), rgba(12, 17, 34, 0.98));
+    box-shadow: 0 12px 27px rgba(3, 5, 15, 0.18), inset 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.app.dark-theme .profile-page .profile-stat-card:hover {
+    border-color: color-mix(in srgb, var(--stat-accent) 45%, transparent);
+    box-shadow: 0 17px 32px rgba(3, 5, 15, 0.27);
+}
+
+.app.dark-theme .profile-page .profile-stat-card > strong {
+    color: var(--stat-accent);
+}
+
+.app.dark-theme .profile-page .profile-stat-label,
+.app.dark-theme .profile-page .game-history-info p,
+.app.dark-theme .profile-page .game-history-score > strong > span {
+    color: #9da9c7;
+    opacity: 1;
+}
+
+.app.dark-theme .profile-page .game-history-header button {
+    min-height: 39px;
+    border: 1px solid rgba(185, 162, 255, 0.26);
+    border-radius: 11px;
+    background: rgba(111, 81, 209, 0.17);
+    color: #d8ceff;
+}
+
+.app.dark-theme .profile-page .game-history-card {
+    border: 1px solid rgba(147, 160, 219, 0.12);
+    border-radius: 16px;
+    background: linear-gradient(100deg, rgba(20, 27, 51, 0.96), rgba(13, 18, 36, 0.97));
+    box-shadow: 0 9px 23px rgba(3, 5, 15, 0.14);
+}
+
+.app.dark-theme .profile-page .game-history-card:hover {
+    border-color: rgba(166, 140, 255, 0.31);
+    background: linear-gradient(100deg, rgba(28, 31, 62, 0.98), rgba(16, 25, 45, 0.98));
+}
+
+.app.dark-theme .profile-page .game-history-info p,
+.app.dark-theme .profile-page .game-history-score span {
+    opacity: 1;
+}
+
+.app.dark-theme .profile-page .no-game-history {
+    border: 1px dashed rgba(160, 173, 215, 0.2);
+    border-radius: 20px;
+    background: linear-gradient(145deg, rgba(18, 24, 47, 0.9), rgba(11, 16, 33, 0.94));
+}
+
+.app.dark-theme .profile-page .no-game-history h3 {
+    color: #f5f6ff;
+}
+
+.app.dark-theme .profile-page .no-game-history p {
+    color: #9da9c9;
+    opacity: 1;
+}
+
+@media (max-width: 1050px) {
     .profile-page {
-        padding: 25px 12px 40px;
+        padding: 32px 24px 55px;
     }
 
-    .profile-header h1 {
-        font-size: 25px;
-        margin-top: 55px;
+    .profile-stats-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .profile-card {
-        padding: 25px 17px;
+    .game-history-card {
+        grid-template-columns: minmax(140px, 1fr) minmax(145px, 1fr) minmax(130px, 0.9fr) auto;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 760px) {
+    .profile-identity {
+        grid-template-columns: 76px minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .profile-avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 23px;
+        font-size: 29px;
+    }
+
+    .profile-avatar img {
+        border-radius: 20px;
     }
 
     .profile-actions {
-        flex-direction: column;
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+        padding-left: 84px;
     }
 
-    .profile-detail-item {
-        align-items: flex-start;
-        flex-direction: column;
+    .profile-details {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 15px;
+    }
+
+    .profile-account-chip {
+        grid-column: 1 / -1;
+        justify-self: start;
+    }
+
+    .game-history-card {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+    }
+
+    .game-history-info {
+        grid-column: 1;
+        grid-row: 2;
+        padding-left: 53px;
+    }
+
+    .game-history-score {
+        grid-column: 1;
+        grid-row: 3;
+        padding-left: 53px;
+    }
+
+    .game-history-status {
+        grid-column: 2;
+        grid-row: 1 / 4;
+        align-self: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .profile-page {
+        padding: 24px 15px 42px;
+    }
+
+    .profile-header {
+        min-height: 175px;
+        margin-bottom: 14px;
+    }
+
+    .profile-hero-copy {
+        width: 100%;
+        padding: 53px 0 0;
+    }
+
+    .profile-header h1,
+    .app.dark-theme .profile-page .profile-header h1 {
+        margin: 10px 0 8px;
+        font-size: clamp(32px, 8.5vw, 43px);
+    }
+
+    .profile-header p {
+        max-width: 340px;
+        margin: 0 auto;
+        font-size: 11px;
+    }
+
+    .profile-header .profile-back-btn,
+    .app.dark-theme .profile-page .profile-header .profile-back-btn {
+        min-height: 37px;
+        padding: 0 11px;
+        font-size: 10px;
+    }
+
+    .profile-hero-mark {
+        top: 58px;
+        right: 12px;
+        font-size: 17px;
+    }
+
+    .profile-card,
+    .app.dark-theme .profile-page .profile-card {
+        margin-bottom: 31px;
+        padding: 20px 17px 0;
+        border-radius: 20px;
+    }
+
+    .profile-identity {
+        grid-template-columns: 61px minmax(0, 1fr);
+        gap: 12px;
+        padding-bottom: 18px;
+    }
+
+    .profile-avatar {
+        width: 58px;
+        height: 58px;
+        border-width: 1px;
+        border-radius: 19px;
+        font-size: 24px;
+    }
+
+    .profile-avatar img {
+        border-radius: 17px;
+    }
+
+    .profile-avatar-status {
+        right: -5px;
+        bottom: -4px;
+        width: 12px;
+        height: 12px;
+    }
+
+    .profile-identity-copy h2 {
+        font-size: 22px;
+    }
+
+    .profile-email {
+        font-size: 9px;
+    }
+
+    .profile-actions {
         gap: 7px;
+        padding-left: 0;
+    }
+
+    .profile-actions button,
+    .app.dark-theme .profile-page .profile-actions button {
+        min-height: 39px;
+        flex: 1;
+        padding: 0 8px;
+        font-size: 9px;
+    }
+
+    .profile-details {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 14px 0;
     }
 
     .profile-detail-item strong {
-        text-align: left;
+        font-size: 10px;
+    }
+
+    .profile-account-chip {
+        grid-column: auto;
+    }
+
+    .profile-stats-section {
+        margin-bottom: 34px;
+    }
+
+    .profile-section-heading h2,
+    .game-history-header h2 {
+        font-size: 20px;
     }
 
     .profile-stats-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 10px;
+        gap: 9px;
     }
 
-    .profile-stat-card {
-        padding: 20px 8px;
+    .profile-stat-card,
+    .app.dark-theme .profile-page .profile-stat-card {
+        min-height: 131px;
+        padding: 14px 12px;
+        border-radius: 16px;
     }
 
-    .profile-stat-card h3 {
+    .profile-stat-icon {
+        width: 33px;
+        height: 33px;
+        margin-bottom: 10px;
+        border-radius: 11px;
+        font-size: 17px;
+    }
+
+    .profile-stat-card > strong {
         font-size: 23px;
     }
 
-    .game-history-card {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 13px;
-    }
-
-    .game-history-score {
-        text-align: left;
+    .profile-stat-label {
+        font-size: 7px;
     }
 
     .game-history-header {
-        align-items: flex-start;
+        align-items: flex-end;
     }
 
-    .game-history-header h2 {
-        font-size: 19px;
+    .game-history-header button,
+    .app.dark-theme .profile-page .game-history-header button {
+        min-height: 36px;
+        padding: 0 10px;
+        font-size: 9px;
+    }
+
+    .game-history-card,
+    .app.dark-theme .profile-page .game-history-card {
+        gap: 10px;
+        padding: 13px;
+        border-radius: 15px;
+    }
+
+    .game-history-game-icon {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+        border-radius: 12px;
+        font-size: 18px;
+    }
+
+    .game-history-info,
+    .game-history-score {
+        padding-left: 48px;
+    }
+
+    .game-history-level strong {
+        font-size: 12px;
+    }
+
+    .game-history-info p {
+        font-size: 9px;
+    }
+
+    .game-history-score > strong {
+        font-size: 14px;
+    }
+
+    .game-history-answer-counts {
+        font-size: 7px;
+    }
+
+    .game-passed,
+    .game-failed {
+        min-height: 26px;
+        padding: 0 7px;
+        font-size: 7px;
+    }
+
+    .no-game-history,
+    .app.dark-theme .profile-page .no-game-history {
+        min-height: 220px;
+        padding: 25px 16px;
+        border-radius: 18px;
+    }
+}
+
+@media (max-width: 370px) {
+    .profile-page {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
+    .profile-header h1,
+    .app.dark-theme .profile-page .profile-header h1 {
+        font-size: 30px;
+    }
+
+    .profile-actions button,
+    .app.dark-theme .profile-page .profile-actions button {
+        font-size: 8px;
+    }
+
+    .game-history-status {
+        align-self: end;
+        margin-bottom: 4px;
+    }
+
+    .game-passed,
+    .game-failed {
+        gap: 3px;
+        padding: 0 6px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .profile-page *,
+    .profile-page *::before,
+    .profile-page *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
     }
 }

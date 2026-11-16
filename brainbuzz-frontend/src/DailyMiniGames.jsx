@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import api from './services/api'
 import './DailyMiniGames.css'
 
@@ -28,13 +28,130 @@ const [lastPage, setLastPage] = useState(1)
     const [error, setError] = useState('')
     const [view, setView] = useState('game')
     const [startedAt, setStartedAt] = useState(null)
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false)
+    const [gsap, setGsap] = useState(null)
+    const splashRef = useRef(null)
+    const gameSceneRef = useRef(null)
 
     useEffect(() => {
-        loadGame()
+        loadGame(true)
     }, [])
 
     useEffect(() => {
-        if (!challenge || challenge.is_completed || result || timeLeft <= 0) {
+        let isMounted = true
+
+        import('gsap').then(({ gsap: loadedGsap }) => {
+            if (isMounted) {
+                setGsap(loadedGsap)
+            }
+        })
+
+        return () => {
+            isMounted = false
+        }
+    }, [])
+
+    useLayoutEffect(() => {
+        if (!gsap || initialLoadComplete || !splashRef.current) return
+
+        const motion = gsap.matchMedia()
+        const context = gsap.context(() => {
+            motion.add('(prefers-reduced-motion: no-preference)', () => {
+                const timeline = gsap.timeline({
+                    defaults: { ease: 'power3.out' },
+                })
+
+                timeline
+                    .fromTo(
+                        '.mini-splash-mark',
+                        {
+                            autoAlpha: 0,
+                            scale: 0.45,
+                            rotationX: 24,
+                            rotationY: -150,
+                            z: -100,
+                        },
+                        {
+                            autoAlpha: 1,
+                            scale: 1,
+                            rotationX: 0,
+                            rotationY: 0,
+                            z: 0,
+                            duration: 1.05,
+                        }
+                    )
+                    .fromTo(
+                        '.mini-splash-wordmark',
+                        { autoAlpha: 0, y: 18, letterSpacing: '12px' },
+                        {
+                            autoAlpha: 1,
+                            y: 0,
+                            letterSpacing: '1px',
+                            duration: 0.65,
+                        },
+                        '-=0.35'
+                    )
+                    .fromTo(
+                        '.mini-splash-copy',
+                        { autoAlpha: 0, y: 12 },
+                        { autoAlpha: 1, y: 0, duration: 0.55 },
+                        '-=0.2'
+                    )
+                    .fromTo(
+                        '.mini-splash-loader',
+                        { autoAlpha: 0, scaleX: 0.75 },
+                        { autoAlpha: 1, scaleX: 1, duration: 0.4 },
+                        '-=0.1'
+                    )
+
+                gsap.to('.mini-splash-ring', {
+                    rotationY: 360,
+                    rotationZ: 18,
+                    duration: 5,
+                    ease: 'none',
+                    repeat: -1,
+                })
+
+                gsap.to('.mini-splash-mark', {
+                    y: -8,
+                    duration: 1.2,
+                    ease: 'sine.inOut',
+                    yoyo: true,
+                    repeat: -1,
+                })
+
+                gsap.fromTo(
+                    '.mini-splash-particle',
+                    { autoAlpha: 0.2, scale: 0.55, y: 14 },
+                    {
+                        autoAlpha: 1,
+                        scale: 1,
+                        y: -14,
+                        duration: 1.1,
+                        ease: 'sine.inOut',
+                        stagger: 0.18,
+                        yoyo: true,
+                        repeat: -1,
+                    }
+                )
+            })
+        }, splashRef.current)
+
+        return () => {
+            motion.revert()
+            context.revert()
+        }
+    }, [gsap, initialLoadComplete])
+
+    useEffect(() => {
+        if (
+            !initialLoadComplete ||
+            loading ||
+            !challenge ||
+            challenge.is_completed ||
+            result ||
+            timeLeft <= 0
+        ) {
             return
         }
 
@@ -43,15 +160,186 @@ const [lastPage, setLastPage] = useState(1)
         }, 1000)
 
         return () => clearInterval(timer)
-    }, [challenge, result, timeLeft])
+    }, [challenge, initialLoadComplete, loading, result, timeLeft])
 
-    const loadGame = async () => {
+    useLayoutEffect(() => {
+        if (!gsap || !initialLoadComplete || loading || !gameSceneRef.current) return
+
+        const motion = gsap.matchMedia()
+        const cardCleanups = []
+        const context = gsap.context(() => {
+            motion.add('(prefers-reduced-motion: no-preference)', () => {
+                const timeline = gsap.timeline({
+                    defaults: { ease: 'power3.out' },
+                })
+
+                if (view === 'history') {
+                    timeline
+                        .fromTo(
+                            '.mini-history-heading',
+                            { autoAlpha: 0, y: 20 },
+                            { autoAlpha: 1, y: 0, duration: 0.45 }
+                        )
+                        .fromTo(
+                            '.mini-player-panel > .mini-player-stats',
+                            { autoAlpha: 0, y: 22 },
+                            { autoAlpha: 1, y: 0, duration: 0.45 },
+                            '-=0.2'
+                        )
+                        .fromTo(
+                            '.mini-history-card, .mini-history-empty',
+                            { autoAlpha: 0, y: 18, rotateX: -5 },
+                            {
+                                autoAlpha: 1,
+                                y: 0,
+                                rotateX: 0,
+                                duration: 0.45,
+                                stagger: 0.08,
+                            },
+                            '-=0.15'
+                        )
+                } else {
+                    timeline
+                        .fromTo(
+                            '.mini-player-header',
+                            { autoAlpha: 0, y: -18 },
+                            { autoAlpha: 1, y: 0, duration: 0.45 }
+                        )
+                        .fromTo(
+                            '.mini-player-stats > .mini-stat-card',
+                            { autoAlpha: 0, y: 22, rotationY: -10, scale: 0.94 },
+                            {
+                                autoAlpha: 1,
+                                y: 0,
+                                rotationY: 0,
+                                scale: 1,
+                                duration: 0.48,
+                                stagger: 0.08,
+                            },
+                            '-=0.15'
+                        )
+                        .fromTo(
+                            '.mini-player-panel',
+                            {
+                                autoAlpha: 0,
+                                y: 30,
+                                rotationX: -5,
+                                transformPerspective: 1100,
+                            },
+                            {
+                                autoAlpha: 1,
+                                y: 0,
+                                rotationX: 0,
+                                duration: 0.55,
+                            },
+                            '-=0.18'
+                        )
+                        .fromTo(
+                            '.mini-player-question',
+                            {
+                                autoAlpha: 0,
+                                y: 24,
+                                rotationX: -7,
+                                scale: 0.97,
+                                transformPerspective: 900,
+                            },
+                            {
+                                autoAlpha: 1,
+                                y: 0,
+                                rotationX: 0,
+                                scale: 1,
+                                duration: 0.5,
+                                stagger: 0.09,
+                            },
+                            '-=0.2'
+                        )
+                        .fromTo(
+                            '.mini-result-icon, .mini-submit-btn',
+                            { autoAlpha: 0, scale: 0.86, y: 12 },
+                            {
+                                autoAlpha: 1,
+                                scale: 1,
+                                y: 0,
+                                duration: 0.5,
+                                stagger: 0.12,
+                            },
+                            '-=0.2'
+                        )
+                }
+
+                gsap.utils.toArray('.mini-player-question').forEach(card => {
+                    const tiltCard = event => {
+                        if (event.pointerType === 'touch') return
+
+                        const bounds = card.getBoundingClientRect()
+                        if (!bounds.width || !bounds.height) return
+
+                        const x = (event.clientX - bounds.left) / bounds.width - 0.5
+                        const y = (event.clientY - bounds.top) / bounds.height - 0.5
+
+                        gsap.to(card, {
+                            rotationY: x * 5,
+                            rotationX: y * -5,
+                            transformPerspective: 900,
+                            duration: 0.3,
+                            ease: 'power2.out',
+                            overwrite: 'auto',
+                        })
+                    }
+                    const resetCard = () => {
+                        gsap.to(card, {
+                            rotationY: 0,
+                            rotationX: 0,
+                            duration: 0.45,
+                            ease: 'power2.out',
+                            overwrite: 'auto',
+                        })
+                    }
+
+                    card.addEventListener('pointermove', tiltCard)
+                    card.addEventListener('pointerleave', resetCard)
+                    cardCleanups.push(() => {
+                        card.removeEventListener('pointermove', tiltCard)
+                        card.removeEventListener('pointerleave', resetCard)
+                    })
+                })
+
+                if (result) {
+                    gsap.fromTo(
+                        '.mini-result h1',
+                        { scale: 0.8, autoAlpha: 0 },
+                        {
+                            scale: 1,
+                            autoAlpha: 1,
+                            duration: 0.65,
+                            ease: 'back.out(1.7)',
+                            delay: 0.35,
+                        }
+                    )
+                }
+            })
+        }, gameSceneRef.current)
+
+        return () => {
+            cardCleanups.forEach(cleanup => cleanup())
+            motion.revert()
+            context.revert()
+        }
+    }, [gsap, initialLoadComplete, loading, view, challenge?.id, result])
+
+    async function loadGame(opening = false) {
+        const minimumSplashTime = opening
+            ? new Promise(resolve => window.setTimeout(resolve, 1650))
+            : null
+        let openedGame = null
+
         try {
             setLoading(true)
             setError('')
 
             const response = await api.get('/daily-mini-game')
             const game = response.data.challenge
+            openedGame = game
 
             setChallenge(game)
             setStreak(response.data.streak || {})
@@ -60,7 +348,7 @@ const [lastPage, setLastPage] = useState(1)
             if (game.is_completed) {
                 setResult(game.attempt)
             } else {
-                setStartedAt(Date.now())
+                setStartedAt(opening ? null : Date.now())
             }
         } catch (err) {
             setError(
@@ -68,6 +356,13 @@ const [lastPage, setLastPage] = useState(1)
                 'Daily Mini Game is not available today.'
             )
         } finally {
+            if (minimumSplashTime) {
+                await minimumSplashTime
+                if (openedGame && !openedGame.is_completed) {
+                    setStartedAt(Date.now())
+                }
+                setInitialLoadComplete(true)
+            }
             setLoading(false)
         }
     }
@@ -137,7 +432,7 @@ const [lastPage, setLastPage] = useState(1)
         setLastPage(historyData?.last_page || 1)
 
         setView('history')
-    } catch (err) {
+    } catch {
         setError('Unable to load game history.')
     } finally {
         setLoading(false)
@@ -159,21 +454,59 @@ const [lastPage, setLastPage] = useState(1)
         ? Math.round((answeredQuestions / totalQuestions) * 100)
         : 0
 
+    if (!initialLoadComplete) {
+        return (
+            <div className="mini-game-splash" ref={splashRef} role="status">
+                <div className="mini-splash-stars" aria-hidden="true">
+                    <span className="mini-splash-particle">✦</span>
+                    <span className="mini-splash-particle">✧</span>
+                    <span className="mini-splash-particle">✦</span>
+                    <span className="mini-splash-particle">✧</span>
+                </div>
+
+                <div className="mini-splash-card">
+                    <div className="mini-splash-stage" aria-hidden="true">
+                        <div className="mini-splash-glow" />
+                        <div className="mini-splash-ring" />
+                        <div className="mini-splash-mark">🧠</div>
+                        <span className="mini-splash-orbit-dot" />
+                    </div>
+
+                    <div className="mini-splash-brand">
+                        <span className="mini-splash-eyebrow">WELCOME TO THE DAILY ARCADE</span>
+                        <h1 className="mini-splash-wordmark">
+                            BRAIN<span>BUZZ</span>
+                        </h1>
+                        <p className="mini-splash-copy">
+                            Your next brain-powered challenge is loading.
+                        </p>
+                    </div>
+
+                    <div className="mini-splash-loader" aria-hidden="true">
+                        <span />
+                    </div>
+                    <p className="mini-splash-status">
+                        <span className="mini-splash-status-dot" />
+                        POWERING UP YOUR GAME
+                    </p>
+                </div>
+            </div>
+        )
+    }
+
     if (loading) {
         return (
-            <div className="mini-player-page">
-                <div className="mini-player-loading" role="status">
-                    <span className="mini-loading-icon" aria-hidden="true">🎮</span>
-                    <h2>Getting today's game ready</h2>
-                    <p>Warming up your brain-powered challenge...</p>
-                    <span className="mini-loading-bar" aria-hidden="true" />
+            <div className="mini-player-page mini-loading-page">
+                <div className="mini-inline-loader" role="status">
+                    <span className="mini-inline-spinner" aria-hidden="true">🧩</span>
+                    <p>Loading your BrainBuzz game...</p>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="mini-player-page">
+        <div className="mini-player-page" ref={gameSceneRef}>
 
             <header className="mini-player-header">
                 <button

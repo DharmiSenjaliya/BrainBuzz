@@ -333,36 +333,44 @@ class GameResultController extends Controller
             ->get()
             ->groupBy('level');
 
-        $levels = [];
         $currentLevel = 1;
-
-        for ($level = 1; $level <= 50; $level++) {
-            $levelResults = $results->get($level, collect());
-
-            $bestCorrect = $levelResults->max('correct_answers') ?? 0;
-
-            $isCompleted = $levelResults->contains(
+        $completedLevels = $results
+            ->filter(fn ($levelResults) => $levelResults->contains(
                 fn ($result) => $result->passed
-            );
+            ))
+            ->keys()
+            ->map(fn ($level) => (int) $level)
+            ->sort()
+            ->values();
 
-            $isUnlocked = $level === 1 || $currentLevel >= $level;
-
-            $stars = $bestCorrect >= 5 ? 3 :
-                ($bestCorrect >= 4 ? 2 :
-                ($bestCorrect >= 3 ? 1 : 0));
-
-            $levels[] = [
-                'level' => $level,
-                'is_unlocked' => $isUnlocked,
-                'is_completed' => $isCompleted,
-                'stars' => $stars,
-                'best_correct_answers' => $bestCorrect,
-            ];
-
-            if ($isCompleted && $level === $currentLevel) {
-                $currentLevel++;
+        foreach ($completedLevels as $level) {
+            if ($level !== $currentLevel) {
+                break;
             }
+
+            $currentLevel++;
         }
+
+        $levels = $results
+            ->map(function ($levelResults, $level) use ($currentLevel) {
+                $bestCorrect = $levelResults->max('correct_answers') ?? 0;
+                $isCompleted = $levelResults->contains(
+                    fn ($result) => $result->passed
+                );
+                $stars = $bestCorrect >= 5 ? 3 :
+                    ($bestCorrect >= 4 ? 2 :
+                    ($bestCorrect >= 3 ? 1 : 0));
+
+                return [
+                    'level' => (int) $level,
+                    'is_unlocked' => (int) $level <= $currentLevel,
+                    'is_completed' => $isCompleted,
+                    'stars' => $stars,
+                    'best_correct_answers' => $bestCorrect,
+                ];
+            })
+            ->sortKeys()
+            ->values();
 
         return response()->json([
             'success' => true,

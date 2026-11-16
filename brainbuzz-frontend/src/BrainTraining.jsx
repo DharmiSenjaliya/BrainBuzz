@@ -1,9 +1,10 @@
 
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useLayoutEffect, useState, useRef } from 'react'
 import api from './services/api'
 import './BrainTraining.css'
 
 const shuffle = (items) => [...items].sort(() => Math.random() - 0.5)
+const formatNumber = (value) => Number(value || 0).toLocaleString()
 const fetchTrainingHistory = async (token) => {
     const response = await api.get('/brain-training/history', {
         headers: { Authorization: `Bearer ${token}` },
@@ -13,6 +14,7 @@ const fetchTrainingHistory = async (token) => {
 }
 
 function BrainTraining({ onBack }) {
+    const pageRef = useRef(null)
     const [activeGame, setActiveGame] = useState(null)
     const [trainingResults, setTrainingResults] = useState([])
     const [historyLoading, setHistoryLoading] = useState(true)
@@ -45,6 +47,96 @@ function BrainTraining({ onBack }) {
         loadHistory()
         return () => { isMounted = false }
     }, [])
+
+    useLayoutEffect(() => {
+        if (!pageRef.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            return undefined
+        }
+
+        let isActive = true
+        let animationContext
+        const tiltCleanups = []
+
+        import('gsap')
+            .then(({ gsap }) => {
+                if (!isActive || !pageRef.current) return
+
+                animationContext = gsap.context(() => {
+                    gsap.timeline({ defaults: { ease: 'power3.out' } })
+                        .fromTo(
+                            '.training-heading-copy',
+                            { autoAlpha: 0, y: 20 },
+                            { autoAlpha: 1, y: 0, duration: 0.45 }
+                        )
+                        .fromTo(
+                            '.training-hero-art',
+                            { autoAlpha: 0, scale: 0.9, rotationY: -10 },
+                            {
+                                autoAlpha: 1,
+                                scale: 1,
+                                rotationY: 0,
+                                duration: 0.52,
+                            },
+                            '-=0.2'
+                        )
+                        .fromTo(
+                            activeGame ? '.training-play' : '.training-dashboard, .training-card',
+                            { autoAlpha: 0, y: 20, scale: 0.97 },
+                            {
+                                autoAlpha: 1,
+                                y: 0,
+                                scale: 1,
+                                stagger: 0.07,
+                                duration: 0.42,
+                            },
+                            '-=0.15'
+                        )
+
+                    if (!activeGame) {
+                        gsap.utils.toArray('.training-card').forEach(card => {
+                            const tilt = event => {
+                                if (event.pointerType === 'touch') return
+
+                                const bounds = card.getBoundingClientRect()
+                                if (!bounds.width || !bounds.height) return
+
+                                gsap.to(card, {
+                                    rotationY: ((event.clientX - bounds.left) / bounds.width - 0.5) * 5,
+                                    rotationX: ((event.clientY - bounds.top) / bounds.height - 0.5) * -5,
+                                    transformPerspective: 1000,
+                                    duration: 0.3,
+                                    ease: 'power2.out',
+                                    overwrite: 'auto',
+                                })
+                            }
+                            const reset = () => gsap.to(card, {
+                                rotationX: 0,
+                                rotationY: 0,
+                                duration: 0.35,
+                                ease: 'power2.out',
+                                overwrite: 'auto',
+                            })
+
+                            card.addEventListener('pointermove', tilt)
+                            card.addEventListener('pointerleave', reset)
+                            tiltCleanups.push(() => {
+                                card.removeEventListener('pointermove', tilt)
+                                card.removeEventListener('pointerleave', reset)
+                            })
+                        })
+                    }
+                }, pageRef)
+            })
+            .catch(animationError => {
+                console.error('Unable to load Brain Training animation:', animationError)
+            })
+
+        return () => {
+            isActive = false
+            tiltCleanups.forEach(cleanup => cleanup())
+            animationContext?.revert()
+        }
+    }, [activeGame])
    
     // SCORE SAVING
 const [saveMessage, setSaveMessage] = useState('')
@@ -303,15 +395,31 @@ const saveResult = async (gameData) => {
     const gameTitles = Object.fromEntries(games.map((game) => [game.id, game.title]))
 
     return (
-        <main className="brain-training">
-            <button className="training-back" onClick={() => activeGame ? setActiveGame(null) : onBack()}>
-                ← {activeGame ? 'All Training Games' : 'Back to Games'}
-            </button>
+        <main className="brain-training" ref={pageRef}>
+            <div className="training-topbar">
+                <button
+                    className="training-back"
+                    type="button"
+                    onClick={() => activeGame ? setActiveGame(null) : onBack()}
+                >
+                    <span aria-hidden="true">←</span> {activeGame ? 'All training games' : 'Back to games'}
+                </button>
+                <span className="training-session-chip"><i /> FOCUS MODE <b>READY</b></span>
+            </div>
 
             <header className="training-heading">
-                <span>BRAINBUZZ BRAIN TRAINING</span>
-                <h1>Train Your Brain 🧠</h1>
-                <p>Improve your memory, focus and reaction speed with fun exercises.</p>
+                <div className="training-heading-copy">
+                    <span className="training-eyebrow"><i /> BRAINBUZZ BRAIN TRAINING</span>
+                    <h1>Power up your <strong>brain.</strong></h1>
+                    <p>Sharpen your memory, focus and reflexes with quick, playful challenges.</p>
+                </div>
+                <div className="training-hero-art" aria-hidden="true">
+                    <span className="training-hero-orbit training-hero-orbit-one" />
+                    <span className="training-hero-orbit training-hero-orbit-two" />
+                    <span className="training-hero-brain">🧠</span>
+                    <i className="training-hero-spark training-hero-spark-one">✦</i>
+                    <i className="training-hero-spark training-hero-spark-two">✧</i>
+                </div>
             </header>
 
             {!activeGame && (
@@ -319,39 +427,51 @@ const saveResult = async (gameData) => {
                 <section className="training-dashboard" aria-label="Brain training dashboard">
                     <header className="training-dashboard-heading">
                         <div>
-                            <span>YOUR PERFORMANCE</span>
+                            <span className="training-dashboard-kicker">YOUR PERFORMANCE</span>
                             <h2>Training dashboard</h2>
                         </div>
-                        <p>Every session adds to your progress.</p>
+                        <p><i /> Every session adds to your progress.</p>
                     </header>
 
                     <div className="training-summary-grid">
                         <article className="training-summary">
-                            <span>Total games played</span>
+                            <div className="training-summary-top">
+                                <span>Total games played</span>
+                                <i aria-hidden="true">🎮</i>
+                            </div>
                             <strong>{completedResults.length}</strong>
+                            <small>COMPLETED SESSIONS</small>
                         </article>
                         <article className="training-summary">
-                            <span>Total score</span>
+                            <div className="training-summary-top">
+                                <span>Total score</span>
+                                <i aria-hidden="true">⚡</i>
+                            </div>
                             <strong>{completedResults.reduce((total, result) => total + (Number(result.score) || 0), 0)}</strong>
+                            <small>POINTS EARNED</small>
                         </article>
                         <article className="training-summary">
-                            <span>Games practiced</span>
+                            <div className="training-summary-top">
+                                <span>Games practiced</span>
+                                <i aria-hidden="true">🧠</i>
+                            </div>
                             <strong>{bestScores.filter((game) => game.bestScore !== null).length}<small> / {games.length}</small></strong>
+                            <small>EXERCISES TRIED</small>
                         </article>
                     </div>
 
                     <div className="training-dashboard-grid">
                         <section className="training-dashboard-panel">
                             <div className="training-panel-heading">
-                                <h3>Best score by game</h3>
-                                <span>Personal bests</span>
+                                <h3><span>🏅</span> Best score by game</h3>
+                                <span>PERSONAL BESTS</span>
                             </div>
                             <div className="training-best-list">
                                 {bestScores.map((game) => (
                                     <div className="training-best-row" key={game.id}>
                                         <span className="training-best-icon">{game.icon}</span>
                                         <span className="training-best-name">{game.title}</span>
-                                        <strong>{game.bestScore ?? '—'}</strong>
+                                        <strong>{game.bestScore ?? '—'}<small>{game.bestScore !== null ? ' PTS' : ''}</small></strong>
                                     </div>
                                 ))}
                             </div>
@@ -359,8 +479,8 @@ const saveResult = async (gameData) => {
 
                         <section className="training-dashboard-panel">
                             <div className="training-panel-heading">
-                                <h3>Recent game history</h3>
-                                <span>Latest 5 sessions</span>
+                                <h3><span>🕹️</span> Recent sessions</h3>
+                                <span>LATEST 5</span>
                             </div>
                             {historyLoading ? (
                                 <p className="training-empty-state">Loading your sessions...</p>
@@ -376,7 +496,7 @@ const saveResult = async (gameData) => {
                                                     {new Date(result.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                                                 </time>
                                             </div>
-                                            <span>+{result.score} pts</span>
+                                            <span>+{formatNumber(result.score)} <small>PTS</small></span>
                                         </article>
                                     ))}
                                 </div>
@@ -389,7 +509,7 @@ const saveResult = async (gameData) => {
                     <section className="training-dashboard-panel training-progress-panel">
                         <div className="training-panel-heading">
                             <div>
-                                <h3>Score progress</h3>
+                                <h3><span>📈</span> Score progress</h3>
                                 <p>Your last 8 completed sessions</p>
                             </div>
                             {scoreTrend.length > 0 && <span>{scoreTrend.length} sessions</span>}
@@ -415,25 +535,37 @@ const saveResult = async (gameData) => {
                 </section>
 
                 <section className="training-grid">
-                    {games.map((game) => (
-                        <article className="training-card" key={game.id}>
-                            <div className="training-icon">{game.icon}</div>
-                            <h2>{game.title}</h2>
-                            <p>{game.description}</p>
-                            <button onClick={() => {
-                                setActiveGame(game.id)
-                                if (game.id === 'memory') startMemory()
-                            }}>
-                                Play Now →
-                            </button>
-                        </article>
-                    ))}
+                    {games.map((game, index) => {
+                        const bestScore = bestScores.find(item => item.id === game.id)?.bestScore
+                        const gameType = ['MEMORY', 'FOCUS', 'REFLEX', 'SEQUENCE'][index]
+
+                        return (
+                            <article className={`training-card training-card-${game.id}`} key={game.id}>
+                                <div className="training-card-topline">
+                                    <span className="training-game-type">{gameType} EXERCISE</span>
+                                    {bestScore !== null && (
+                                        <span className="training-best-chip">BEST {formatNumber(bestScore)} PTS</span>
+                                    )}
+                                </div>
+                                <div className="training-icon">{game.icon}</div>
+                                <h2>{game.title}</h2>
+                                <p>{game.description}</p>
+                                <button type="button" onClick={() => {
+                                    setActiveGame(game.id)
+                                    if (game.id === 'memory') startMemory()
+                                }}>
+                                    Start exercise <span aria-hidden="true">↗</span>
+                                </button>
+                            </article>
+                        )
+                    })}
                 </section>
                 </>
             )}
 
             {activeGame === 'memory' && (
                 <section className="training-play">
+                    <span className="training-play-kicker">MEMORY MATCH · EXERCISE 01</span>
                     <h2>Memory Match</h2>
                     <p>Moves: {moves} · Matched: {matched.length / 2}/4</p>
                     <div className="memory-grid">
@@ -455,6 +587,7 @@ const saveResult = async (gameData) => {
 
             {activeGame === 'number' && (
                 <section className="training-play">
+                    <span className="training-play-kicker">NUMBER MEMORY · EXERCISE 02</span>
                     <h2>Number Memory</h2>
                     <p>Remember the number displayed on screen.</p>
                     {showNumber ? (
@@ -477,6 +610,7 @@ const saveResult = async (gameData) => {
 
             {activeGame === 'reaction' && (
                 <section className="training-play">
+                    <span className="training-play-kicker">REACTION TEST · EXERCISE 03</span>
                     <h2>Reaction Test</h2>
                     <p>Wait until the box turns green, then click it quickly!</p>
                     <button
@@ -496,6 +630,7 @@ const saveResult = async (gameData) => {
 
             {activeGame === 'pattern' && (
                 <section className="training-play">
+                    <span className="training-play-kicker">PATTERN RECALL · EXERCISE 04</span>
                     <h2>Pattern Recall</h2>
                     <p>Remember the sequence, then repeat it by selecting the colors.</p>
                     {showPattern ? (

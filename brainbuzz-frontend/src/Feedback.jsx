@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import api from './services/api'
 import './Feedback.css'
 
@@ -8,6 +8,55 @@ function Feedback({ onBack }) {
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState('')
     const [error, setError] = useState('')
+    const pageRef = useRef(null)
+
+    useLayoutEffect(() => {
+        if (!pageRef.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            return undefined
+        }
+
+        let isActive = true
+        let animationContext
+
+        import('gsap')
+            .then(({ gsap }) => {
+                if (!isActive || !pageRef.current) return
+
+                animationContext = gsap.context(() => {
+                    gsap.timeline({ defaults: { ease: 'power3.out' } })
+                        .fromTo(
+                            '.feedback-intro',
+                            { autoAlpha: 0, y: 22 },
+                            { autoAlpha: 1, y: 0, duration: 0.5 }
+                        )
+                        .fromTo(
+                            '.feedback-card',
+                            {
+                                autoAlpha: 0,
+                                y: 24,
+                                rotationX: -5,
+                                transformPerspective: 1100,
+                            },
+                            { autoAlpha: 1, y: 0, rotationX: 0, duration: 0.55 },
+                            '-=0.2'
+                        )
+                        .fromTo(
+                            '.feedback-footer',
+                            { autoAlpha: 0 },
+                            { autoAlpha: 1, duration: 0.35 },
+                            '-=0.1'
+                        )
+                }, pageRef)
+            })
+            .catch(animationError => {
+                console.error('Unable to load feedback animation:', animationError)
+            })
+
+        return () => {
+            isActive = false
+            animationContext?.revert()
+        }
+    }, [])
 
     const ratingDetails = {
         1: { label: 'Poor', emoji: '😞', text: 'We will try to improve!' },
@@ -64,10 +113,10 @@ function Feedback({ onBack }) {
     }
 
     return (
-        <div className="feedback-page">
+        <main className="feedback-page" ref={pageRef}>
 
             <div className="feedback-topbar">
-                <button className="feedback-back-btn" onClick={onBack}>
+                <button className="feedback-back-btn" type="button" onClick={onBack}>
                     <span>←</span>
                     Back to Dashboard
                 </button>
@@ -95,6 +144,36 @@ function Feedback({ onBack }) {
                         Your feedback helps us create a smarter,
                         better and more enjoyable gaming experience.
                     </p>
+
+                    <div className="feedback-journey">
+                        <div className="feedback-journey-heading">
+                            <span className="feedback-journey-icon">✦</span>
+                            <div>
+                                <span>PLAYER POWER</span>
+                                <strong>Make your next move count</strong>
+                            </div>
+                        </div>
+                        <div className="feedback-journey-steps">
+                            <div>
+                                <span>01</span>
+                                <i>Choose a rating</i>
+                            </div>
+                            <span className="feedback-journey-line" />
+                            <div>
+                                <span>02</span>
+                                <i>Share your thoughts</i>
+                            </div>
+                            <span className="feedback-journey-line" />
+                            <div>
+                                <span>03</span>
+                                <i>Help BrainBuzz grow</i>
+                            </div>
+                        </div>
+                        <p className="feedback-journey-note">
+                            <span aria-hidden="true">🔒</span>
+                            Your feedback is shared with the BrainBuzz team.
+                        </p>
+                    </div>
                 </div>
 
                 <form className="feedback-card" onSubmit={handleSubmit}>
@@ -121,6 +200,7 @@ function Feedback({ onBack }) {
                                     }`}
                                     onClick={() => setRating(star)}
                                     aria-label={`Rate ${star} stars`}
+                                    aria-pressed={rating === star}
                                 >
                                     ★
                                 </button>
@@ -156,21 +236,22 @@ function Feedback({ onBack }) {
                         placeholder="Share your thoughts, suggestions or ideas..."
                         rows="6"
                         maxLength="1000"
+                        aria-describedby="feedback-character-count"
                     />
 
-                    <div className="feedback-character-count">
+                    <div className="feedback-character-count" id="feedback-character-count">
                         <span>We'd love to hear your thoughts.</span>
                         <strong>{message.length}/1000</strong>
                     </div>
 
                     {success && (
-                        <div className="feedback-success">
+                        <div className="feedback-success" role="status">
                             <span>✓</span> {success}
                         </div>
                     )}
 
                     {error && (
-                        <div className="feedback-error">
+                        <div className="feedback-error" role="alert">
                             <span>!</span> {error}
                         </div>
                     )}
@@ -195,7 +276,7 @@ function Feedback({ onBack }) {
                 </div>
 
             </div>
-        </div>
+        </main>
     )
 }
 

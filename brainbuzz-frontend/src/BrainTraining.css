@@ -490,3 +490,1295 @@
         gap: 8px;
     }
 }
+
+/* Arcade-style Brain Training dashboard */
+.brain-training {
+    --training-panel: rgba(18, 24, 47, 0.9);
+    --training-border: rgba(147, 160, 219, 0.15);
+    --training-muted: #9da9c9;
+    position: relative;
+    isolation: isolate;
+    width: min(calc(100% - 48px), 1260px);
+    max-width: 1260px;
+    margin: 0 auto;
+    padding: 28px 0 70px;
+    overflow: hidden;
+    color: #f5f6ff;
+    font-family: Inter, system-ui, sans-serif;
+}
+
+.brain-training::before,
+.brain-training::after {
+    position: absolute;
+    z-index: -1;
+    width: 470px;
+    height: 470px;
+    border-radius: 50%;
+    content: "";
+    pointer-events: none;
+}
+
+.brain-training::before {
+    top: -240px;
+    right: -210px;
+    background: radial-gradient(circle, rgba(106, 72, 239, 0.2), transparent 68%);
+}
+
+.brain-training::after {
+    top: 480px;
+    left: -380px;
+    background: radial-gradient(circle, rgba(34, 196, 232, 0.1), transparent 70%);
+}
+
+.training-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 4px;
+}
+
+.brain-training .training-back {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0 14px;
+    border: 1px solid var(--training-border);
+    border-radius: 12px;
+    background: rgba(19, 25, 48, 0.75);
+    color: #e6e9ff;
+    font-size: 10px;
+    font-weight: 750;
+    transition: 180ms ease;
+}
+
+.training-back > span {
+    color: #b8a4ff;
+    font-size: 16px;
+}
+
+.brain-training .training-back:hover {
+    transform: translateX(-3px);
+    border-color: rgba(173, 145, 255, 0.6);
+    background: rgba(84, 57, 153, 0.24);
+}
+
+.training-session-chip {
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+    gap: 7px;
+    padding: 0 11px;
+    border: 1px solid rgba(93, 231, 192, 0.17);
+    border-radius: 99px;
+    background: rgba(49, 171, 129, 0.08);
+    color: #9bb9b4;
+    font-size: 7px;
+    font-weight: 900;
+    letter-spacing: 0.13em;
+}
+
+.training-session-chip > i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #5de7c0;
+    box-shadow: 0 0 9px rgba(93, 231, 192, 0.75);
+}
+
+.training-session-chip b {
+    padding: 4px 6px;
+    border-radius: 99px;
+    background: rgba(93, 231, 192, 0.12);
+    color: #76ddba;
+    font-size: 6px;
+}
+
+.training-heading {
+    display: grid;
+    min-height: 225px;
+    grid-template-columns: minmax(0, 1fr) 230px;
+    align-items: center;
+    gap: 30px;
+    margin: 0 0 25px;
+    text-align: left;
+}
+
+.training-heading-copy {
+    max-width: 680px;
+    padding: 8px 0 0;
+}
+
+.training-heading .training-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #b7a3ff;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.19em;
+}
+
+.training-eyebrow i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #7de6d1;
+    box-shadow: 0 0 10px rgba(125, 230, 209, 0.7);
+}
+
+.training-heading h1 {
+    margin: 11px 0 9px;
+    color: #f7f6ff;
+    font-size: clamp(36px, 5vw, 58px);
+    font-weight: 950;
+    letter-spacing: -0.07em;
+    line-height: 1.04;
+}
+
+.training-heading h1 strong {
+    color: #b49aff;
+    text-shadow: 0 0 32px rgba(155, 123, 255, 0.36);
+}
+
+.training-heading p {
+    max-width: 490px;
+    margin: 0;
+    color: var(--training-muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.training-hero-art {
+    position: relative;
+    display: grid;
+    width: 210px;
+    height: 190px;
+    justify-self: center;
+    place-items: center;
+    transform-style: preserve-3d;
+}
+
+.training-hero-brain {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: 112px;
+    height: 112px;
+    place-items: center;
+    border: 1px solid rgba(199, 183, 255, 0.46);
+    border-radius: 35px;
+    background: linear-gradient(145deg, #a27bff, #6541d9 62%, #3b2b9c);
+    box-shadow: 0 15px 40px rgba(122, 82, 231, 0.35), inset 0 1px rgba(255, 255, 255, 0.38);
+    font-size: 63px;
+    transform: rotate(-7deg);
+}
+
+.training-hero-orbit {
+    position: absolute;
+    width: 190px;
+    height: 72px;
+    border: 1px solid rgba(193, 176, 255, 0.29);
+    border-radius: 50%;
+    transform: rotate(-29deg);
+}
+
+.training-hero-orbit-two {
+    width: 208px;
+    height: 90px;
+    border-color: rgba(91, 220, 230, 0.21);
+    transform: rotate(38deg);
+}
+
+.training-hero-spark {
+    position: absolute;
+    z-index: 2;
+    color: #ffe28c;
+    font-size: 19px;
+    font-style: normal;
+    text-shadow: 0 0 12px rgba(255, 223, 134, 0.7);
+}
+
+.training-hero-spark-one {
+    top: 13px;
+    right: 16px;
+}
+
+.training-hero-spark-two {
+    bottom: 15px;
+    left: 3px;
+    color: #a5eff2;
+}
+
+/* Training dashboard */
+.training-dashboard {
+    margin-bottom: 38px;
+    padding: 24px;
+    border: 1px solid rgba(150, 164, 221, 0.14);
+    border-radius: 24px;
+    background:
+        radial-gradient(ellipse at 100% 0, rgba(103, 78, 208, 0.12), transparent 36%),
+        linear-gradient(145deg, rgba(17, 23, 45, 0.91), rgba(11, 16, 33, 0.95));
+    box-shadow: 0 19px 48px rgba(3, 5, 15, 0.2), inset 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.training-dashboard-heading {
+    align-items: flex-end;
+    margin-bottom: 17px;
+}
+
+.training-dashboard-heading .training-dashboard-kicker {
+    color: #b39eff;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.17em;
+}
+
+.training-dashboard-heading h2 {
+    margin-top: 5px;
+    color: #f4f4ff;
+    font-size: 21px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+}
+
+.training-dashboard-heading p {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #97a4c2;
+    font-size: 9px;
+}
+
+.training-dashboard-heading p > i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #62deb5;
+    box-shadow: 0 0 8px rgba(98, 222, 181, 0.7);
+}
+
+.training-summary-grid {
+    gap: 11px;
+    margin-bottom: 14px;
+}
+
+.training-summary {
+    min-height: 111px;
+    gap: 7px;
+    padding: 14px 16px;
+    border: 1px solid rgba(146, 161, 220, 0.13);
+    border-radius: 16px;
+    background:
+        radial-gradient(ellipse at 100% 0, rgba(147, 117, 252, 0.12), transparent 53%),
+        rgba(16, 22, 43, 0.84);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.training-summary:nth-child(2) {
+    background:
+        radial-gradient(ellipse at 100% 0, rgba(255, 199, 88, 0.1), transparent 53%),
+        rgba(16, 22, 43, 0.84);
+}
+
+.training-summary:nth-child(3) {
+    background:
+        radial-gradient(ellipse at 100% 0, rgba(86, 223, 194, 0.1), transparent 53%),
+        rgba(16, 22, 43, 0.84);
+}
+
+.training-summary-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.training-summary-top > span {
+    color: #9da9c7;
+    font-size: 8px;
+    font-weight: 750;
+}
+
+.training-summary-top > i {
+    display: grid;
+    width: 27px;
+    height: 27px;
+    place-items: center;
+    border: 1px solid rgba(170, 150, 255, 0.17);
+    border-radius: 9px;
+    background: rgba(131, 98, 231, 0.12);
+    font-size: 13px;
+    font-style: normal;
+}
+
+.training-summary strong {
+    color: #f6f5ff;
+    font-size: 25px;
+    font-weight: 950;
+    letter-spacing: -0.04em;
+}
+
+.training-summary strong small {
+    color: #9eabd0;
+    font-size: 12px;
+}
+
+.training-summary > small {
+    color: #72809f;
+    font-size: 6px;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+}
+
+.training-dashboard-grid {
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.training-dashboard-panel {
+    min-width: 0;
+    padding: 17px;
+    border: 1px solid rgba(145, 161, 215, 0.12);
+    border-radius: 16px;
+    background: rgba(10, 15, 32, 0.54);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.035);
+}
+
+.training-panel-heading {
+    margin-bottom: 12px;
+}
+
+.training-panel-heading h3 {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #eceeff;
+    font-size: 12px;
+    font-weight: 850;
+}
+
+.training-panel-heading h3 > span {
+    font-size: 14px;
+}
+
+.training-panel-heading > span,
+.training-panel-heading p {
+    color: #828ead;
+    font-size: 7px;
+    font-weight: 850;
+    letter-spacing: 0.1em;
+}
+
+.training-panel-heading p {
+    margin-top: 4px;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+.training-best-row,
+.training-history-row {
+    min-height: 42px;
+    border-top-color: rgba(148, 163, 184, 0.1);
+}
+
+.training-best-icon {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    flex-basis: 28px;
+    place-items: center;
+    border: 1px solid rgba(162, 143, 255, 0.14);
+    border-radius: 9px;
+    background: rgba(118, 89, 217, 0.1);
+    font-size: 14px;
+}
+
+.training-best-name,
+.training-history-row strong {
+    color: #cbd3e9;
+    font-size: 9px;
+}
+
+.training-best-row > strong {
+    color: #c7b5ff;
+    font-size: 11px;
+}
+
+.training-best-row > strong small {
+    color: #8491ae;
+    font-size: 7px;
+}
+
+.training-history-row {
+    gap: 8px;
+}
+
+.training-history-row > div {
+    gap: 3px;
+}
+
+.training-history-row time {
+    color: #8491af;
+    font-size: 8px;
+}
+
+.training-history-row > span {
+    color: #7de0b7;
+    font-size: 9px;
+    white-space: nowrap;
+}
+
+.training-history-row > span small {
+    color: #8491af;
+    font-size: 6px;
+}
+
+.training-progress-panel {
+    padding: 17px 18px 14px;
+}
+
+.training-progress-panel .training-panel-heading {
+    margin-bottom: 8px;
+}
+
+.training-progress-panel .training-panel-heading > span {
+    padding: 5px 8px;
+    border: 1px solid rgba(161, 174, 218, 0.13);
+    border-radius: 99px;
+    color: #a4afcc;
+    font-size: 7px;
+    letter-spacing: 0.04em;
+}
+
+.training-trend-chart {
+    min-height: 127px;
+    padding-top: 5px;
+}
+
+.training-trend-column {
+    grid-template-rows: 15px 1fr 15px;
+    gap: 4px;
+}
+
+.training-trend-column strong {
+    color: #bcb0f5;
+    font-size: 8px;
+}
+
+.training-trend-track {
+    border-bottom-color: rgba(148, 163, 184, 0.18);
+}
+
+.training-trend-track span {
+    width: min(100%, 30px);
+    border-radius: 7px 7px 2px 2px;
+    background: linear-gradient(180deg, #7a61ec, #2f9da8);
+    box-shadow: 0 0 11px rgba(111, 101, 238, 0.2);
+}
+
+.training-trend-column small {
+    color: #8290af;
+    font-size: 7px;
+}
+
+.training-empty-state {
+    color: #9ba7c4;
+    font-size: 9px;
+    line-height: 1.65;
+}
+
+/* Game launch cards */
+.training-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 13px;
+}
+
+.training-card {
+    --game-accent: #a58aff;
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 270px;
+    flex-direction: column;
+    padding: 17px;
+    overflow: hidden;
+    border: 1px solid rgba(157, 145, 232, 0.2);
+    border-radius: 19px;
+    background:
+        radial-gradient(ellipse at 100% 0, color-mix(in srgb, var(--game-accent) 15%, transparent), transparent 50%),
+        linear-gradient(145deg, rgba(26, 28, 57, 0.97), rgba(13, 19, 38, 0.99));
+    box-shadow: 0 14px 30px rgba(3, 5, 15, 0.22), inset 0 1px rgba(255, 255, 255, 0.05);
+    transform-style: preserve-3d;
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.training-card-memory {
+    --game-accent: #a58aff;
+}
+
+.training-card-number {
+    --game-accent: #6de0d0;
+}
+
+.training-card-reaction {
+    --game-accent: #ffd36e;
+}
+
+.training-card-pattern {
+    --game-accent: #f08fb6;
+}
+
+.training-card::after {
+    position: absolute;
+    right: -53px;
+    bottom: -82px;
+    width: 165px;
+    height: 140px;
+    border: 1px solid color-mix(in srgb, var(--game-accent) 20%, transparent);
+    border-radius: 50%;
+    content: "";
+    pointer-events: none;
+}
+
+.training-card:hover {
+    border-color: color-mix(in srgb, var(--game-accent) 54%, transparent);
+    box-shadow: 0 20px 42px rgba(3, 5, 15, 0.34), 0 0 24px color-mix(in srgb, var(--game-accent) 8%, transparent);
+}
+
+.training-card-topline {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    min-height: 22px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.training-game-type {
+    color: color-mix(in srgb, var(--game-accent) 78%, #cbd3eb);
+    font-size: 6px;
+    font-weight: 950;
+    letter-spacing: 0.12em;
+}
+
+.training-best-chip {
+    padding: 4px 6px;
+    border: 1px solid color-mix(in srgb, var(--game-accent) 18%, transparent);
+    border-radius: 99px;
+    background: color-mix(in srgb, var(--game-accent) 8%, transparent);
+    color: #c7d0e7;
+    font-size: 6px;
+    font-weight: 850;
+    white-space: nowrap;
+}
+
+.training-icon {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: 58px;
+    height: 58px;
+    margin: 17px 0 14px;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--game-accent) 35%, transparent);
+    border-radius: 19px;
+    background: linear-gradient(145deg, color-mix(in srgb, var(--game-accent) 19%, #292849), rgba(13, 20, 39, 0.95));
+    box-shadow: 0 9px 23px color-mix(in srgb, var(--game-accent) 11%, transparent), inset 0 1px rgba(255, 255, 255, 0.12);
+    font-size: 31px;
+}
+
+.training-card h2 {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 7px;
+    color: #f2f4ff;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: -0.025em;
+}
+
+.training-card p {
+    position: relative;
+    z-index: 1;
+    min-height: 34px;
+    margin: 0 0 15px;
+    color: #9ca8c7;
+    font-size: 9px;
+    line-height: 1.65;
+}
+
+.training-card button {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    min-height: 39px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 7px;
+    margin: auto 0 0;
+    padding: 0 12px;
+    border: 1px solid color-mix(in srgb, var(--game-accent) 32%, transparent);
+    border-radius: 11px;
+    background: color-mix(in srgb, var(--game-accent) 13%, rgba(12, 17, 35, 0.9));
+    color: #f1efff;
+    font-size: 9px;
+    font-weight: 850;
+    transition: transform 170ms ease, background 170ms ease, box-shadow 170ms ease;
+}
+
+.training-card button > span {
+    color: var(--game-accent);
+    font-size: 15px;
+    transition: transform 170ms ease;
+}
+
+.training-card button:hover {
+    transform: translateY(-1px);
+    background: color-mix(in srgb, var(--game-accent) 20%, rgba(12, 17, 35, 0.9));
+    box-shadow: 0 7px 18px color-mix(in srgb, var(--game-accent) 12%, transparent);
+    opacity: 1;
+}
+
+.training-card button:hover > span {
+    transform: translate(2px, -2px);
+}
+
+/* Active mini games */
+.training-play {
+    position: relative;
+    max-width: 760px;
+    min-height: 380px;
+    margin: 0 auto;
+    padding: 34px;
+    overflow: hidden;
+    border: 1px solid rgba(157, 139, 255, 0.27);
+    border-radius: 24px;
+    background:
+        radial-gradient(ellipse at 100% 0, rgba(91, 215, 223, 0.09), transparent 40%),
+        linear-gradient(145deg, rgba(24, 26, 55, 0.98), rgba(12, 18, 36, 0.99));
+    box-shadow: 0 23px 65px rgba(3, 5, 15, 0.35), inset 0 1px rgba(255, 255, 255, 0.06);
+    text-align: center;
+}
+
+.training-play-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 8px;
+    color: #b6a2ff;
+    font-size: 7px;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+}
+
+.training-play-kicker::before {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #71e2cb;
+    box-shadow: 0 0 8px rgba(113, 226, 203, 0.7);
+    content: "";
+}
+
+.training-play h2 {
+    margin: 4px 0 10px;
+    color: #f6f5ff;
+    font-size: 29px;
+    font-weight: 950;
+    letter-spacing: -0.04em;
+}
+
+.training-play p {
+    color: #a5b0cd;
+    font-size: 10px;
+    line-height: 1.7;
+}
+
+.brain-training .training-play input {
+    min-height: 48px;
+    border-color: rgba(157, 143, 226, 0.3);
+    border-radius: 12px;
+    background: rgba(6, 11, 26, 0.8);
+    color: #f8f6ff;
+}
+
+.memory-grid {
+    gap: 11px;
+    max-width: 390px;
+    margin: 25px auto 17px;
+}
+
+.brain-training .memory-card {
+    border: 1px solid rgba(183, 157, 255, 0.42);
+    border-radius: 15px;
+    background: linear-gradient(145deg, #5141a5, #26285d);
+    box-shadow: 0 8px 20px rgba(4, 6, 18, 0.25), inset 0 1px rgba(255, 255, 255, 0.15);
+    transition: transform 150ms ease, filter 150ms ease, background 150ms ease;
+}
+
+.brain-training .memory-card:hover {
+    transform: translateY(-2px) rotateY(8deg);
+    background: linear-gradient(145deg, #6d54d1, #343879);
+}
+
+.memory-number {
+    display: grid;
+    width: min(100%, 390px);
+    min-height: 110px;
+    place-items: center;
+    border: 1px solid rgba(105, 220, 233, 0.2);
+    border-radius: 18px;
+    background: rgba(7, 16, 34, 0.68);
+    color: #8fe6ed;
+    font-size: clamp(42px, 9vw, 62px);
+    letter-spacing: 0.22em;
+    text-shadow: 0 0 24px rgba(105, 220, 233, 0.35);
+}
+
+.brain-training .training-play .training-action {
+    min-height: 43px;
+    margin: 16px 5px 0;
+    padding: 0 17px;
+    border: 1px solid rgba(195, 176, 255, 0.28);
+    border-radius: 12px;
+    background: linear-gradient(130deg, #8865f2, #5f45ce);
+    box-shadow: 0 8px 19px rgba(85, 59, 182, 0.2);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 850;
+}
+
+.brain-training .training-play .training-action:hover {
+    opacity: 1;
+    box-shadow: 0 12px 25px rgba(85, 59, 182, 0.32);
+}
+
+.reaction-box {
+    min-height: 175px;
+    border: 1px solid rgba(255, 185, 96, 0.25);
+    background: linear-gradient(145deg, #be7528, #733728);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.2), 0 12px 30px rgba(43, 14, 14, 0.25);
+    font-size: 18px;
+    letter-spacing: 0.07em;
+    transition: transform 170ms ease, background 200ms ease, box-shadow 200ms ease;
+}
+
+.reaction-box:hover {
+    transform: translateY(-2px);
+}
+
+.reaction-box.reaction-ready {
+    border-color: rgba(128, 255, 185, 0.45);
+    background: linear-gradient(145deg, #13aa70, #087e64);
+    box-shadow: 0 0 35px rgba(38, 218, 142, 0.22), inset 0 1px rgba(255, 255, 255, 0.23);
+}
+
+.pattern-display {
+    min-height: 93px;
+    align-items: center;
+    padding: 18px;
+    border: 1px solid rgba(160, 145, 240, 0.17);
+    border-radius: 17px;
+    background: rgba(7, 12, 29, 0.56);
+    font-size: 35px;
+}
+
+.pattern-buttons {
+    margin: 21px 0;
+}
+
+.brain-training .pattern-buttons button {
+    border: 1px solid rgba(165, 181, 218, 0.2);
+    border-radius: 17px;
+    background: rgba(32, 39, 74, 0.9);
+    box-shadow: 0 8px 19px rgba(3, 5, 15, 0.18);
+    transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.brain-training .pattern-buttons button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 23px rgba(3, 5, 15, 0.27);
+}
+
+/* Override shared dark-theme defaults for this page only. */
+.app.dark-theme .brain-training {
+    width: min(calc(100% - 48px), 1260px);
+    max-width: 1260px;
+    margin: 0 auto;
+    color: #f5f6ff;
+}
+
+.app.dark-theme .brain-training .training-back {
+    min-height: 40px;
+    padding: 0 14px;
+    border: 1px solid var(--training-border);
+    border-radius: 12px;
+    background: rgba(19, 25, 48, 0.75);
+    color: #e6e9ff;
+}
+
+.app.dark-theme .brain-training .training-back:hover:not(:disabled) {
+    transform: translateX(-3px);
+    border-color: rgba(173, 145, 255, 0.6);
+    background: rgba(84, 57, 153, 0.24);
+}
+
+.app.dark-theme .brain-training .training-heading h1 {
+    color: #f7f6ff;
+    font-size: clamp(36px, 5vw, 58px);
+    letter-spacing: -0.07em;
+}
+
+.app.dark-theme .brain-training .training-heading p {
+    color: var(--training-muted);
+}
+
+.app.dark-theme .brain-training .training-dashboard {
+    border: 1px solid rgba(150, 164, 221, 0.14);
+    border-radius: 24px;
+    background:
+        radial-gradient(ellipse at 100% 0, rgba(103, 78, 208, 0.12), transparent 36%),
+        linear-gradient(145deg, rgba(17, 23, 45, 0.91), rgba(11, 16, 33, 0.95));
+    box-shadow: 0 19px 48px rgba(3, 5, 15, 0.2), inset 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.app.dark-theme .brain-training .training-dashboard-heading h2,
+.app.dark-theme .brain-training .training-panel-heading h3 {
+    color: #f4f4ff;
+}
+
+.app.dark-theme .brain-training .training-dashboard-heading p,
+.app.dark-theme .brain-training .training-panel-heading p,
+.app.dark-theme .brain-training .training-history-row time {
+    color: #97a4c2;
+}
+
+.app.dark-theme .brain-training .training-summary {
+    border: 1px solid rgba(146, 161, 220, 0.13);
+    border-radius: 16px;
+    background:
+        radial-gradient(ellipse at 100% 0, rgba(147, 117, 252, 0.12), transparent 53%),
+        rgba(16, 22, 43, 0.84);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.app.dark-theme .brain-training .training-summary:nth-child(2) {
+    background:
+        radial-gradient(ellipse at 100% 0, rgba(255, 199, 88, 0.1), transparent 53%),
+        rgba(16, 22, 43, 0.84);
+}
+
+.app.dark-theme .brain-training .training-summary:nth-child(3) {
+    background:
+        radial-gradient(ellipse at 100% 0, rgba(86, 223, 194, 0.1), transparent 53%),
+        rgba(16, 22, 43, 0.84);
+}
+
+.app.dark-theme .brain-training .training-summary-top > span {
+    color: #9da9c7;
+}
+
+.app.dark-theme .brain-training .training-summary strong {
+    color: #f6f5ff;
+}
+
+.app.dark-theme .brain-training .training-dashboard-panel {
+    border: 1px solid rgba(145, 161, 215, 0.12);
+    border-radius: 16px;
+    background: rgba(10, 15, 32, 0.54);
+    box-shadow: inset 0 1px rgba(255, 255, 255, 0.035);
+}
+
+.app.dark-theme .brain-training .training-best-name,
+.app.dark-theme .brain-training .training-history-row strong {
+    color: #cbd3e9;
+}
+
+.app.dark-theme .brain-training .training-empty-state {
+    color: #9ba7c4;
+}
+
+.app.dark-theme .brain-training .training-card {
+    border: 1px solid rgba(157, 145, 232, 0.2);
+    border-radius: 19px;
+    background:
+        radial-gradient(ellipse at 100% 0, color-mix(in srgb, var(--game-accent) 15%, transparent), transparent 50%),
+        linear-gradient(145deg, rgba(26, 28, 57, 0.97), rgba(13, 19, 38, 0.99));
+    box-shadow: 0 14px 30px rgba(3, 5, 15, 0.22), inset 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.app.dark-theme .brain-training .training-card:hover {
+    border-color: color-mix(in srgb, var(--game-accent) 54%, transparent);
+    box-shadow: 0 20px 42px rgba(3, 5, 15, 0.34), 0 0 24px color-mix(in srgb, var(--game-accent) 8%, transparent);
+}
+
+.app.dark-theme .brain-training .training-card h2 {
+    color: #f2f4ff;
+}
+
+.app.dark-theme .brain-training .training-card p {
+    color: #9ca8c7;
+}
+
+.app.dark-theme .brain-training .training-card button {
+    min-height: 39px;
+    border: 1px solid color-mix(in srgb, var(--game-accent) 32%, transparent);
+    border-radius: 11px;
+    background: color-mix(in srgb, var(--game-accent) 13%, rgba(12, 17, 35, 0.9));
+    color: #f1efff;
+}
+
+.app.dark-theme .brain-training .training-play {
+    max-width: 760px;
+    padding: 34px;
+    border: 1px solid rgba(157, 139, 255, 0.27);
+    border-radius: 24px;
+    background:
+        radial-gradient(ellipse at 100% 0, rgba(91, 215, 223, 0.09), transparent 40%),
+        linear-gradient(145deg, rgba(24, 26, 55, 0.98), rgba(12, 18, 36, 0.99));
+    box-shadow: 0 23px 65px rgba(3, 5, 15, 0.35), inset 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.app.dark-theme .brain-training .training-play h2 {
+    color: #f6f5ff;
+}
+
+.app.dark-theme .brain-training .training-play p {
+    color: #a5b0cd;
+}
+
+@media (max-width: 900px) {
+    .brain-training,
+    .app.dark-theme .brain-training {
+        width: min(calc(100% - 36px), 760px);
+    }
+
+    .training-heading {
+        min-height: 200px;
+        grid-template-columns: minmax(0, 1fr) 185px;
+        gap: 16px;
+    }
+
+    .training-hero-art {
+        width: 175px;
+        height: 170px;
+    }
+
+    .training-hero-brain {
+        width: 94px;
+        height: 94px;
+        border-radius: 30px;
+        font-size: 53px;
+    }
+
+    .training-hero-orbit {
+        width: 162px;
+        height: 64px;
+    }
+
+    .training-hero-orbit-two {
+        width: 179px;
+        height: 78px;
+    }
+
+    .training-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .brain-training,
+    .app.dark-theme .brain-training {
+        width: calc(100% - 28px);
+        padding: 20px 0 43px;
+    }
+
+    .training-topbar {
+        margin-bottom: 9px;
+    }
+
+    .brain-training .training-back,
+    .app.dark-theme .brain-training .training-back {
+        min-height: 36px;
+        padding: 0 10px;
+        font-size: 9px;
+    }
+
+    .training-session-chip {
+        min-height: 28px;
+        padding: 0 8px;
+        font-size: 6px;
+    }
+
+    .training-heading {
+        min-height: 165px;
+        grid-template-columns: minmax(0, 1fr) 95px;
+        gap: 4px;
+        margin-bottom: 18px;
+    }
+
+    .training-heading h1,
+    .app.dark-theme .brain-training .training-heading h1 {
+        margin: 9px 0 7px;
+        font-size: clamp(30px, 8vw, 42px);
+    }
+
+    .training-heading p {
+        font-size: 10px;
+    }
+
+    .training-heading .training-eyebrow {
+        font-size: 7px;
+        letter-spacing: 0.14em;
+    }
+
+    .training-hero-art {
+        width: 90px;
+        height: 120px;
+        margin-top: 32px;
+    }
+
+    .training-hero-brain {
+        width: 61px;
+        height: 61px;
+        border-radius: 21px;
+        font-size: 34px;
+    }
+
+    .training-hero-orbit {
+        width: 103px;
+        height: 43px;
+    }
+
+    .training-hero-orbit-two {
+        width: 111px;
+        height: 51px;
+    }
+
+    .training-hero-spark {
+        font-size: 13px;
+    }
+
+    .training-hero-spark-one {
+        top: 15px;
+        right: 0;
+    }
+
+    .training-hero-spark-two {
+        bottom: 13px;
+        left: 0;
+    }
+
+    .training-dashboard,
+    .app.dark-theme .brain-training .training-dashboard {
+        margin-bottom: 27px;
+        padding: 16px;
+        border-radius: 19px;
+    }
+
+    .training-dashboard-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+        margin-bottom: 13px;
+    }
+
+    .training-dashboard-heading h2 {
+        font-size: 18px;
+    }
+
+    .training-summary-grid,
+    .app.dark-theme .brain-training .training-summary-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .training-summary,
+    .app.dark-theme .brain-training .training-summary {
+        min-height: 85px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+        padding: 11px 13px;
+        border-radius: 13px;
+    }
+
+    .training-summary-top {
+        grid-row: 1;
+    }
+
+    .training-summary strong {
+        font-size: 21px;
+    }
+
+    .training-summary > small {
+        font-size: 6px;
+    }
+
+    .training-dashboard-grid,
+    .app.dark-theme .brain-training .training-dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 9px;
+    }
+
+    .training-dashboard-panel,
+    .app.dark-theme .brain-training .training-dashboard-panel {
+        padding: 14px;
+        border-radius: 14px;
+    }
+
+    .training-progress-panel {
+        padding: 14px 13px 11px;
+    }
+
+    .training-trend-chart {
+        min-height: 112px;
+        gap: 5px;
+    }
+
+    .training-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .training-card,
+    .app.dark-theme .brain-training .training-card {
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 52px minmax(0, 1fr);
+        grid-template-rows: auto auto auto auto;
+        align-items: center;
+        column-gap: 12px;
+        padding: 14px;
+        border-radius: 17px;
+    }
+
+    .training-card-topline {
+        grid-column: 2;
+        grid-row: 1;
+        width: 100%;
+    }
+
+    .training-icon {
+        width: 49px;
+        height: 49px;
+        grid-column: 1;
+        grid-row: 1 / 4;
+        margin: 0;
+        border-radius: 16px;
+        font-size: 26px;
+    }
+
+    .training-card h2 {
+        grid-column: 2;
+        grid-row: 2;
+        margin: 4px 0;
+        font-size: 14px;
+    }
+
+    .training-card p {
+        grid-column: 2;
+        grid-row: 3;
+        min-height: 0;
+        margin: 0 0 9px;
+        font-size: 8px;
+    }
+
+    .training-card button,
+    .app.dark-theme .brain-training .training-card button {
+        grid-column: 2;
+        grid-row: 4;
+        min-height: 33px;
+        margin: 0;
+        padding: 0 9px;
+        font-size: 8px;
+    }
+
+    .training-play,
+    .app.dark-theme .brain-training .training-play {
+        min-height: 340px;
+        padding: 23px 15px;
+        border-radius: 19px;
+    }
+
+    .training-play h2 {
+        font-size: 24px;
+    }
+
+    .memory-grid {
+        gap: 8px;
+    }
+
+    .brain-training .memory-card {
+        border-radius: 12px;
+        font-size: 23px;
+    }
+
+    .reaction-box {
+        min-height: 150px;
+        font-size: 16px;
+    }
+
+    .pattern-display {
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 28px;
+    }
+
+    .pattern-buttons {
+        gap: 10px;
+    }
+
+    .brain-training .pattern-buttons button {
+        width: 54px;
+        height: 54px;
+        border-radius: 14px;
+        font-size: 23px;
+    }
+}
+
+@media (max-width: 360px) {
+    .brain-training,
+    .app.dark-theme .brain-training {
+        width: calc(100% - 22px);
+    }
+
+    .training-session-chip {
+        gap: 5px;
+        font-size: 5px;
+    }
+
+    .training-heading {
+        grid-template-columns: minmax(0, 1fr) 72px;
+    }
+
+    .training-hero-art {
+        width: 70px;
+    }
+
+    .training-hero-brain {
+        width: 54px;
+        height: 54px;
+        font-size: 30px;
+    }
+
+    .training-game-type,
+    .training-best-chip {
+        font-size: 5px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .brain-training *,
+    .brain-training *::before,
+    .brain-training *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}

@@ -2394,6 +2394,53 @@ body.dark-theme .auth-page {
     align-items: stretch;
 }
 
+.level-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 17px;
+    padding: 10px 12px;
+    border: 1px solid #e4defb;
+    border-radius: 12px;
+    background: #faf9ff;
+}
+
+.level-pagination button {
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid #d5cdfa;
+    border-radius: 9px;
+    background: #f0edff;
+    color: #5940bf;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.level-pagination button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.level-pagination > span {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    color: #292740;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.level-pagination small {
+    color: #716b91;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+}
+
 .level-card {
     display: flex;
     flex-direction: column;
@@ -2443,6 +2490,21 @@ body.dark-theme .auth-page {
 @media (max-width: 600px) {
     .level-cards {
         grid-template-columns: 1fr;
+    }
+
+    .level-pagination {
+        gap: 6px;
+        padding: 8px 6px;
+    }
+
+    .level-pagination button {
+        min-height: 32px;
+        padding: 0 7px;
+        font-size: 10px;
+    }
+
+    .level-pagination > span {
+        font-size: 10px;
     }
 }
 

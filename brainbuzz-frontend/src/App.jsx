@@ -20,6 +20,7 @@ import KnowledgeChallenge from './KnowledgeChallenge'
 
 // Temporarily hide Daily Challenge while retaining its player implementation.
 const DAILY_CHALLENGE_UI_ENABLED = false
+const LEVEL_PAGE_SIZE = 10
 
 const isUsableToken = (token) =>
     typeof token === 'string' &&
@@ -336,6 +337,7 @@ function App() {
     const [selectedLevel, setSelectedLevel] = useState(1)
     const [levelProgress, setLevelProgress] = useState([])
     const [currentUnlockedLevel, setCurrentUnlockedLevel] = useState(1)
+    const [levelPage, setLevelPage] = useState(1)
 
     // CATEGORY FILTER STATES
     const [playerCategories, setPlayerCategories] = useState([])
@@ -405,6 +407,7 @@ function App() {
                 Math.max(1, ...unlockedLevels)
 
             setCurrentUnlockedLevel(nextLevel)
+            setLevelPage(Math.ceil(nextLevel / LEVEL_PAGE_SIZE))
         }
     } catch (error) {
         console.error('Level Progress Error:', error)
@@ -684,6 +687,7 @@ const fetchPlayerCategories = async (token) => {
             setShowLeaderboard(false)
             setLevelProgress([])
             setCurrentUnlockedLevel(1)
+            setLevelPage(1)
             resetGame()
         }
     }
@@ -1246,49 +1250,72 @@ if (selectedGameMode === 'knowledge') {
     // DASHBOARD
 if (showDashboard) {
         const maxLevelToShow = Math.max(10, currentUnlockedLevel + 4)
+        const totalLevelPages = Math.ceil(maxLevelToShow / LEVEL_PAGE_SIZE)
+        const firstLevelOnPage = (levelPage - 1) * LEVEL_PAGE_SIZE + 1
+        const visibleLevelCount = Math.min(
+            LEVEL_PAGE_SIZE,
+            maxLevelToShow - firstLevelOnPage + 1
+        )
 
         return (
             <div className={`app ${theme}-theme`}>
                 {navbar}
 
-                <main className="dashboard-container">
-                    <div className="dashboard-welcome">
-                        <p className="level">PLAYER DASHBOARD</p>
-                        <h1>Welcome, {user.name}! 👋</h1>
-                        <p>Ready to challenge your brain today?</p>
-                    </div>
-
-                    <div className="dashboard-stats">
-                        <div className="stat-card">
-                            <span>🎮</span>
-                            <h2>{dashboardStats.games_played}</h2>
-                            <p>Games Played</p>
+                <main className="dashboard-container dashboard-arcade">
+                    <section className="dashboard-welcome">
+                        <div className="dashboard-welcome-copy">
+                            <p className="level"><span aria-hidden="true">✦</span> PLAYER DASHBOARD</p>
+                            <h1>Welcome back,<strong>{user.name}!</strong></h1>
+                            <p>Your next brain-boosting challenge is waiting. Pick a game and make this run count.</p>
+                            <div className="dashboard-welcome-meta">
+                                <span><i /> LEVEL {currentUnlockedLevel} UNLOCKED</span>
+                                <span><i /> READY WHEN YOU ARE</span>
+                            </div>
                         </div>
-
-                        <div className="stat-card">
-                            <span>⭐</span>
-                            <h2>{dashboardStats.total_score}</h2>
-                            <p>Total Score</p>
+                        <div className="dashboard-hero-art" aria-hidden="true">
+                            <span className="dashboard-hero-orbit dashboard-hero-orbit-one" />
+                            <span className="dashboard-hero-orbit dashboard-hero-orbit-two" />
+                            <span className="dashboard-hero-brain">🧠</span>
+                            <span className="dashboard-hero-spark dashboard-hero-spark-one">✦</span>
+                            <span className="dashboard-hero-spark dashboard-hero-spark-two">✧</span>
+                            <span className="dashboard-hero-level">
+                                <small>NEXT UP</small>
+                                <strong>LEVEL {currentUnlockedLevel}</strong>
+                            </span>
                         </div>
+                    </section>
 
-                        <div className="stat-card">
-                            <span>✅</span>
-                            <h2>{dashboardStats.total_correct}</h2>
-                            <p>Correct Answers</p>
-                        </div>
+                    <section className="dashboard-stats" aria-label="Your game statistics">
+                        <article className="stat-card stat-card-games">
+                            <span className="stat-icon" aria-hidden="true">🎮</span>
+                            <div><p>Games played</p><h2>{dashboardStats.games_played}</h2></div>
+                            <i className="stat-card-glow" aria-hidden="true" />
+                        </article>
 
-                        <div className="stat-card">
-                            <span>❌</span>
-                            <h2>{dashboardStats.total_wrong}</h2>
-                            <p>Wrong Answers</p>
-                        </div>
+                        <article className="stat-card stat-card-score">
+                            <span className="stat-icon" aria-hidden="true">⭐</span>
+                            <div><p>Total score</p><h2>{dashboardStats.total_score}</h2></div>
+                            <i className="stat-card-glow" aria-hidden="true" />
+                        </article>
 
-                        <div className="stat-card">
-                            <span>📊</span>
-                            <h2>{dashboardStats.accuracy}%</h2>
-                            <p>Accuracy</p>
-                        </div>
-                    </div>
+                        <article className="stat-card stat-card-correct">
+                            <span className="stat-icon" aria-hidden="true">✅</span>
+                            <div><p>Correct answers</p><h2>{dashboardStats.total_correct}</h2></div>
+                            <i className="stat-card-glow" aria-hidden="true" />
+                        </article>
+
+                        <article className="stat-card stat-card-wrong">
+                            <span className="stat-icon" aria-hidden="true">🧩</span>
+                            <div><p>Wrong answers</p><h2>{dashboardStats.total_wrong}</h2></div>
+                            <i className="stat-card-glow" aria-hidden="true" />
+                        </article>
+
+                        <article className="stat-card stat-card-accuracy">
+                            <span className="stat-icon" aria-hidden="true">🎯</span>
+                            <div><p>Accuracy</p><h2>{dashboardStats.accuracy}%</h2></div>
+                            <i className="stat-card-glow" aria-hidden="true" />
+                        </article>
+                    </section>
 
 {/* BRAINBUZZ GAMES HUB */}
 <section className="games-hub-promo">
@@ -1309,8 +1336,11 @@ if (showDashboard) {
     </button>
 </section>
                     <section className="dashboard-game">
-                        <h2>🧠 BrainBuzz Levels</h2>
-                        <p>Get at least 3 correct answers out of 5 to unlock the next level.</p>
+                        <div className="dashboard-game-heading">
+                            <span className="dashboard-section-kicker">MAIN CAMPAIGN</span>
+                            <h2><span aria-hidden="true">🧠</span> BrainBuzz Levels</h2>
+                            <p>Get at least 3 correct answers out of 5 to unlock the next level.</p>
+                        </div>
                       
                       <div className="player-category-filter">
     <label htmlFor="player-category">
@@ -1348,8 +1378,8 @@ if (showDashboard) {
     </select>
 </div>
                         <div className="level-cards">
-                            {Array.from({ length: maxLevelToShow }, (_, index) => {
-                                const level = index + 1
+                            {Array.from({ length: visibleLevelCount }, (_, index) => {
+                                const level = firstLevelOnPage + index
                                 const progress = levelProgress.find(
                                     (item) => Number(item.level) === level
                                 )
@@ -1404,56 +1434,108 @@ if (showDashboard) {
                                 )
                             })}
                         </div>
-                                                {DAILY_CHALLENGE_UI_ENABLED && (
-                                                    <button
-                                                        className="dashboard-btn"
-                                                        onClick={() => setShowDailyChallenge(true)}
-                                                    >
-                                                        🎯 Daily Challenge
-                                                    </button>
+                                                {totalLevelPages > 1 && (
+                                                    <nav className="level-pagination" aria-label="Level pages">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setLevelPage(page => Math.max(1, page - 1))}
+                                                            disabled={levelPage === 1}
+                                                        >
+                                                            ← Earlier levels
+                                                        </button>
+                                                        <span>
+                                                            Levels {firstLevelOnPage}–{firstLevelOnPage + visibleLevelCount - 1}
+                                                            <small>PAGE {levelPage} / {totalLevelPages}</small>
+                                                        </span>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setLevelPage(page => Math.min(totalLevelPages, page + 1))}
+                                                            disabled={levelPage >= totalLevelPages}
+                                                        >
+                                                            More levels →
+                                                        </button>
+                                                    </nav>
                                                 )}
+                                                <section className="dashboard-shortcuts" aria-label="Player shortcuts">
+                                                    <div className="dashboard-shortcuts-heading">
+                                                        <div>
+                                                            <span className="dashboard-section-kicker">EXPLORE THE ARCADE</span>
+                                                            <h2>More ways to play</h2>
+                                                        </div>
+                                                        <span>YOUR PLAYER HUB</span>
+                                                    </div>
+                                                    {DAILY_CHALLENGE_UI_ENABLED && (
+                                                        <button
+                                                            className="dashboard-btn"
+                                                            type="button"
+                                                            onClick={() => setShowDailyChallenge(true)}
+                                                        >
+                                                            <span className="dashboard-shortcut-icon">🎯</span>
+                                                            <span className="dashboard-shortcut-copy">Daily Challenge<small>Take on a fresh challenge</small></span>
+                                                            <i aria-hidden="true">↗</i>
+                                                        </button>
+                                                    )}
 
-                        <button
-                        className="dashboard-btn"
-                        onClick={() => setShowDailyMiniGames(true)}
-                    >
-                        🕹️ Daily Mini Games
-                    </button>
-                        
-                        <button
-                            className="dashboard-btn"
-                            onClick={() => setShowLeaderboard(true)}
-                        >
-                            🏆 View Leaderboard
-                        </button>
+                                                    <button
+                                                        className="dashboard-btn shortcut-minigames"
+                                                        type="button"
+                                                        onClick={() => setShowDailyMiniGames(true)}
+                                                    >
+                                                        <span className="dashboard-shortcut-icon">🕹️</span>
+                                                        <span className="dashboard-shortcut-copy">Daily Mini Games<small>Quick games, big brain energy</small></span>
+                                                        <i aria-hidden="true">↗</i>
+                                                    </button>
 
-                        <button
-                            className="dashboard-btn"
-                            onClick={() => setShowAchievements(true)}
-                        >
-                            🏅 View Achievements
-                        </button>
+                                                    <button
+                                                        className="dashboard-btn shortcut-leaderboard"
+                                                        type="button"
+                                                        onClick={() => setShowLeaderboard(true)}
+                                                    >
+                                                        <span className="dashboard-shortcut-icon">🏆</span>
+                                                        <span className="dashboard-shortcut-copy">Leaderboard<small>See where you rank</small></span>
+                                                        <i aria-hidden="true">↗</i>
+                                                    </button>
 
-                        <button
-                            className="dashboard-btn"
-                            onClick={() => setShowHowToPlay(true)}
-                        >
-                            🎮 How to Play
-                        </button>
+                                                    <button
+                                                        className="dashboard-btn shortcut-achievements"
+                                                        type="button"
+                                                        onClick={() => setShowAchievements(true)}
+                                                    >
+                                                        <span className="dashboard-shortcut-icon">🏅</span>
+                                                        <span className="dashboard-shortcut-copy">Achievements<small>Check your latest milestones</small></span>
+                                                        <i aria-hidden="true">↗</i>
+                                                    </button>
 
-                        <button
-                            className="dashboard-btn"
-                            onClick={() => setShowProfile(true)}
-                        >
-                            👤 My Profile & Game History
-                        </button>
+                                                    <button
+                                                        className="dashboard-btn shortcut-how-to-play"
+                                                        type="button"
+                                                        onClick={() => setShowHowToPlay(true)}
+                                                    >
+                                                        <span className="dashboard-shortcut-icon">🎮</span>
+                                                        <span className="dashboard-shortcut-copy">How to Play<small>Learn the rules and power-ups</small></span>
+                                                        <i aria-hidden="true">↗</i>
+                                                    </button>
 
-                        <button
-                            className="dashboard-btn"
-                            onClick={() => setShowFeedback(true)}
-                        >
-                            💬 Share Feedback
-                        </button>
+                                                    <button
+                                                        className="dashboard-btn shortcut-profile"
+                                                        type="button"
+                                                        onClick={() => setShowProfile(true)}
+                                                    >
+                                                        <span className="dashboard-shortcut-icon">👤</span>
+                                                        <span className="dashboard-shortcut-copy">My Profile & History<small>Review your player journey</small></span>
+                                                        <i aria-hidden="true">↗</i>
+                                                    </button>
+
+                                                    <button
+                                                        className="dashboard-btn shortcut-feedback"
+                                                        type="button"
+                                                        onClick={() => setShowFeedback(true)}
+                                                    >
+                                                        <span className="dashboard-shortcut-icon">💬</span>
+                                                        <span className="dashboard-shortcut-copy">Share Feedback<small>Help make BrainBuzz better</small></span>
+                                                        <i aria-hidden="true">↗</i>
+                                                    </button>
+                                                </section>
                     </section>
                 </main>
             </div>
