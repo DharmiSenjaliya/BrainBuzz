@@ -64,7 +64,7 @@ class DailyGamePlayerController extends Controller
                 'bonus_points' => $challenge->bonus_points,
                 'items' => $items,
                 'is_completed' => (bool) $attempt,
-                'attempt' => $attempt ? [
+              'attempt' => $attempt ? [
     'score' => $attempt->score,
     'max_score' => $attempt->max_score,
     'correct_answers' => $attempt->correct_answers,
@@ -72,6 +72,10 @@ class DailyGamePlayerController extends Controller
     'duration_seconds' => $attempt->duration_seconds,
     'is_completed' => $attempt->is_completed,
     'completed_at' => $attempt->completed_at,
+    'bonus_points' => (int) ($attempt->result_data['bonus_points'] ?? 0),
+    'answers' => $attempt->is_completed
+        ? ($attempt->result_data['answers'] ?? [])
+        : [],
 ] : null,
             ],
             'streak' => [
@@ -208,10 +212,12 @@ $isCorrect = (
                 (int) $challenge->total_points
             );
 
-            // Bonus is awarded for completing the daily game
-            $bonusPoints = (int) $challenge->bonus_points;
-            $totalScore = $baseScore + $bonusPoints;
+            // Bonus is awarded only when all answers are correct
+            $bonusPoints = ($correctAnswers === $items->count())
+                ? (int) $challenge->bonus_points
+                : 0;
 
+            $totalScore = $baseScore + $bonusPoints;
             $completedAt = now('Asia/Kolkata');
 
             $attempt = DailyGameAttempt::create([

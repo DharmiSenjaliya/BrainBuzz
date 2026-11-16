@@ -2,6 +2,17 @@ import { useEffect, useState } from 'react'
 import api from './services/api'
 import './DailyMiniGames.css'
 
+const formatDate = (date) => {
+    if (!date) return ''
+
+    return new Date(date).toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC'
+    })
+}
+
 function DailyMiniGames({ onBack }) {
     const [challenge, setChallenge] = useState(null)
     const [streak, setStreak] = useState({})
@@ -9,6 +20,8 @@ function DailyMiniGames({ onBack }) {
     const [result, setResult] = useState(null)
     const [history, setHistory] = useState([])
     const [summary, setSummary] = useState({})
+    const [currentPage, setCurrentPage] = useState(1)
+const [lastPage, setLastPage] = useState(1)
     const [timeLeft, setTimeLeft] = useState(0)
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
@@ -107,20 +120,29 @@ function DailyMiniGames({ onBack }) {
         }
     }
 
-    const loadHistory = async () => {
-        try {
-            setLoading(true)
-            const response = await api.get('/daily-mini-game/history')
+    const loadHistory = async (page = 1) => {
+    try {
+        setLoading(true)
+        setError('')
 
-            setHistory(response.data.history?.data || [])
-            setSummary(response.data.summary || {})
-            setView('history')
-        } catch (err) {
-            setError('Unable to load game history.')
-        } finally {
-            setLoading(false)
-        }
+        const response = await api.get(
+            `/daily-mini-game/history?page=${page}`
+        )
+
+        const historyData = response.data.history
+
+        setHistory(historyData?.data || [])
+        setSummary(response.data.summary || {})
+        setCurrentPage(historyData?.current_page || 1)
+        setLastPage(historyData?.last_page || 1)
+
+        setView('history')
+    } catch (err) {
+        setError('Unable to load game history.')
+    } finally {
+        setLoading(false)
     }
+}
 
     const formatTime = seconds => {
         const minutes = Math.floor(seconds / 60)
@@ -153,6 +175,7 @@ function DailyMiniGames({ onBack }) {
                         <div>Total Points: {summary.total_points || 0}</div>
                         <div>Current Streak: {summary.current_streak || 0}</div>
                         <div>Longest Streak: {summary.longest_streak || 0}</div>
+                        <div>Average Score: {summary.average_score || 0}</div>
                     </div>
 
                     {history.length === 0 ? (
@@ -162,13 +185,33 @@ function DailyMiniGames({ onBack }) {
                             <h3>{attempt.challenge?.title || 'Daily Mini Game'}</h3>
                             <p>
                                 {attempt.challenge?.game_type} ·
-                                {' '}{attempt.challenge?.challenge_date}
+                                {' '}{formatDate(attempt.challenge?.challenge_date)}
                             </p>
                             <strong>
                                 {attempt.score} / {attempt.max_score} points
                             </strong>
                         </div>
                     ))}
+                          
+                                              <div className="mini-history-pagination">
+                        <button
+                            onClick={() => loadHistory(currentPage - 1)}
+                            disabled={currentPage <= 1 || loading}
+                        >
+                            Previous
+                        </button>
+
+                        <span>
+                            Page {currentPage} of {lastPage}
+                        </span>
+
+                        <button
+                            onClick={() => loadHistory(currentPage + 1)}
+                            disabled={currentPage >= lastPage || loading}
+                        >
+                            Next
+                        </button>
+                    </div>
 
                     <button onClick={() => setView('game')}>
                         Back to Today's Game
@@ -208,12 +251,26 @@ function DailyMiniGames({ onBack }) {
                         </div>
 
                         {challenge.is_completed && result ? (
-                            <div className="mini-result">
-                                <h2>Game Already Completed!</h2>
-                                <h1>{result.score} / {result.max_score}</h1>
-                                <p>Correct Answers: {result.correct_answers}</p>
-                                <p>Wrong Answers: {result.wrong_answers}</p>
-                            </div>
+    <div className="mini-result">
+        <h2>Game Already Completed!</h2>
+        <h1>{result.score} / {result.max_score} Points</h1>
+        <p>Correct Answers: {result.correct_answers}</p>
+        <p>Wrong Answers: {result.wrong_answers}</p>
+        <p>Bonus: {result.bonus_points || 0}</p>
+
+        <div className="mini-result-details">
+            {result.answers?.map(item => (
+                <div key={item.item_id}>
+                    <strong>
+                        {item.is_correct ? '✓ Correct' : '✗ Incorrect'}
+                    </strong>
+                    <p>Your answer: {item.submitted_answer || 'Not answered'}</p>
+                    <p>Correct answer: {item.correct_answer}</p>
+                    {item.explanation && <p>{item.explanation}</p>}
+                </div>
+            ))}
+        </div>
+    </div>
                         ) : result ? (
                             <div className="mini-result">
                                 <h2>🎉 Game Completed!</h2>

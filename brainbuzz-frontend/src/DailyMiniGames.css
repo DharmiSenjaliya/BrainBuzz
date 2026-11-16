@@ -306,3 +306,29 @@
     font-weight: 600;
     white-space: pre-line;
 }   
+
+.mini-history-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 24px 0;
+}
+
+.mini-history-pagination button {
+    padding: 9px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.mini-history-pagination button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.mini-history-pagination span {
+    font-weight: 600;
+    white-space: nowrap;
+}

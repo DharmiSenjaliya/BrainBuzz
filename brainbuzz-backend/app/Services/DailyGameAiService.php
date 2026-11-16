@@ -4,16 +4,17 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Http\Client\ConnectionException;
 use RuntimeException;
 
 class DailyGameAiService
 {
     public function generate(string $gameType, string $date): array
     {
-        $apiKey = config('services.openai.api_key');
+        $apiKey = config('services.gemini.api_key');
 
-        if (!$apiKey) {
-            throw new RuntimeException('OpenAI API key is missing.');
+        if (!is_string($apiKey) || trim($apiKey) === '') {
+            throw new RuntimeException('Gemini API key is missing. Set GEMINI_API_KEY in the backend environment.');
         }
 
         $types = [
@@ -30,7 +31,7 @@ class DailyGameAiService
 
         $typeInstructions = [
             'word_shuffle' => 'Use scrambled_word with shuffled letters.',
-            'logic_detective' => 'Use clues containing logical detective clues.',
+            'logic_detective' => 'You MUST provide the clues field as a non-empty string containing 3 to 5 numbered logical clues. Each clue must help solve the puzzle. The answer must be uniquely determined by the clues. Never leave clues null or empty.',
             'pattern_master' => 'Use sequence containing a number or symbol pattern.',
             'visual_detective' => 'Use an emoji-based visual puzzle in prompt. image_url must be null.',
             'number_ninja' => 'Use math_puzzle containing a mathematical puzzle.',
@@ -60,56 +61,198 @@ math_puzzle, answer, points, options, image_url, explanation.
 Use null for fields that do not apply.
 For weekend_surprise, use all five item types exactly once.
 
-Return only valid JSON:
+Return only valid JSON with this structure:
 {
   \"title\": \"Game title\",
   \"instructions\": \"How to play\",
   \"items\": [
     {
       \"id\": \"item-1\",
-      \"item_type\": \"word_shuffle\",
-      \"prompt\": \"Arrange the letters to make a word\",
-      \"scrambled_word\": \"LEAP\",
+      \"item_type\": \"GAME_TYPE\",
+      \"prompt\": \"Question text\",
+      \"scrambled_word\": null,
       \"clues\": null,
       \"sequence\": null,
       \"math_puzzle\": null,
-      \"answer\": \"PALE\",
+      \"answer\": \"One exact correct answer\",
       \"points\": 20,
       \"options\": null,
       \"image_url\": null,
-      \"explanation\": \"The letters form PALE.\"
+      \"explanation\": \"Explain the correct answer\"
     }
   ]
 }
+
+Important:
+- Generate exactly 5 items.
+- For logic_detective, clues MUST be a non-empty string with 3 to 5 numbered clues.
+- For word_shuffle, scrambled_word MUST contain shuffled letters.
+- For pattern_master, sequence MUST contain a solvable pattern.
+- For number_ninja, math_puzzle MUST contain a solvable math puzzle.
+- For visual_detective, prompt MUST contain an emoji-based visual puzzle.
+- Every answer must be uniquely correct.
+- Never leave the required game-specific field empty.
+- For weekend_surprise, use all five item types exactly once.
 ";
 
-        $response = Http::withToken($apiKey)
-            ->acceptJson()
-            ->timeout(90)
-            ->post('https://api.openai.com/v1/responses', [
-                'model' => config('services.openai.model', 'gpt-4o-mini'),
+       
+$model = config('services.gemini.model', 'gemini-3.8-flash');
+
+try {
+    $createResponse = Http::withHeaders([
+        'x-goog-api-key' => $apiKey,
+    ])
+        ->acceptJson()
+        ->timeout(30)
+        ->post(
+            'https://generativelanguage.googleapis.com/v1beta/interactions',
+            [
+                'model' => $model,
                 'input' => $prompt,
-                'text' => [
-                    'format' => ['type' => 'json_object'],
+                'background' => true,
+                'store' => true,
+                'generation_config' => [
+                    'max_output_tokens' => 4096,
+                    'thinking_level' => 'low',
                 ],
-            ]);
+            ]
+        );
+
+    if (!$createResponse->successful()) {
+        throw new RuntimeException(
+            'Gemini request failed with HTTP ' . $createResponse->status()
+            . ': ' . $createResponse->body()
+        );
+    }
+
+    $interactionId = $createResponse->json('id');
+
+    if (!is_string($interactionId) || trim($interactionId) === '') {
+        throw new RuntimeException('Gemini did not return an interaction ID.');
+    }
+
+    $completed = false;
+
+    for ($attempt = 0; $attempt < 60; $attempt++) {
+        sleep(3);
+
+       try {
+    $response = Http::withHeaders([
+        'x-goog-api-key' => $apiKey,
+    ])
+        ->acceptJson()
+        ->timeout(30)
+        ->get(
+            'https://generativelanguage.googleapis.com/v1beta/interactions/'
+            . $interactionId
+        );
+} catch (ConnectionException $e) {
+    // Temporary network failure: retry on the next polling cycle.
+    continue;
+}
+        if (!$response->successful()) {
+            throw new RuntimeException(
+                'Gemini status check failed with HTTP ' . $response->status()
+            );
+        }
+
+
+        $status = $response->json('status');
+
+        if ($status === 'completed') {
+            $completed = true;
+            break;
+        }
+
+        if (in_array($status, ['failed', 'cancelled', 'incomplete'], true)) {
+    throw new RuntimeException(
+        'Gemini interaction ended with status: ' . $status
+        . '. Details: '
+        . json_encode(
+            $response->json(),
+            JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+        )
+    );
+}
+    }
+
+    if (!$completed) {
+        throw new RuntimeException('Gemini generation timed out after 180 seconds.');
+    }
+
+} catch (ConnectionException $e) {
+    throw new RuntimeException(
+        'Gemini Connection Error: ' . $e->getMessage(),
+        0,
+        $e
+    );
+}
+
 
         if (!$response->successful()) {
-            throw new RuntimeException('OpenAI request failed.');
+            $message = match ($response->status()) {
+                400 => 'Gemini rejected the request. Check the model and request format.',
+                401, 403 => 'Gemini authentication failed. Check GEMINI_API_KEY and API access.',
+                429 => 'Gemini quota or rate limit exceeded. Check your Google AI Studio limits and retry later.',
+                500, 503 => 'Gemini is temporarily unavailable. Please try again later.',
+                default => 'Gemini request failed with HTTP ' . $response->status() . '.',
+            };
+
+            throw new RuntimeException($message);
         }
 
-        $output = collect($response->json('output', []))
-            ->flatMap(fn ($item) => $item['content'] ?? [])
-            ->firstWhere('type', 'output_text');
+        
+$steps = $response->json('steps', []);
 
-        if (!$output || empty($output['text'])) {
-            throw new RuntimeException('OpenAI returned empty content.');
+$outputText = '';
+
+foreach (is_array($steps) ? $steps : [] as $step) {
+    if (($step['type'] ?? '') !== 'model_output') {
+        continue;
+    }
+
+    $content = $step['content'] ?? [];
+
+    foreach (is_array($content) ? $content : [] as $part) {
+        if (($part['type'] ?? '') === 'text' && is_string($part['text'] ?? null)) {
+            $outputText .= $part['text'];
+        }
+    }
+}
+
+
+        if (trim($outputText) === '') {
+            throw new RuntimeException('Gemini returned an empty response.');
         }
 
-        $generated = json_decode($output['text'], true);
 
-        if (!is_array($generated) || count($generated['items'] ?? []) !== 5) {
-            throw new RuntimeException('AI must generate exactly 5 questions.');
+$outputText = trim($outputText);
+
+// Remove Markdown JSON code fences if Gemini includes them.
+$outputText = preg_replace('/^```(?:json)?\s*/i', '', $outputText);
+$outputText = preg_replace('/\s*```$/', '', $outputText);
+
+$generated = json_decode(trim($outputText), true);
+
+       
+if (json_last_error() !== JSON_ERROR_NONE || !is_array($generated)) {
+    throw new RuntimeException(
+        'Gemini returned invalid JSON. Reason: '
+        . json_last_error_msg()
+        . '. Output preview: '
+        . mb_substr($outputText, 0, 1500)
+    );
+}
+
+
+        if (!isset($generated['items']) || !is_array($generated['items']) || count($generated['items']) !== 5) {
+            throw new RuntimeException('Gemini must generate exactly 5 questions.');
+        }
+
+        foreach ($generated['items'] as $item) {
+            if (!is_array($item)) {
+                throw new RuntimeException('Gemini returned an invalid question.');
+            }
         }
 
         $allowedItemTypes = $types;
@@ -126,7 +269,7 @@ Return only valid JSON:
             }
         }
 
-        foreach ($generated['items'] as &$item) {
+        foreach ($generated['items'] as $index => $item) {
             $itemType = $gameType === 'weekend_surprise'
                 ? ($item['item_type'] ?? '')
                 : $gameType;
@@ -143,31 +286,44 @@ Return only valid JSON:
                 'number_ninja' => 'math_puzzle',
             ][$itemType];
 
-            if (empty($item[$requiredField])) {
+            if (!isset($item[$requiredField]) || !is_string($item[$requiredField]) || trim($item[$requiredField]) === '') {
                 throw new RuntimeException('AI generated incomplete puzzle content.');
             }
 
-            $item['id'] = (string) Str::uuid();
-            $item['item_type'] = $itemType;
-            $item['points'] = 20;
-            $item['answer'] = trim((string) ($item['answer'] ?? ''));
+            $answer = $item['answer'] ?? null;
 
-            if ($item['answer'] === '') {
+            if (!is_string($answer) || trim($answer) === '') {
                 throw new RuntimeException('AI generated an empty answer.');
             }
 
-            $item['options'] = null;
-            $item['image_url'] = null;
-            $item['explanation'] = $item['explanation'] ?? 'Review the puzzle solution.';
+            $explanation = $item['explanation'] ?? null;
+            $generated['items'][$index] = [
+                'id' => (string) Str::uuid(),
+                'item_type' => $itemType,
+                'prompt' => is_string($item['prompt'] ?? null) ? $item['prompt'] : null,
+                'scrambled_word' => is_string($item['scrambled_word'] ?? null) ? $item['scrambled_word'] : null,
+                'clues' => is_string($item['clues'] ?? null) ? $item['clues'] : null,
+                'sequence' => is_string($item['sequence'] ?? null) ? $item['sequence'] : null,
+                'math_puzzle' => is_string($item['math_puzzle'] ?? null) ? $item['math_puzzle'] : null,
+                'answer' => trim($answer),
+                'points' => 20,
+                'options' => null,
+                'image_url' => null,
+                'explanation' => is_string($explanation) && trim($explanation) !== ''
+                    ? trim($explanation)
+                    : 'Review the puzzle solution.',
+            ];
         }
-
-        unset($item);
 
         return [
             'game_type' => $gameType,
             'challenge_date' => $date,
-            'title' => $generated['title'] ?? 'Daily Mini Game',
-            'instructions' => $generated['instructions'] ?? 'Complete all puzzles.',
+            'title' => is_string($generated['title'] ?? null) && trim($generated['title']) !== ''
+                ? trim($generated['title'])
+                : 'Daily Mini Game',
+            'instructions' => is_string($generated['instructions'] ?? null) && trim($generated['instructions']) !== ''
+                ? trim($generated['instructions'])
+                : 'Complete all puzzles.',
             'difficulty' => 'medium',
             'duration_seconds' => 120,
             'total_points' => 100,
