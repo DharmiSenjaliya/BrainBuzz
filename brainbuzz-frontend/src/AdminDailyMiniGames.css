@@ -458,3 +458,112 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+/* ADMIN DASHBOARD INTEGRATION */
+
+.admin-mini-games {
+    --mini-border: #293852;
+    padding: 0;
+}
+
+.admin-mini-games > h1 {
+    margin-bottom: 6px;
+    font-size: clamp(24px, 2.2vw, 31px);
+    letter-spacing: -0.7px;
+}
+
+.admin-mini-games > p:not(.mini-success):not(.mini-error) {
+    margin: 0 0 22px;
+    color: #93a4bd;
+}
+
+.admin-mini-games .mini-game-form {
+    margin-top: 0;
+    border-color: #293852;
+    border-radius: 15px;
+    background: linear-gradient(145deg, #111a2e, #0f182a);
+    box-shadow: 0 10px 28px #02061722;
+}
+
+.admin-mini-games .mini-game-form > h2 {
+    margin: 0 0 5px;
+    color: #f8fafc;
+    font-size: 19px;
+}
+
+.admin-mini-games .mini-game-form > hr {
+    width: 100%;
+    border-top-color: #293852;
+}
+
+.admin-mini-games .mini-question-card {
+    border-color: #293852;
+    border-radius: 12px;
+    background: #10192b;
+}
+
+.admin-mini-games .mini-question-card h3 {
+    color: #ddd6fe;
+}
+
+.admin-mini-games button {
+    min-height: 39px;
+    border-radius: 9px;
+}
+
+.admin-mini-games .mini-form-actions {
+    padding-top: 6px;
+    border-top: 1px solid #293852;
+}
+
+.admin-mini-games .mini-games-list {
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 14px;
+}
+
+.admin-mini-games .mini-game-card {
+    min-width: 0;
+    border-color: #293852;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #111a2e, #0f182a);
+    transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.admin-mini-games .mini-game-card:hover {
+    transform: translateY(-2px);
+    border-color: #7052b3;
+    box-shadow: 0 10px 24px #02061733;
+}
+
+.admin-mini-games .mini-game-card h3 {
+    color: #f8fafc;
+}
+
+.admin-mini-games .mini-game-card p {
+    margin: 8px 0;
+}
+
+.admin-mini-games .mini-status {
+    display: inline-flex;
+    padding: 4px 8px;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.04em;
+}
+
+.admin-mini-games > p.mini-success,
+.admin-mini-games > p.mini-error {
+    margin: 0 0 14px;
+}
+
+@media (max-width: 700px) {
+    .admin-mini-games .mini-game-form {
+        padding: 15px !important;
+    }
+
+    .admin-mini-games .mini-games-list {
+        grid-template-columns: 1fr;
+    }
+}

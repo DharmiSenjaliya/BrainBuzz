@@ -12,6 +12,7 @@ class DailyChallenge extends Model
         'question_ids',
         'bonus_points',
         'is_active',
+        'admin_comment',
     ];
 
     protected function casts(): array

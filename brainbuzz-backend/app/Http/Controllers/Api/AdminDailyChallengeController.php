@@ -139,6 +139,29 @@ class AdminDailyChallengeController extends Controller
         ]);
     }
 
+    // Save an admin-only note without changing the challenge or its attempts.
+    public function updateComment(Request $request, $id)
+    {
+        if ($error = $this->checkAdmin($request)) {
+            return $error;
+        }
+
+        $validated = $request->validate([
+            'admin_comment' => 'present|nullable|string|max:5000',
+        ]);
+
+        $challenge = DailyChallenge::findOrFail($id);
+        $challenge->update([
+            'admin_comment' => $validated['admin_comment'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Admin comment saved successfully.',
+            'challenge' => $challenge->fresh(),
+        ]);
+    }
+
     // Delete a daily challenge
     public function destroy(Request $request, $id)
     {

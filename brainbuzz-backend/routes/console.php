@@ -10,6 +10,6 @@ Artisan::command('inspire', function () {
 
 // BrainBuzz Daily Mini Game Rotation
 Schedule::command('app:rotate-daily-game')
-    ->dailyAt('00:05')
+    ->everyFifteenMinutes()
     ->timezone('Asia/Kolkata')
     ->withoutOverlapping();

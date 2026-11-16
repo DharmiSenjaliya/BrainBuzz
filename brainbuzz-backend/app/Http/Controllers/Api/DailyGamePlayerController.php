@@ -16,7 +16,7 @@ class DailyGamePlayerController extends Controller
     {
         $today = now('Asia/Kolkata')->toDateString();
 
-        $challenge = DailyGameChallenge::where('challenge_date', $today)
+        $challenge = DailyGameChallenge::whereDate('challenge_date', $today)
             ->where('status', 'published')
             ->first();
 
@@ -109,7 +109,7 @@ class DailyGamePlayerController extends Controller
                 'id',
                 $validated['challenge_id']
             )
-                ->where('challenge_date', $today)
+                ->whereDate('challenge_date', $today)
                 ->where('status', 'published')
                 ->lockForUpdate()
                 ->first();

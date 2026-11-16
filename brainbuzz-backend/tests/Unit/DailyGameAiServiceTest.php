@@ -205,6 +205,38 @@ class DailyGameAiServiceTest extends TestCase
         }
     }
 
+
+    public function test_it_hides_provider_details_when_generation_fails(): void
+{
+    Http::fake([
+        'https://generativelanguage.googleapis.com/v1beta/interactions' => Http::response([
+            'id' => 'failed-test-interaction',
+            'status' => 'in_progress',
+        ]),
+        'https://generativelanguage.googleapis.com/v1beta/interactions/failed-test-interaction' => Http::response([
+            'id' => 'failed-test-interaction',
+            'status' => 'failed',
+            'error' => [
+                'message' => 'private provider details',
+            ],
+        ]),
+    ]);
+
+    try {
+        app(DailyGameAiService::class)->generate('word_shuffle', '2026-11-15');
+        $this->fail('Expected generation failure.');
+    } catch (RuntimeException $exception) {
+        $this->assertSame(
+            'Gemini generation failed. Status: failed. Please try again later.',
+            $exception->getMessage()
+        );
+
+        $this->assertStringNotContainsString(
+            'private provider details',
+            $exception->getMessage()
+        );
+    }
+}
     public function test_it_converts_connection_failures_to_a_safe_message(): void
     {
         Http::fake(function () {

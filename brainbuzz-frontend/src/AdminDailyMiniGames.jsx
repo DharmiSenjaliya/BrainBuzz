@@ -511,9 +511,6 @@ function AdminDailyMiniGames() {
         {saving ? 'Generating...' : '✨ Generate with AI'}
     </button>
 
-    <button type="submit" disabled={saving}>
-
-    </button>
                     <button type="submit" disabled={saving}>
                         {saving ? 'Saving...' : editingId ? 'Update Game' : 'Create Game'}
                     </button>

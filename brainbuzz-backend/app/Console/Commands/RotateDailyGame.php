@@ -10,7 +10,7 @@ class RotateDailyGame extends Command
 {
     protected $signature = 'app:rotate-daily-game';
 
-    protected $description = 'Prepare the daily mini game rotation';
+    protected $description = 'Generate and publish the daily mini game';
     public function handle(DailyGameAiService $aiService): int
     {
         $gameTypes = [
@@ -36,7 +36,7 @@ class RotateDailyGame extends Command
         $this->info('Date: ' . $date);
         $this->info('Selected Game: ' . $gameType);
 
-        if (DailyGameChallenge::where('challenge_date', $date)->exists()) {
+        if (DailyGameChallenge::whereDate('challenge_date', $date)->exists()) {
             $this->warn('A game already exists for today. Skipping generation.');
             return self::SUCCESS;
         }
@@ -54,13 +54,13 @@ class RotateDailyGame extends Command
                 'duration_seconds' => $data['duration_seconds'],
                 'total_points' => $data['total_points'],
                 'bonus_points' => $data['bonus_points'],
-                'status' => 'draft',
+                'status' => 'published',
                 'generation_source' => 'ai',
                 'generated_at' => now(),
+                'published_at' => now(),
             ]);
 
-            $this->info('AI game generated successfully as draft.');
-            $this->comment('Admin approval and publishing are required.');
+            $this->info('AI game generated and published successfully.');
 
             return self::SUCCESS;
         } catch (\Throwable $e) {

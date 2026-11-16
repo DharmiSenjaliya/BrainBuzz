@@ -18,6 +18,9 @@ import GamesHub from './GamesHub'
 import BrainTraining from './BrainTraining'
 import KnowledgeChallenge from './KnowledgeChallenge'
 
+// Temporarily hide Daily Challenge while retaining its player implementation.
+const DAILY_CHALLENGE_UI_ENABLED = false
+
 const isUsableToken = (token) =>
     typeof token === 'string' &&
     token.trim() !== '' &&
@@ -1085,7 +1088,7 @@ const checkAnswer = async () => {
         )
     }
 
-    if (showDailyChallenge) {
+    if (DAILY_CHALLENGE_UI_ENABLED && showDailyChallenge) {
     return (
         <div className={`app ${theme}-theme`}>
             {navbar}
@@ -1407,12 +1410,14 @@ if (showDashboard) {
                                 )
                             })}
                         </div>
-                                                <button
-                            className="dashboard-btn"
-                            onClick={() => setShowDailyChallenge(true)}
-                        >
-                            🎯 Daily Challenge
-                        </button>
+                                                {DAILY_CHALLENGE_UI_ENABLED && (
+                                                    <button
+                                                        className="dashboard-btn"
+                                                        onClick={() => setShowDailyChallenge(true)}
+                                                    >
+                                                        🎯 Daily Challenge
+                                                    </button>
+                                                )}
 
                         <button
                         className="dashboard-btn"

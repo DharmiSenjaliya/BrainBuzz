@@ -171,12 +171,8 @@ try {
 
         if (in_array($status, ['failed', 'cancelled', 'incomplete'], true)) {
     throw new RuntimeException(
-        'Gemini interaction ended with status: ' . $status
-        . '. Details: '
-        . json_encode(
-            $response->json(),
-            JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
-        )
+        'Gemini generation failed. Status: ' . $status
+        . '. Please try again later.'
     );
 }
     }
@@ -244,8 +240,6 @@ if (json_last_error() !== JSON_ERROR_NONE || !is_array($generated)) {
     throw new RuntimeException(
         'Gemini returned invalid JSON. Reason: '
         . json_last_error_msg()
-        . '. Output preview: '
-        . mb_substr($outputText, 0, 1500)
     );
 }
 

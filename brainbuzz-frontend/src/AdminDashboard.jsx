@@ -15,10 +15,14 @@ import {
     Gamepad2,
     ChartNoAxesColumnIncreasing,
     Medal,
+    RefreshCw,
     X,
     Plus,
 } from 'lucide-react'
 import AdminDailyMiniGames from './AdminDailyMiniGames'
+
+// Temporarily hide Daily Challenge while retaining its admin implementation.
+const DAILY_CHALLENGE_UI_ENABLED = false
 
 function AdminDashboard({ admin, onLogout }) {
     const [activeTab, setActiveTab] = useState('overview')
@@ -31,6 +35,10 @@ const [dailyChallengeError, setDailyChallengeError] = useState('')
 const [dailyChallengeSuccess, setDailyChallengeSuccess] = useState('')
 const [savingDailyChallenge, setSavingDailyChallenge] = useState(false)
 const [editingDailyChallenge, setEditingDailyChallenge] = useState(null)
+const [commentingDailyChallenge, setCommentingDailyChallenge] = useState(null)
+const [dailyChallengeComment, setDailyChallengeComment] = useState('')
+const [dailyChallengeCommentError, setDailyChallengeCommentError] = useState('')
+const [savingDailyChallengeComment, setSavingDailyChallengeComment] = useState(false)
 
 const [dailyChallengeForm, setDailyChallengeForm] = useState({
     challenge_date: new Date().toLocaleDateString('en-CA'),
@@ -439,6 +447,56 @@ const handleEditDailyChallenge = (challenge) => {
     setActiveTab('daily-challenges')
 }
 
+const openDailyChallengeComment = (challenge) => {
+    setCommentingDailyChallenge(challenge)
+    setDailyChallengeComment(challenge.admin_comment || '')
+    setDailyChallengeCommentError('')
+}
+
+const closeDailyChallengeComment = () => {
+    setCommentingDailyChallenge(null)
+    setDailyChallengeCommentError('')
+}
+
+const handleDailyChallengeCommentSubmit = async (e) => {
+    e.preventDefault()
+
+    if (!commentingDailyChallenge) {
+        return
+    }
+
+    const adminComment = dailyChallengeComment.trim() || null
+
+    try {
+        setSavingDailyChallengeComment(true)
+        setDailyChallengeCommentError('')
+
+        await api.patch(
+            `/admin/daily-challenges/${commentingDailyChallenge.id}/comment`,
+            { admin_comment: adminComment },
+            authConfig
+        )
+
+        setDailyChallenges((previous) =>
+            previous.map((challenge) =>
+                challenge.id === commentingDailyChallenge.id
+                    ? { ...challenge, admin_comment: adminComment }
+                    : challenge
+            )
+        )
+        setDailyChallengeSuccess('Admin comment saved successfully.')
+        setCommentingDailyChallenge(null)
+    } catch (error) {
+        console.error('Daily Challenge Comment Save Error:', error)
+        setDailyChallengeCommentError(
+            error.response?.data?.message ||
+            'Unable to save admin comment.'
+        )
+    } finally {
+        setSavingDailyChallengeComment(false)
+    }
+}
+
 // Delete Daily Challenge
 const handleDeleteDailyChallenge = async (challenge) => {
     if (Number(challenge.attempts_count || 0) > 0) {
@@ -545,7 +603,9 @@ const fetchLeaderboard = async (search = '') => {
     fetchQuestions()
     fetchFeedback()
     fetchPlayers()
-    fetchDailyChallenges()
+    if (DAILY_CHALLENGE_UI_ENABLED) {
+        fetchDailyChallenges()
+    }
     fetchCategories()
 }, [])
 
@@ -896,6 +956,34 @@ const questionPageNumbers = useMemo(() => {
             return String(item.rating) === String(feedbackRatingFilter)
         })
     }, [feedback, feedbackRatingFilter])
+
+    const feedbackSummary = useMemo(() => {
+        const ratings = [5, 4, 3, 2, 1].map((rating) => ({
+            rating,
+            count: feedback.filter(
+                (item) => Number(item.rating) === rating
+            ).length,
+        }))
+        const total = feedback.length
+        const positiveCount = ratings
+            .filter(({ rating }) => rating >= 4)
+            .reduce((count, item) => count + item.count, 0)
+
+        return {
+            total,
+            ratings,
+            averageRating: total
+                ? feedback.reduce(
+                      (sum, item) => sum + Number(item.rating || 0),
+                      0
+                  ) / total
+                : 0,
+            positiveCount,
+            positivePercentage: total
+                ? Math.round((positiveCount / total) * 100)
+                : 0,
+        }
+    }, [feedback])
 
 
 // FEEDBACK PAGINATION
@@ -1453,18 +1541,20 @@ const handleDeletePlayer = async (id) => {
     Leaderboard
 </button>
 
-<button
-    className={`admin-nav-btn ${
-        activeTab === 'daily-challenges' ? 'active' : ''
-    }`}
-    onClick={() => {
-        setActiveTab('daily-challenges')
-        fetchDailyChallenges()
-    }}
->
-   <span><Target size={18} /></span>
-    Daily Challenges
-</button>
+{DAILY_CHALLENGE_UI_ENABLED && (
+    <button
+        className={`admin-nav-btn ${
+            activeTab === 'daily-challenges' ? 'active' : ''
+        }`}
+        onClick={() => {
+            setActiveTab('daily-challenges')
+            fetchDailyChallenges()
+        }}
+    >
+       <span><Target size={18} /></span>
+        Daily Challenges
+    </button>
+)}
 
 <button
     className={`admin-nav-btn ${
@@ -1488,7 +1578,7 @@ const handleDeletePlayer = async (id) => {
                                         DASHBOARD
                                     </span>
 
-                                    <h1>Welcome back, {admin?.name || 'Admin'} ðŸ‘‹</h1>
+                                    <h1>Welcome back, {admin?.name || 'Admin'}</h1>
 
                                     <p>
                                         Manage BrainBuzz content and player feedback from one place.
@@ -1983,6 +2073,7 @@ const handleDeletePlayer = async (id) => {
                                 </div>
 
                                 <button
+                                    type="button"
                                     className="admin-primary-btn"
                                     onClick={openAddCategory}
                                 >
@@ -2020,7 +2111,7 @@ const handleDeletePlayer = async (id) => {
                             ) : (
                                 <>
                                 <div className="admin-table-wrapper">
-                                    <table className="admin-table">
+                                    <table className="admin-table admin-daily-challenge-table">
                                         <thead>
                                             <tr>
                                                 <th>ID</th>
@@ -2145,103 +2236,282 @@ const handleDeletePlayer = async (id) => {
 
                    
 {activeTab === 'feedback' && (
-    <section>
-        <div className="admin-page-heading">
+    <section className="admin-section admin-feedback-section">
+        <div className="admin-feedback-heading">
             <div>
                 <span className="admin-eyebrow">PLAYER VOICE</span>
-                <h1>Feedback</h1>
-                <p>Review what players think about BrainBuzz.</p>
+                <h1>Player Feedback</h1>
+                <p>See how players feel about their BrainBuzz experience.</p>
             </div>
-
-            <div className="admin-feedback-total">
-                {feedback.length} Responses
-            </div>
-        </div>
-
-        <div className="admin-toolbar">
-            <select
-                value={feedbackRatingFilter}
-                onChange={(e) => setFeedbackRatingFilter(e.target.value)}
-            >
-                <option value="all">All Ratings</option>
-                {[5, 4, 3, 2, 1].map((rating) => (
-                    <option key={rating} value={rating}>
-                        {rating} Stars
-                    </option>
-                ))}
-            </select>
 
             <button
-                className="admin-refresh-btn"
+                type="button"
+                className="admin-refresh-btn admin-feedback-refresh"
                 onClick={fetchFeedback}
+                disabled={loadingFeedback}
             >
-                Refresh
+                <RefreshCw
+                    size={16}
+                    className={loadingFeedback ? 'admin-refresh-spinning' : ''}
+                />
+                {loadingFeedback ? 'Refreshing...' : 'Refresh feedback'}
             </button>
         </div>
 
+        <div className="admin-feedback-summary">
+            <article className="admin-feedback-stat">
+                <div className="admin-feedback-stat-icon">
+                    <MessageCircle size={19} />
+                </div>
+                <span className="admin-feedback-stat-label">Total responses</span>
+                <strong>{feedbackSummary.total}</strong>
+                <span className="admin-feedback-stat-note">Player submissions</span>
+            </article>
+
+            <article className="admin-feedback-stat">
+                <div className="admin-feedback-stat-icon is-rating">
+                    <Star size={19} />
+                </div>
+                <span className="admin-feedback-stat-label">Average rating</span>
+                <strong>
+                    {feedbackSummary.total
+                        ? feedbackSummary.averageRating.toFixed(1)
+                        : '—'}
+                    <small>/ 5</small>
+                </strong>
+                <span className="admin-feedback-stat-note">
+                    Across all responses
+                </span>
+            </article>
+
+            <article className="admin-feedback-stat">
+                <div className="admin-feedback-stat-icon is-positive">
+                    <CheckCircle2 size={19} />
+                </div>
+                <span className="admin-feedback-stat-label">Positive ratings</span>
+                <strong>{feedbackSummary.positivePercentage}%</strong>
+                <span className="admin-feedback-stat-note">
+                    {feedbackSummary.positiveCount} rated 4 or 5 stars
+                </span>
+            </article>
+        </div>
+
+        <div className="admin-feedback-breakdown">
+            <div className="admin-feedback-breakdown-heading">
+                <div>
+                    <h2>Rating breakdown</h2>
+                    <p>Select a rating to filter responses</p>
+                </div>
+                {feedbackRatingFilter !== 'all' && (
+                    <button
+                        type="button"
+                        className="admin-feedback-clear-filter"
+                        onClick={() => setFeedbackRatingFilter('all')}
+                    >
+                        Clear filter
+                    </button>
+                )}
+            </div>
+
+            <div className="admin-feedback-rating-list">
+                {feedbackSummary.ratings.map(({ rating, count }) => (
+                    <button
+                        type="button"
+                        className={`admin-feedback-rating-row ${
+                            String(rating) === feedbackRatingFilter
+                                ? 'active'
+                                : ''
+                        }`}
+                        key={rating}
+                        onClick={() => setFeedbackRatingFilter(String(rating))}
+                        aria-pressed={String(rating) === feedbackRatingFilter}
+                        aria-label={`Filter ${rating} star feedback, ${count} responses`}
+                    >
+                        <span className="admin-feedback-rating-label">
+                            {rating} <span aria-hidden="true">★</span>
+                        </span>
+                        <span className="admin-feedback-rating-track">
+                            <span
+                                style={{
+                                    width: `${
+                                        feedbackSummary.total
+                                            ? (count / feedbackSummary.total) * 100
+                                            : 0
+                                    }%`,
+                                }}
+                            />
+                        </span>
+                        <span className="admin-feedback-rating-count">
+                            {count}
+                        </span>
+                    </button>
+                ))}
+            </div>
+        </div>
+
+        <div className="admin-feedback-toolbar">
+            <div>
+                <h2>Recent responses</h2>
+                <p>
+                    Showing {filteredFeedback.length} of {feedback.length}{' '}
+                    responses
+                </p>
+            </div>
+
+            <label className="admin-feedback-filter">
+                <span>Filter by rating</span>
+                <select
+                    value={feedbackRatingFilter}
+                    onChange={(e) => setFeedbackRatingFilter(e.target.value)}
+                >
+                    <option value="all">All ratings</option>
+                    {[5, 4, 3, 2, 1].map((rating) => (
+                        <option key={rating} value={rating}>
+                            {rating} stars
+                        </option>
+                    ))}
+                </select>
+            </label>
+        </div>
+
         {loadingFeedback ? (
-            <div className="admin-empty-state">
-                Loading feedback...
+            <div className="admin-feedback-grid" aria-label="Loading feedback">
+                {[1, 2, 3, 4].map((item) => (
+                    <div className="admin-feedback-skeleton" key={item}>
+                        <span />
+                        <span />
+                        <span />
+                        <span />
+                    </div>
+                ))}
             </div>
         ) : feedbackError ? (
-            <div className="admin-error-box">
-                {feedbackError}
+            <div className="admin-feedback-state is-error">
+                <h2>Feedback could not be loaded</h2>
+                <p>{feedbackError}</p>
+                <button
+                    type="button"
+                    className="admin-refresh-btn"
+                    onClick={fetchFeedback}
+                >
+                    Try again
+                </button>
             </div>
         ) : filteredFeedback.length === 0 ? (
-            <div className="admin-empty-state">
-                No feedback found.
+            <div className="admin-feedback-state">
+                <div className="admin-feedback-state-icon">
+                    <MessageCircle size={24} />
+                </div>
+                <h2>
+                    {feedback.length
+                        ? 'No responses for this rating'
+                        : 'No feedback yet'}
+                </h2>
+                <p>
+                    {feedback.length
+                        ? 'Try another rating or clear the current filter.'
+                        : 'Player reviews will appear here once they share their thoughts.'}
+                </p>
+                {feedback.length > 0 && (
+                    <button
+                        type="button"
+                        className="admin-feedback-clear-filter"
+                        onClick={() => setFeedbackRatingFilter('all')}
+                    >
+                        Show all feedback
+                    </button>
+                )}
             </div>
         ) : (
             <>
                 <div className="admin-feedback-grid">
-                    {paginatedFeedback.map((item) => (
-                        <div
-                            className="admin-feedback-card"
-                            key={item.id}
-                        >
-                            <div className="admin-feedback-top">
-                                <div className="admin-feedback-user">
-                                    <div className="admin-feedback-avatar">
-                                        {(item.user?.name || 'U')
-                                            .charAt(0)
-                                            .toUpperCase()}
+                    {paginatedFeedback.map((item) => {
+                        const submittedAt = new Date(item.created_at)
+                        const formattedDate = Number.isNaN(submittedAt.getTime())
+                            ? 'Date unavailable'
+                            : submittedAt.toLocaleString(undefined, {
+                                  dateStyle: 'medium',
+                                  timeStyle: 'short',
+                              })
+                        const rating = Number(item.rating) || 0
+
+                        return (
+                            <article
+                                className="admin-feedback-card"
+                                key={item.id}
+                            >
+                                <div className="admin-feedback-card-header">
+                                    <div className="admin-feedback-user">
+                                        <div
+                                            className="admin-feedback-avatar"
+                                            aria-hidden="true"
+                                        >
+                                            {(item.user?.name || 'U')
+                                                .charAt(0)
+                                                .toUpperCase()}
+                                        </div>
+
+                                        <div className="admin-feedback-user-info">
+                                            <h3>
+                                                {item.user?.name || 'Unknown User'}
+                                            </h3>
+                                            <p>
+                                                {item.user?.email || 'No email provided'}
+                                            </p>
+                                        </div>
                                     </div>
 
-                                    <div>
-                                        <h3>
-                                            {item.user?.name || 'Unknown User'}
-                                        </h3>
-                                        <p>
-                                            {item.user?.email || 'No email'}
-                                        </p>
-                                    </div>
+                                    <button
+                                        type="button"
+                                        className="admin-feedback-delete"
+                                        onClick={() =>
+                                            handleDeleteFeedback(item.id)
+                                        }
+                                        disabled={deletingFeedbackId === item.id}
+                                        aria-label={`Delete feedback from ${
+                                            item.user?.name || 'Unknown User'
+                                        }`}
+                                    >
+                                        {deletingFeedbackId === item.id
+                                            ? 'Deleting...'
+                                            : 'Delete'}
+                                    </button>
                                 </div>
 
-                                <button
-                                    className="admin-delete-btn"
-                                    onClick={() => handleDeleteFeedback(item.id)}
-                                    disabled={deletingFeedbackId === item.id}
-                                >
-                                    {deletingFeedbackId === item.id
-                                        ? 'Deleting...'
-                                        : 'Delete'}
-                                </button>
-                            </div>
+                                <div className="admin-feedback-card-rating">
+                                    <div
+                                        className="admin-feedback-stars"
+                                        role="img"
+                                        aria-label={`${rating} out of 5 stars`}
+                                    >
+                                        {Array.from({ length: 5 }, (_, index) => (
+                                            <Star
+                                                key={index}
+                                                size={16}
+                                                fill={
+                                                    index < rating
+                                                        ? 'currentColor'
+                                                        : 'none'
+                                                }
+                                            />
+                                        ))}
+                                    </div>
+                                    <span>{rating}/5</span>
+                                </div>
 
-                            <div className="admin-feedback-stars">
-                                {'★'.repeat(Number(item.rating))}
-                                {'☆'.repeat(5 - Number(item.rating))}
-                            </div>
+                                <p className="admin-feedback-message">
+                                    {item.message || 'No written comment provided.'}
+                                </p>
 
-                            <p className="admin-feedback-message">
-                                {item.message}
-                            </p>
-
-                            <small className="admin-feedback-date">
-                                {new Date(item.created_at).toLocaleString()}
-                            </small>
-                        </div>
-                    ))}
+                                <footer className="admin-feedback-card-footer">
+                                    <span>Submitted</span>
+                                    <time dateTime={item.created_at}>
+                                        {formattedDate}
+                                    </time>
+                                </footer>
+                            </article>
+                        )
+                    })}
                 </div>
 
                 <div className="admin-pagination">
@@ -2280,7 +2550,9 @@ const handleDeletePlayer = async (id) => {
                                     type="button"
                                     key={page}
                                     className={
-                                        feedbackCurrentPage === page ? 'active' : ''
+                                        feedbackCurrentPage === page
+                                            ? 'active'
+                                            : ''
                                     }
                                     onClick={() => setFeedbackCurrentPage(page)}
                                 >
@@ -2788,7 +3060,7 @@ const handleDeletePlayer = async (id) => {
     )}
 
     {/* DAILY CHALLENGE MANAGEMENT */}
-    {activeTab === 'daily-challenges' && (
+    {DAILY_CHALLENGE_UI_ENABLED && activeTab === 'daily-challenges' && (
         <section className="admin-section">
 
             <div className="admin-page-heading">
@@ -2907,7 +3179,7 @@ const handleDeletePlayer = async (id) => {
                                             <span>
                                                 <strong>{question.title}</strong>
                                                 <small>
-                                                    Level {question.level} Â· {question.points} points
+                                                    Level {question.level} | {question.points} points
                                                 </small>
                                             </span>
                                         </label>
@@ -2984,6 +3256,7 @@ const handleDeletePlayer = async (id) => {
                                     <th>Bonus</th>
                                     <th>Attempts</th>
                                     <th>Status</th>
+                                    <th>Admin Comment</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -3019,7 +3292,25 @@ const handleDeletePlayer = async (id) => {
                                         </td>
 
                                         <td>
+                                            <div className="admin-daily-comment-preview">
+                                                {challenge.admin_comment || 'No comment added'}
+                                            </div>
+                                        </td>
+
+                                        <td>
                                             <div className="admin-daily-actions">
+
+                                                <button
+                                                    type="button"
+                                                    className="comment"
+                                                    onClick={() =>
+                                                        openDailyChallengeComment(challenge)
+                                                    }
+                                                >
+                                                    {challenge.admin_comment
+                                                        ? 'Edit Comment'
+                                                        : 'Add Comment'}
+                                                </button>
 
                                                 <button
                                                     type="button"
@@ -3130,6 +3421,102 @@ const handleDeletePlayer = async (id) => {
            
             </div>
 
+            {commentingDailyChallenge && (
+                <div
+                    className="admin-modal-overlay"
+                    onClick={(event) => {
+                        if (
+                            event.target === event.currentTarget &&
+                            !savingDailyChallengeComment
+                        ) {
+                            closeDailyChallengeComment()
+                        }
+                    }}
+                >
+                    <div
+                        className="admin-question-modal admin-daily-comment-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="daily-challenge-comment-title"
+                    >
+                        <div className="admin-modal-header">
+                            <div>
+                                <span className="admin-eyebrow">
+                                    ADMIN ONLY
+                                </span>
+                                <h2 id="daily-challenge-comment-title">
+                                    {commentingDailyChallenge.admin_comment
+                                        ? 'Edit Challenge Comment'
+                                        : 'Add Challenge Comment'}
+                                </h2>
+                                <p>
+                                    {String(
+                                        commentingDailyChallenge.challenge_date
+                                    ).slice(0, 10)}
+                                </p>
+                            </div>
+
+                            <button
+                                type="button"
+                                className="admin-modal-close"
+                                onClick={closeDailyChallengeComment}
+                                disabled={savingDailyChallengeComment}
+                                aria-label="Close comment editor"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleDailyChallengeCommentSubmit}>
+                            <label htmlFor="daily-challenge-admin-comment">
+                                Internal comment
+                            </label>
+                            <textarea
+                                id="daily-challenge-admin-comment"
+                                value={dailyChallengeComment}
+                                onChange={(event) =>
+                                    setDailyChallengeComment(event.target.value)
+                                }
+                                placeholder="Write an internal note about this challenge..."
+                                rows={5}
+                                maxLength={5000}
+                                autoFocus
+                            />
+                            <p className="admin-daily-comment-help">
+                                This note is visible only in the admin panel.
+                                Leave it blank to clear the comment.
+                            </p>
+
+                            {dailyChallengeCommentError && (
+                                <div className="admin-error-box">
+                                    {dailyChallengeCommentError}
+                                </div>
+                            )}
+
+                            <div className="admin-modal-actions">
+                                <button
+                                    type="button"
+                                    className="admin-cancel-btn"
+                                    onClick={closeDailyChallengeComment}
+                                    disabled={savingDailyChallengeComment}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="admin-primary-btn"
+                                    disabled={savingDailyChallengeComment}
+                                >
+                                    {savingDailyChallengeComment
+                                        ? 'Saving...'
+                                        : 'Save Comment'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
         </section>
     )}
     {activeTab === 'daily-mini-games' && (
@@ -3167,116 +3554,6 @@ const handleDeletePlayer = async (id) => {
                                     </h2>
                                 </div>
 
-                                        {showCategoryForm && (
-                    <div
-                        className="admin-modal-overlay"
-                        onClick={(e) => {
-                            if (e.target === e.currentTarget) {
-                                resetCategoryForm()
-                            }
-                        }}
-                    >
-                        <div className="admin-question-modal">
-
-                            <div className="admin-modal-header">
-                                <div>
-                                    <span className="admin-eyebrow">
-                                        {editingCategory
-                                            ? 'EDIT CATEGORY'
-                                            : 'NEW CATEGORY'}
-                                    </span>
-
-                                    <h2>
-                                        {editingCategory
-                                            ? 'Edit Category'
-                                            : 'Add Category'}
-                                    </h2>
-                                </div>
-
-                                <button
-                                    type="button"
-                                    className="admin-modal-close"
-                                    onClick={resetCategoryForm}
-                                >
-                                    <X size={18} />
-                                </button>
-                            </div>
-
-                            <form onSubmit={handleCategorySubmit}>
-
-                                <label>Category Name</label>
-
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={categoryForm.name}
-                                    onChange={handleCategoryInput}
-                                    placeholder="Example: General Knowledge"
-                                    maxLength={255}
-                                    required
-                                />
-
-                                <label>Description</label>
-
-                                <textarea
-                                    name="description"
-                                    value={categoryForm.description}
-                                    onChange={handleCategoryInput}
-                                    placeholder="Enter category description"
-                                    rows="3"
-                                />
-
-                                <label>Category Icon (Emoji)</label>
-
-                                <input
-                                    type="text"
-                                    name="icon"
-                                    value={categoryForm.icon}
-                                    onChange={handleCategoryInput}
-                                    placeholder="Example: BookOpen"
-                                    maxLength={50}
-                                />
-
-                                <label className="admin-checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        name="is_active"
-                                        checked={categoryForm.is_active}
-                                        onChange={handleCategoryInput}
-                                    />
-
-                                    <span>Category is active</span>
-                                </label>
-
-                                <div className="admin-modal-actions">
-
-                                    <button
-                                        type="button"
-                                        className="admin-cancel-btn"
-                                        onClick={resetCategoryForm}
-                                    >
-                                        Cancel
-                                    </button>
-
-                                    <button
-                                        type="submit"
-                                        className="admin-primary-btn"
-                                        disabled={savingCategory}
-                                    >
-                                        {savingCategory
-                                            ? 'Saving...'
-                                            : editingCategory
-                                                ? 'Update Category'
-                                                : 'Create Category'}
-                                    </button>
-
-                                </div>
-
-                            </form>
-
-                        </div>
-                    </div>
-                )}
                                 <button
                                     className="admin-modal-close"
                                     onClick={resetQuestionForm}
@@ -3469,6 +3746,111 @@ const handleDeletePlayer = async (id) => {
 
                         </div>
 
+                    </div>
+                )}
+
+                {showCategoryForm && (
+                    <div
+                        className="admin-modal-overlay"
+                        onClick={(e) => {
+                            if (e.target === e.currentTarget) {
+                                resetCategoryForm()
+                            }
+                        }}
+                    >
+                        <div className="admin-question-modal">
+                            <div className="admin-modal-header">
+                                <div>
+                                    <span className="admin-eyebrow">
+                                        {editingCategory
+                                            ? 'EDIT CATEGORY'
+                                            : 'NEW CATEGORY'}
+                                    </span>
+
+                                    <h2>
+                                        {editingCategory
+                                            ? 'Edit Category'
+                                            : 'Add Category'}
+                                    </h2>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className="admin-modal-close"
+                                    onClick={resetCategoryForm}
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+
+                            <form onSubmit={handleCategorySubmit}>
+                                <label>Category Name</label>
+
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={categoryForm.name}
+                                    onChange={handleCategoryInput}
+                                    placeholder="Example: General Knowledge"
+                                    maxLength={255}
+                                    required
+                                />
+
+                                <label>Description</label>
+
+                                <textarea
+                                    name="description"
+                                    value={categoryForm.description}
+                                    onChange={handleCategoryInput}
+                                    placeholder="Enter category description"
+                                    rows="3"
+                                />
+
+                                <label>Category Icon (Emoji)</label>
+
+                                <input
+                                    type="text"
+                                    name="icon"
+                                    value={categoryForm.icon}
+                                    onChange={handleCategoryInput}
+                                    placeholder="Example: 📚"
+                                    maxLength={50}
+                                />
+
+                                <label className="admin-checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        name="is_active"
+                                        checked={categoryForm.is_active}
+                                        onChange={handleCategoryInput}
+                                    />
+
+                                    <span>Category is active</span>
+                                </label>
+
+                                <div className="admin-modal-actions">
+                                    <button
+                                        type="button"
+                                        className="admin-cancel-btn"
+                                        onClick={resetCategoryForm}
+                                    >
+                                        Cancel
+                                    </button>
+
+                                    <button
+                                        type="submit"
+                                        className="admin-primary-btn"
+                                        disabled={savingCategory}
+                                    >
+                                        {savingCategory
+                                            ? 'Saving...'
+                                            : editingCategory
+                                                ? 'Update Category'
+                                                : 'Create Category'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 )}
 

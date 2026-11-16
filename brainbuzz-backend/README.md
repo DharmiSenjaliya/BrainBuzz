@@ -57,3 +57,21 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Daily Mini Game Automation
+
+The `app:rotate-daily-game` scheduler generates and publishes today's AI mini game. It checks every 15 minutes (Asia/Kolkata) and skips generation once a game already exists for the date. Set `GEMINI_API_KEY` and, if needed, `GEMINI_MODEL` in the backend environment.
+
+On a Linux host, install this cron entry using the absolute path to the backend:
+
+```cron
+* * * * * cd /path/to/brainbuzz-backend && php artisan schedule:run >> /dev/null 2>&1
+```
+
+For local development on Windows, keep this command running in a terminal:
+
+```powershell
+php artisan schedule:work
+```
+
+Verify the registered schedule with `php artisan schedule:list`.

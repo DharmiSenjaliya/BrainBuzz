@@ -104,6 +104,7 @@ Route::middleware('auth:sanctum')->group(function () {
         // Existing Daily Challenge Management - PRESERVED
         Route::get('/admin/daily-challenges', [AdminDailyChallengeController::class, 'index']);
         Route::post('/admin/daily-challenges', [AdminDailyChallengeController::class, 'store']);
+        Route::patch('/admin/daily-challenges/{id}/comment', [AdminDailyChallengeController::class, 'updateComment']);
         Route::put('/admin/daily-challenges/{id}', [AdminDailyChallengeController::class, 'update']);
         Route::delete('/admin/daily-challenges/{id}', [AdminDailyChallengeController::class, 'destroy']);
 

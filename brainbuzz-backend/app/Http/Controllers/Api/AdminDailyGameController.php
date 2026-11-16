@@ -129,7 +129,7 @@ $validated = $request->validate([
             ],
         ]);
 
-        if (DailyGameChallenge::where(
+        if (DailyGameChallenge::whereDate(
             'challenge_date',
             $validated['challenge_date']
         )->exists()) {
