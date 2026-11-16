@@ -862,15 +862,13 @@ const checkAnswer = async () => {
     if (isResetPasswordPage && !user) {
         return (
             <div className={`app auth-page ${theme}-theme`}>
-                <main className="auth-container">
-                    <ResetPassword
-                        onBack={() => {
-                            window.history.replaceState({}, '', '/')
-                            setIsResetPasswordPage(false)
-                            setAuthMode('login')
-                        }}
-                    />
-                </main>
+                <ResetPassword
+                    onBack={() => {
+                        window.history.replaceState({}, '', '/')
+                        setIsResetPasswordPage(false)
+                        setAuthMode('login')
+                    }}
+                />
             </div>
         )
     }
@@ -904,16 +902,12 @@ const checkAnswer = async () => {
     if (!user && showForgotPassword) {
         return (
             <div className={`app auth-page ${theme}-theme`}>
-                <main className="auth-container">
-               
-
-                    <ForgotPassword
-                        onBack={() => {
-                            setShowForgotPassword(false)
-                            setAuthMessage('')
-                        }}
-                    />
-                </main>
+                <ForgotPassword
+                    onBack={() => {
+                        setShowForgotPassword(false)
+                        setAuthMessage('')
+                    }}
+                />
             </div>
         )
     }

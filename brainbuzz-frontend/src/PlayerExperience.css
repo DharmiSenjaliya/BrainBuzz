@@ -1,0 +1,1188 @@
+.app.dark-theme {
+    --player-bg: #080d1b;
+    --player-panel: #111a2e;
+    --player-panel-raised: #172238;
+    --player-border: #293852;
+    --player-text: #f8fafc;
+    --player-muted: #9aa9bf;
+    --player-purple: #8b5cf6;
+    --player-cyan: #22d3ee;
+    min-height: 100vh;
+    background:
+        radial-gradient(ellipse at 10% 12%, #7c3aed14, transparent 34%),
+        radial-gradient(ellipse at 92% 38%, #06b6d40d, transparent 30%),
+        var(--player-bg);
+    color: var(--player-text);
+    font-family: Inter, "Segoe UI", system-ui, sans-serif;
+}
+
+.app.dark-theme .navbar {
+    position: relative;
+    z-index: 20;
+    min-height: 72px;
+    padding: 12px clamp(16px, 5vw, 64px);
+    border-bottom: 1px solid #ffffff12;
+    background: linear-gradient(110deg, #10182bea, #111a2df2);
+    box-shadow: 0 10px 30px #02061733;
+    backdrop-filter: blur(16px);
+}
+
+.app.dark-theme .navbar h2 {
+    color: #ddd6fe;
+    font-size: 23px;
+    letter-spacing: -0.5px;
+}
+
+.app.dark-theme .user-area {
+    gap: 12px;
+}
+
+.app.dark-theme .user-area > span {
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
+.app.dark-theme .logout-btn,
+.app.dark-theme .notification-bell-btn {
+    min-height: 40px;
+    border: 1px solid #ffffff24;
+    border-radius: 11px;
+    background: #ffffff08;
+    color: #e2e8f0;
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.app.dark-theme .logout-btn {
+    padding: 9px 15px;
+}
+
+.app.dark-theme .notification-bell-btn {
+    width: 42px;
+    height: 42px;
+}
+
+.app.dark-theme .logout-btn:hover,
+.app.dark-theme .notification-bell-btn:hover {
+    transform: translateY(-1px);
+    border-color: #a78bfa77;
+    background: #7c3aed24;
+    color: #fff;
+}
+
+.app.dark-theme .notification-count {
+    border: 2px solid #111a2e;
+    background: linear-gradient(135deg, #fb7185, #e11d48);
+}
+
+.app.dark-theme .notification-dropdown {
+    border: 1px solid var(--player-border);
+    border-radius: 15px;
+    background: #10192b;
+    box-shadow: 0 20px 55px #02061799;
+}
+
+.app.dark-theme .notification-header,
+.app.dark-theme .notification-item {
+    border-color: #ffffff12;
+}
+
+.app.dark-theme .notification-item.unread {
+    background: #7c3aed16;
+}
+
+.app.dark-theme .notification-item.read {
+    background: transparent;
+}
+
+.app.dark-theme :is(button, input, select, textarea):focus-visible {
+    outline: 2px solid #a78bfa;
+    outline-offset: 3px;
+}
+
+.app.dark-theme button:disabled {
+    cursor: not-allowed;
+}
+
+.app.dark-theme :is(input, select, textarea)::placeholder {
+    color: #8190a8;
+}
+
+.app.dark-theme .loading {
+    color: #c4b5fd;
+}
+
+/* Authentication and account forms */
+
+.app.dark-theme.auth-page {
+    display: flex;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 16px;
+    background:
+        radial-gradient(ellipse at 18% 20%, #7c3aed2b, transparent 36%),
+        radial-gradient(ellipse at 82% 82%, #06b6d420, transparent 34%),
+        #080d1b;
+}
+
+.app.dark-theme .auth-container {
+    position: relative;
+    width: min(100%, 470px);
+    padding: clamp(24px, 5vw, 38px);
+    overflow: hidden;
+    border: 1px solid #ffffff1c;
+    border-radius: 22px;
+    background:
+        radial-gradient(circle at 100% 0, #7c3aed16, transparent 38%),
+        linear-gradient(145deg, #141f34, #0f1728);
+    box-shadow: 0 28px 80px #02061780;
+}
+
+.app.dark-theme .auth-logo {
+    color: #ddd6fe;
+    font-size: 32px;
+    letter-spacing: -1px;
+}
+
+.app.dark-theme .auth-subtitle,
+.app.dark-theme .auth-description {
+    color: #a7b3c8;
+    line-height: 1.6;
+}
+
+.app.dark-theme .auth-container h2 {
+    margin: 18px 0 8px;
+    color: #f8fafc;
+    font-size: 24px;
+}
+
+.app.dark-theme .auth-tabs {
+    gap: 5px;
+    padding: 5px;
+    border: 1px solid #ffffff12;
+    border-radius: 12px;
+    background: #080f1d;
+}
+
+.app.dark-theme .auth-tab {
+    min-height: 42px;
+    border-radius: 9px;
+    color: #a7b3c8;
+}
+
+.app.dark-theme .auth-tab.active {
+    background: linear-gradient(110deg, #7c3aed, #5b42c9);
+    box-shadow: 0 6px 16px #6d28d933;
+    color: #fff;
+}
+
+.app.dark-theme .auth-form {
+    gap: 12px;
+}
+
+.app.dark-theme .auth-form input,
+.app.dark-theme .edit-profile-form input,
+.app.dark-theme .change-password-form input,
+.app.dark-theme .forgot-password-form input,
+.app.dark-theme .reset-password-form input {
+    width: 100%;
+    min-height: 46px;
+    padding: 12px 14px;
+    border: 1px solid #34445f;
+    border-radius: 10px;
+    background: #0a1221;
+    color: #f8fafc;
+    font: inherit;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.app.dark-theme :is(
+    .auth-form input,
+    .edit-profile-form input,
+    .change-password-form input,
+    .forgot-password-form input,
+    .reset-password-form input
+):focus {
+    border-color: #8b5cf6;
+    outline: none;
+    box-shadow: 0 0 0 3px #8b5cf626;
+}
+
+.app.dark-theme .auth-message,
+.app.dark-theme .forgot-message {
+    padding: 11px 13px;
+    border: 1px solid #f8717140;
+    border-radius: 10px;
+    background: #7f1d1d24;
+    color: #fecaca;
+    line-height: 1.5;
+}
+
+.app.dark-theme .auth-switch {
+    margin-top: 20px;
+}
+
+.app.dark-theme .auth-switch button,
+.app.dark-theme .forgot-password-link button {
+    color: #c4b5fd;
+}
+
+.app.dark-theme.auth-page .submit-btn,
+.app.dark-theme .forgot-password-form button[type="submit"],
+.app.dark-theme .reset-password-form button[type="submit"],
+.app.dark-theme .change-password-form button[type="submit"],
+.app.dark-theme .edit-profile-form button[type="submit"] {
+    min-height: 46px;
+    border-radius: 10px;
+    background: linear-gradient(110deg, #8b5cf6, #5b42c9);
+    box-shadow: 0 8px 20px #6d28d933;
+}
+
+.app.dark-theme .auth-container > .dashboard-btn {
+    min-height: 42px;
+    margin-top: 18px;
+    border: 1px solid #ffffff20;
+    background: #ffffff08;
+    color: #d7dbea;
+}
+
+.app.dark-theme :is(.edit-profile-container, .change-password-container) {
+    min-height: calc(100vh - 72px);
+    padding: 28px 16px;
+    background:
+        radial-gradient(ellipse at 15% 15%, #7c3aed20, transparent 38%),
+        transparent;
+}
+
+.app.dark-theme :is(.forgot-password-container, .reset-password-container) {
+    min-height: 100vh;
+    padding: 20px;
+    background: transparent;
+}
+
+.app.dark-theme :is(
+    .edit-profile-form,
+    .change-password-form,
+    .forgot-password-form,
+    .reset-password-form
+) {
+    width: min(100%, 500px);
+    padding: clamp(22px, 4vw, 34px);
+    border: 1px solid #ffffff1c;
+    border-radius: 20px;
+    background:
+        radial-gradient(circle at 100% 0, #7c3aed12, transparent 40%),
+        linear-gradient(145deg, #141f34, #0f1728);
+    box-shadow: 0 24px 65px #02061766;
+}
+
+.app.dark-theme :is(
+    .edit-profile-form h2,
+    .change-password-form h2,
+    .forgot-password-form h2,
+    .reset-password-form h2
+) {
+    color: #f8fafc;
+    font-size: 23px;
+}
+
+.app.dark-theme :is(.edit-profile-form label, .phone-help-text) {
+    color: #cbd5e1;
+}
+
+.app.dark-theme :is(
+    .change-password-form button[type="button"],
+    .edit-profile-form button[type="button"],
+    .forgot-password-form button[type="button"],
+    .reset-password-form button[type="button"]
+) {
+    min-height: 42px;
+    border: 1px solid #ffffff20;
+    background: #ffffff08;
+    color: #dbe5f4;
+}
+
+/* Player dashboard and core BrainBuzz game */
+
+.app.dark-theme .dashboard-container {
+    width: min(calc(100% - 36px), 1180px);
+    max-width: none;
+    margin: 30px auto 60px;
+}
+
+.app.dark-theme .dashboard-welcome {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(25px, 4vw, 42px);
+    border: 1px solid #c4b5fd38;
+    border-radius: 22px;
+    background:
+        radial-gradient(circle at 88% 0, #22d3ee30, transparent 34%),
+        linear-gradient(115deg, #3b277a, #5b42c9 58%, #315c9d);
+    box-shadow: 0 18px 42px #39277855;
+}
+
+.app.dark-theme .dashboard-welcome::after {
+    position: absolute;
+    right: -48px;
+    bottom: -132px;
+    width: 260px;
+    height: 260px;
+    border: 1px solid #ffffff15;
+    border-radius: 50%;
+    box-shadow: 0 0 0 28px #ffffff08, 0 0 0 56px #ffffff05;
+    content: "";
+    pointer-events: none;
+}
+
+.app.dark-theme .dashboard-welcome h1 {
+    position: relative;
+    z-index: 1;
+    font-size: clamp(28px, 4vw, 38px);
+    letter-spacing: -1px;
+}
+
+.app.dark-theme .dashboard-welcome > p:last-child {
+    position: relative;
+    z-index: 1;
+    color: #e5e7ff;
+}
+
+.app.dark-theme .dashboard-stats {
+    grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+    gap: 13px;
+    margin-bottom: 20px;
+}
+
+.app.dark-theme .stat-card {
+    padding: 18px 14px;
+    border: 1px solid #ffffff16;
+    border-radius: 16px;
+    background:
+        radial-gradient(circle at 100% 0, #8b5cf615, transparent 50%),
+        #111a2e;
+    box-shadow: 0 12px 28px #0206172e;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.app.dark-theme .stat-card:hover {
+    transform: translateY(-3px);
+    border-color: #a78bfa66;
+}
+
+.app.dark-theme .stat-card span {
+    font-size: 25px;
+}
+
+.app.dark-theme .stat-card h2 {
+    margin: 8px 0 4px;
+    color: #ddd6fe;
+    font-size: 26px;
+    font-variant-numeric: tabular-nums;
+}
+
+.app.dark-theme .stat-card p {
+    color: #a7b3c8;
+}
+
+.app.dark-theme .games-hub-promo {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(22px, 3vw, 32px);
+    border: 1px solid #c4b5fd40;
+    border-radius: 19px;
+    background:
+        radial-gradient(circle at 88% 0, #22d3ee32, transparent 35%),
+        linear-gradient(115deg, #211844, #34276d 56%, #15455c);
+    box-shadow: 0 14px 34px #02061733;
+}
+
+.app.dark-theme .games-hub-promo-button {
+    min-height: 46px;
+    padding: 12px 19px;
+    border: 1px solid #ffffff55;
+    border-radius: 11px;
+    background: #f8fafc;
+    color: #39266f;
+}
+
+.app.dark-theme .dashboard-game {
+    padding: clamp(19px, 3vw, 32px);
+    border: 1px solid #ffffff18;
+    border-radius: 21px;
+    background:
+        radial-gradient(circle at 100% 0, #7c3aed12, transparent 36%),
+        linear-gradient(145deg, #121c30, #0f1728);
+    box-shadow: 0 18px 48px #02061740;
+    text-align: left;
+}
+
+.app.dark-theme .dashboard-game > h2,
+.app.dark-theme .dashboard-game > p {
+    text-align: center;
+}
+
+.app.dark-theme .dashboard-game > h2 {
+    color: #f8fafc;
+    font-size: 25px;
+}
+
+.app.dark-theme .dashboard-game > p {
+    color: #a7b3c8;
+}
+
+.app.dark-theme .level-card {
+    position: relative;
+    overflow: hidden;
+    padding: 22px 18px;
+    border-color: #ffffff1a;
+    background:
+        radial-gradient(circle at 100% 0, #7c3aed16, transparent 45%),
+        #111a2e;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.app.dark-theme .level-card.unlocked {
+    border-color: #8b5cf64d;
+}
+
+.app.dark-theme .level-card.unlocked:hover {
+    transform: translateY(-3px);
+    border-color: #a78bfa;
+    box-shadow: 0 12px 28px #7c3aed24;
+}
+
+.app.dark-theme .level-card.locked {
+    background: #0c1424;
+}
+
+.app.dark-theme .level-card h3 {
+    color: #f8fafc;
+}
+
+.app.dark-theme .level-card p,
+.app.dark-theme .level-performance small {
+    color: #a7b3c8;
+}
+
+.app.dark-theme .level-card button,
+.app.dark-theme .dashboard-game .submit-btn {
+    min-height: 45px;
+    border-radius: 11px;
+    background: linear-gradient(110deg, #8b5cf6, #5b42c9);
+    font-size: 14px;
+    box-shadow: 0 7px 18px #6d28d933;
+}
+
+.app.dark-theme .player-category-filter label {
+    color: #ddd6fe;
+}
+
+.app.dark-theme .player-category-filter select {
+    min-height: 46px;
+    border-color: #34445f;
+    border-radius: 11px;
+    background: #0a1221;
+}
+
+.app.dark-theme .dashboard-game > .dashboard-btn {
+    display: inline-flex;
+    width: calc(33.333% - 10px);
+    min-width: 190px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 8px 0 0;
+    padding: 11px 14px;
+    border: 1px solid #8b5cf655;
+    border-radius: 11px;
+    background: #7c3aed16;
+    color: #ddd6fe;
+}
+
+.app.dark-theme .dashboard-game > .dashboard-btn:hover {
+    transform: translateY(-2px);
+    border-color: #a78bfa;
+    background: #7c3aed33;
+    color: #fff;
+}
+
+.app.dark-theme .game-container {
+    width: min(calc(100% - 36px), 790px);
+    max-width: none;
+    margin: 30px auto 56px;
+    padding: clamp(20px, 4vw, 38px);
+    border: 1px solid #ffffff1c;
+    border-radius: 22px;
+    background:
+        radial-gradient(circle at 100% 0, #7c3aed12, transparent 35%),
+        linear-gradient(145deg, #141f34, #0f1728);
+    box-shadow: 0 22px 60px #02061766;
+    text-align: center;
+}
+
+.app.dark-theme .game-container h1,
+.app.dark-theme .game-container h2 {
+    color: #f8fafc;
+}
+
+.app.dark-theme .game-container .level {
+    border: 1px solid #a78bfa44;
+    background: #7c3aed24;
+    color: #ddd6fe;
+}
+
+.app.dark-theme .game-container .subtitle {
+    color: #a7b3c8;
+}
+
+.app.dark-theme .game-category-label {
+    border-color: #8b5cf655;
+    background: #7c3aed20;
+    color: #ddd6fe;
+}
+
+.app.dark-theme .clue-box {
+    border: 1px solid #ffffff12;
+    background: #0a1221;
+}
+
+.app.dark-theme .clue {
+    border-color: #34445f;
+    background: #172238;
+    color: #e2e8f0;
+}
+
+.app.dark-theme .clue:hover {
+    border-color: #a78bfa;
+    background: #34276d;
+}
+
+.app.dark-theme .answer-input {
+    min-height: 50px;
+    border-color: #34445f;
+    border-radius: 11px;
+    background: #080f1d;
+    color: #f8fafc;
+}
+
+.app.dark-theme .answer-input:focus {
+    border-color: #a78bfa;
+    box-shadow: 0 0 0 3px #8b5cf626;
+}
+
+.app.dark-theme .game-container .submit-btn {
+    min-height: 48px;
+    border-radius: 11px;
+    background: linear-gradient(110deg, #8b5cf6, #5b42c9);
+    box-shadow: 0 8px 20px #6d28d933;
+}
+
+.app.dark-theme .game-container .submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px #6d28d955;
+}
+
+.app.dark-theme .game-top-actions {
+    margin-bottom: 20px;
+}
+
+.app.dark-theme .leave-game-btn {
+    border-color: #fb718544;
+    border-radius: 10px;
+    background: #88133726;
+    color: #fecdd3;
+}
+
+.app.dark-theme .leave-game-btn:hover {
+    background: #9f1239;
+    color: #fff;
+}
+
+.app.dark-theme .hint-section {
+    padding: 15px;
+    border: 1px solid #facc1533;
+    border-radius: 13px;
+    background: #eab3080d;
+}
+
+.app.dark-theme .hints-remaining {
+    color: #fde68a;
+}
+
+.app.dark-theme .hint-text,
+.app.dark-theme .game-message {
+    border: 1px solid #8b5cf633;
+    border-radius: 11px;
+    background: #7c3aed18;
+    color: #e9ddff;
+}
+
+.app.dark-theme .score {
+    justify-content: space-between;
+    gap: 10px;
+    padding: 13px 15px;
+    border: 1px solid #ffffff14;
+    border-radius: 12px;
+    background: #0b1424;
+    color: #dbe5f4;
+}
+
+.app.dark-theme .game-container > .dashboard-btn {
+    margin-top: 10px;
+    border-color: #ffffff24;
+    color: #ddd6fe;
+}
+
+/* Other player sections */
+
+.app.dark-theme :is(
+    .achievements-page,
+    .how-to-play-page,
+    .games-hub-container,
+    .brain-training,
+    .knowledge-challenge,
+    .profile-page,
+    .leaderboard-page
+) {
+    color: var(--player-text);
+}
+
+.app.dark-theme .achievements-page,
+.app.dark-theme .how-to-play-page,
+.app.dark-theme .games-hub-container,
+.app.dark-theme .brain-training,
+.app.dark-theme .profile-page {
+    position: relative;
+    z-index: 0;
+}
+
+.app.dark-theme :is(
+    .achievements-header h1,
+    .how-to-play-header h1,
+    .training-heading h1,
+    .profile-header h1,
+    .leaderboard-header h1
+) {
+    color: #f8fafc;
+    letter-spacing: -0.8px;
+}
+
+.app.dark-theme :is(
+    .achievements-header p,
+    .how-to-play-header p,
+    .profile-header p
+) {
+    color: #a7b3c8;
+    opacity: 1;
+}
+
+.app.dark-theme :is(
+    .achievements-back-btn,
+    .how-back-btn,
+    .games-hub-back,
+    .training-back,
+    .knowledge-back,
+    .profile-back-btn,
+    .leaderboard-header .back-btn
+) {
+    min-height: 42px;
+    padding: 9px 14px;
+    border: 1px solid #ffffff20;
+    border-radius: 10px;
+    background: #111a2e;
+    color: #dbe5f4;
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.app.dark-theme :is(
+    .achievements-back-btn,
+    .how-back-btn,
+    .games-hub-back,
+    .training-back,
+    .knowledge-back,
+    .profile-back-btn,
+    .leaderboard-header .back-btn
+):hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: #a78bfa77;
+    background: #7c3aed20;
+    color: #fff;
+}
+
+.app.dark-theme :is(
+    .achievement-card,
+    .how-card,
+    .training-card,
+    .training-summary,
+    .training-dashboard-panel,
+    .training-play,
+    .games-hub-card,
+    .profile-card,
+    .profile-stat-card,
+    .game-history-card
+) {
+    border: 1px solid #ffffff18;
+    border-radius: 16px;
+    background:
+        radial-gradient(circle at 100% 0, #7c3aed10, transparent 45%),
+        #111a2e;
+    box-shadow: 0 12px 30px #02061729;
+}
+
+.app.dark-theme :is(.achievement-card, .how-card, .training-card, .games-hub-card):hover {
+    transform: translateY(-3px);
+    border-color: #a78bfa77;
+    box-shadow: 0 18px 36px #0206174d;
+}
+
+.app.dark-theme .achievement-card.locked {
+    background: #0d1525;
+    opacity: 0.72;
+}
+
+.app.dark-theme .achievement-card h3,
+.app.dark-theme .how-card h3,
+.app.dark-theme .training-card h2,
+.app.dark-theme .profile-card h2,
+.app.dark-theme .game-history-info h3 {
+    color: #f8fafc;
+}
+
+.app.dark-theme :is(.achievement-card p, .how-card p, .training-card p) {
+    color: #a7b3c8;
+    opacity: 1;
+}
+
+.app.dark-theme .achievements-summary {
+    border: 1px solid #a78bfa33;
+    background: linear-gradient(110deg, #7c3aed20, #06b6d410);
+}
+
+.app.dark-theme .summary-number {
+    color: #f8fafc;
+}
+
+.app.dark-theme .summary-label,
+.app.dark-theme .achievement-progress-info span {
+    color: #a7b3c8;
+    opacity: 1;
+}
+
+.app.dark-theme .achievement-status {
+    background: #22c55e1f;
+    color: #86efac;
+}
+
+.app.dark-theme .achievement-card.locked .achievement-status {
+    background: #ffffff12;
+    color: #a7b3c8;
+}
+
+.app.dark-theme .how-start-section {
+    border: 1px solid #8b5cf633;
+    background: linear-gradient(110deg, #7c3aed1b, #06b6d410);
+}
+
+.app.dark-theme .how-start-section h2 {
+    color: #f8fafc;
+}
+
+.app.dark-theme .how-start-section p {
+    color: #a7b3c8;
+    opacity: 1;
+}
+
+.app.dark-theme :is(.how-start-btn, .training-card button, .training-action) {
+    min-height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(110deg, #8b5cf6, #5b42c9);
+    color: #fff;
+}
+
+.app.dark-theme .games-hub-heading {
+    border: 1px solid #c4b5fd44;
+    background:
+        radial-gradient(circle at 90% 0, #22d3ee36, transparent 35%),
+        linear-gradient(115deg, #3b277a, #5b42c9 58%, #315c9d);
+}
+
+.app.dark-theme .games-hub-card.iq {
+    background:
+        radial-gradient(circle at 100% 0, #8b5cf626, transparent 42%),
+        #111a2e;
+}
+
+.app.dark-theme .games-hub-card.training {
+    background:
+        radial-gradient(circle at 100% 0, #34d39920, transparent 42%),
+        #111a2e;
+}
+
+.app.dark-theme .games-hub-card.knowledge {
+    background:
+        radial-gradient(circle at 100% 0, #fbbf2420, transparent 42%),
+        #111a2e;
+}
+
+.app.dark-theme .games-hub-card h2 {
+    color: #f8fafc;
+}
+
+.app.dark-theme .games-hub-description,
+.app.dark-theme .training-dashboard-heading p,
+.app.dark-theme .training-panel-heading p,
+.app.dark-theme .training-history-row time {
+    color: #a7b3c8;
+}
+
+.app.dark-theme .games-hub-card-footer button {
+    min-height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(110deg, #8b5cf6, #5b42c9);
+}
+
+.app.dark-theme .training-play {
+    max-width: 700px;
+    padding: clamp(22px, 4vw, 36px);
+}
+
+.app.dark-theme .training-play h2 {
+    color: #f8fafc;
+}
+
+.app.dark-theme .training-play input {
+    min-height: 48px;
+    border-color: #34445f;
+    border-radius: 11px;
+    background: #080f1d;
+    color: #f8fafc;
+}
+
+.app.dark-theme .memory-card,
+.app.dark-theme .pattern-buttons button {
+    border-color: #a78bfa66;
+    border-radius: 13px;
+    background: linear-gradient(145deg, #312e81, #211a46);
+    color: #fff;
+}
+
+.app.dark-theme .reaction-box {
+    border: 1px solid #fb923c55;
+    background: linear-gradient(135deg, #9a3412, #c2410c);
+}
+
+.app.dark-theme .reaction-box.reaction-ready {
+    border-color: #4ade8055;
+    background: linear-gradient(135deg, #166534, #15803d);
+}
+
+.app.dark-theme .profile-card {
+    max-width: 760px;
+    padding: clamp(22px, 4vw, 36px);
+}
+
+.app.dark-theme .profile-avatar {
+    border: 3px solid #c4b5fd66;
+    box-shadow: 0 10px 28px #7c3aed44;
+}
+
+.app.dark-theme .profile-email,
+.app.dark-theme .profile-detail-item span {
+    color: #a7b3c8;
+    opacity: 1;
+}
+
+.app.dark-theme .profile-detail-item {
+    border-color: #ffffff14;
+}
+
+.app.dark-theme .profile-detail-item strong {
+    color: #e2e8f0;
+}
+
+.app.dark-theme .profile-actions button,
+.app.dark-theme .game-history-header button {
+    min-height: 44px;
+    border: 1px solid #8b5cf655;
+    border-radius: 10px;
+    background: linear-gradient(110deg, #7c3aed, #5b42c9);
+    color: #fff;
+}
+
+.app.dark-theme .profile-password-btn {
+    border-color: #ffffff20 !important;
+    background: #ffffff08 !important;
+    color: #ddd6fe !important;
+}
+
+.app.dark-theme .profile-stats-section h2,
+.app.dark-theme .game-history-section h2 {
+    color: #f8fafc;
+}
+
+.app.dark-theme .profile-stat-card h3,
+.app.dark-theme .game-history-score strong {
+    color: #c4b5fd;
+}
+
+.app.dark-theme .profile-stat-card p,
+.app.dark-theme .game-history-info p,
+.app.dark-theme .game-history-score span {
+    color: #a7b3c8;
+    opacity: 1;
+}
+
+.app.dark-theme .game-history-card {
+    border-radius: 14px;
+}
+
+.app.dark-theme .no-game-history {
+    border: 1px dashed #ffffff24;
+    border-radius: 15px;
+    background: #111a2e;
+}
+
+.app.dark-theme .no-game-history h3 {
+    color: #f8fafc;
+}
+
+.app.dark-theme .no-game-history p {
+    color: #a7b3c8;
+    opacity: 1;
+}
+
+.app.dark-theme .my-rank-card {
+    border: 1px solid #c4b5fd55;
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 90% 0, #22d3ee2b, transparent 35%),
+        linear-gradient(115deg, #31215d, #4c2690);
+    box-shadow: 0 14px 34px #6d28d933;
+}
+
+.app.dark-theme .leaderboard-page {
+    min-height: calc(100vh - 72px);
+    max-width: 1250px;
+    background: transparent;
+}
+
+.app.dark-theme .top-player-card {
+    border-radius: 16px;
+    box-shadow: 0 10px 26px #02061729;
+}
+
+.app.dark-theme .leaderboard-table-wrapper {
+    border-color: #ffffff18;
+    border-radius: 14px;
+    box-shadow: 0 12px 30px #02061733;
+}
+
+.app.dark-theme .leaderboard-table th {
+    background: #172238;
+    color: #a7b3c8;
+}
+
+.app.dark-theme .leaderboard-table td {
+    border-top-color: #ffffff12;
+}
+
+.app.dark-theme .leaderboard-table tbody tr.current-player-row td {
+    background: #34276d;
+}
+
+.app.dark-theme .knowledge-setup,
+.app.dark-theme .knowledge-round,
+.app.dark-theme .knowledge-results {
+    border-color: #ffffff1c;
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 100% 0, #14b8a615, transparent 38%),
+        linear-gradient(145deg, #121f2b, #0e1722);
+    box-shadow: 0 22px 60px #02061755;
+}
+
+.app.dark-theme .knowledge-primary,
+.app.dark-theme .knowledge-answer-form button,
+.app.dark-theme .knowledge-next {
+    min-height: 46px;
+    border-radius: 10px;
+    background: linear-gradient(110deg, #0f766e, #0e7490);
+}
+
+@media (max-width: 900px) {
+    .app.dark-theme .dashboard-game > .dashboard-btn {
+        width: calc(50% - 10px);
+    }
+
+    .app.dark-theme .dashboard-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .app.dark-theme .dashboard-container {
+        width: min(calc(100% - 24px), 1180px);
+        margin: 18px auto 38px;
+    }
+
+    .app.dark-theme .dashboard-welcome {
+        padding: 23px 20px;
+        margin-bottom: 16px;
+        border-radius: 17px;
+    }
+
+    .app.dark-theme .dashboard-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .app.dark-theme .stat-card {
+        padding: 14px 10px;
+    }
+
+    .app.dark-theme .games-hub-promo {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 15px;
+        margin: 17px 0;
+        padding: 20px;
+    }
+
+    .app.dark-theme .dashboard-game {
+        padding: 17px;
+        border-radius: 16px;
+    }
+
+    .app.dark-theme .dashboard-game > .dashboard-btn {
+        width: 100%;
+        margin-right: 0;
+    }
+
+    .app.dark-theme .game-container {
+        width: min(calc(100% - 24px), 790px);
+        margin: 18px auto 35px;
+        padding: 19px 15px;
+        border-radius: 17px;
+    }
+
+    .app.dark-theme .clue-box {
+        gap: 9px;
+        padding: 12px;
+    }
+
+    .app.dark-theme .clue {
+        padding: 13px 8px;
+        font-size: 13px;
+        overflow-wrap: anywhere;
+    }
+
+    .app.dark-theme .score {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .app.dark-theme .game-top-actions {
+        align-items: center;
+    }
+
+    .app.dark-theme .achievements-grid,
+    .app.dark-theme .how-to-play-content,
+    .app.dark-theme .training-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .app.dark-theme .achievements-header h1,
+    .app.dark-theme .how-to-play-header h1,
+    .app.dark-theme .leaderboard-header h1 {
+        margin-top: 54px;
+        font-size: 25px;
+    }
+
+    .app.dark-theme .profile-header h1 {
+        margin-top: 54px;
+        font-size: 27px;
+    }
+
+    .app.dark-theme .profile-detail-item {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .app.dark-theme .profile-detail-item strong {
+        text-align: left;
+    }
+
+    .app.dark-theme .profile-actions {
+        flex-direction: column;
+    }
+
+    .app.dark-theme .game-history-card {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .app.dark-theme .game-history-score {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .app.dark-theme .training-summary-grid,
+    .app.dark-theme .training-dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .app.dark-theme .navbar {
+        gap: 10px;
+        padding: 12px 14px;
+    }
+
+    .app.dark-theme .navbar h2 {
+        font-size: 20px;
+    }
+
+    .app.dark-theme .user-area {
+        width: 100%;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .app.dark-theme .user-area > span {
+        margin-right: auto;
+        font-size: 12px;
+    }
+
+    .app.dark-theme .notification-dropdown {
+        position: fixed;
+        top: 120px;
+        right: 12px;
+        left: 12px;
+        width: auto;
+        max-height: min(70vh, 560px);
+    }
+
+    .app.dark-theme .auth-container {
+        padding: 24px 18px;
+        border-radius: 17px;
+    }
+
+    .app.dark-theme .auth-container h2 {
+        font-size: 22px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app.dark-theme *,
+    .app.dark-theme *::before,
+    .app.dark-theme *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
