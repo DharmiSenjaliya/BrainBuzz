@@ -119,11 +119,16 @@ try {
         );
 
     if (!$createResponse->successful()) {
-        throw new RuntimeException(
-            'Gemini request failed with HTTP ' . $createResponse->status()
-            . ': ' . $createResponse->body()
-        );
-    }
+    $message = match ($createResponse->status()) {
+        400 => 'Gemini rejected the request. Check the model and request format.',
+        401, 403 => 'Gemini authentication failed. Check GEMINI_API_KEY and API access.',
+        429 => 'Gemini quota or rate limit exceeded. Check your Google AI Studio limits and retry later.',
+        500, 503 => 'Gemini is temporarily unavailable. Please try again later.',
+        default => 'Gemini request failed with HTTP ' . $createResponse->status() . '.',
+    };
+
+    throw new RuntimeException($message);
+}
 
     $interactionId = $createResponse->json('id');
 
@@ -182,7 +187,7 @@ try {
 
 } catch (ConnectionException $e) {
     throw new RuntimeException(
-        'Gemini Connection Error: ' . $e->getMessage(),
+        'Unable to connect to Gemini. Please try again later.',
         0,
         $e
     );
@@ -295,6 +300,39 @@ if (json_last_error() !== JSON_ERROR_NONE || !is_array($generated)) {
             if (!is_string($answer) || trim($answer) === '') {
                 throw new RuntimeException('AI generated an empty answer.');
             }
+
+            // Validate Word Shuffle letters against the correct answer.
+if ($itemType === 'word_shuffle') {
+    $scrambled = preg_replace(
+        '/[^a-z]/',
+        '',
+        strtolower($item['scrambled_word'])
+    );
+
+    $correct = preg_replace(
+        '/[^a-z]/',
+        '',
+        strtolower(trim($answer))
+    );
+
+    $scrambledLetters = str_split($scrambled);
+    $correctLetters = str_split($correct);
+
+    sort($scrambledLetters);
+    sort($correctLetters);
+
+    if (
+        empty($scrambled)
+        || empty($correct)
+        || $scrambledLetters !== $correctLetters
+    ) {
+        throw new RuntimeException(
+            'Invalid Word Shuffle puzzle at question '
+            . ($index + 1)
+            . ': scrambled letters do not match the correct answer.'
+        );
+    }
+}
 
             $explanation = $item['explanation'] ?? null;
             $generated['items'][$index] = [

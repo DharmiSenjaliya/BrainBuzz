@@ -43,17 +43,24 @@ class DailyGameAiServiceTest extends TestCase
         ], JSON_THROW_ON_ERROR);
 
         Http::fake([
-            'https://generativelanguage.googleapis.com/*' => Http::response([
-                'candidates' => [[
+    'https://generativelanguage.googleapis.com/v1beta/interactions' => Http::response([
+        'id' => 'test-interaction-123',
+        'status' => 'in_progress',
+    ]),
+    'https://generativelanguage.googleapis.com/v1beta/interactions/test-interaction-123' => Http::sequence()
+        ->push([
+            'id' => 'test-interaction-123',
+            'status' => 'completed',
+            'steps' => [
+                [
+                    'type' => 'model_output',
                     'content' => [
-                        'parts' => [
-                            ['text' => substr($json, 0, 60)],
-                            ['text' => substr($json, 60)],
-                        ],
+                        ['type' => 'text', 'text' => $json],
                     ],
-                ]],
-            ]),
-        ]);
+                ],
+            ],
+        ]),
+]);
 
         $game = app(DailyGameAiService::class)->generate('weekend_surprise', '2026-11-15');
 
@@ -87,10 +94,12 @@ class DailyGameAiServiceTest extends TestCase
         Http::assertSent(function (Request $request): bool {
             $data = $request->data();
 
-            return str_ends_with($request->url(), '/v1beta/models/gemini-3.8-flash:generateContent')
-                && $request->hasHeader('x-goog-api-key', 'test-only-gemini-key')
-                && isset($data['contents'][0]['parts'][0]['text'])
-                && ($data['generationConfig']['responseMimeType'] ?? null) === 'application/json';
+            return str_ends_with($request->url(), '/v1beta/interactions')
+            && $request->hasHeader('x-goog-api-key', 'test-only-gemini-key')
+            && ($data['model'] ?? null) === 'gemini-3.8-flash'
+            && isset($data['input'])
+            && ($data['background'] ?? null) === true
+            && ($data['store'] ?? null) === true;
         });
     }
 
@@ -145,10 +154,16 @@ class DailyGameAiServiceTest extends TestCase
     public function test_it_rejects_empty_responses(): void
     {
         Http::fake([
-            'https://generativelanguage.googleapis.com/*' => Http::response([
-                'candidates' => [['content' => ['parts' => []]]],
-            ]),
-        ]);
+    'https://generativelanguage.googleapis.com/v1beta/interactions' => Http::response([
+        'id' => 'empty-test-interaction',
+        'status' => 'in_progress',
+    ]),
+    'https://generativelanguage.googleapis.com/v1beta/interactions/empty-test-interaction' => Http::response([
+        'id' => 'empty-test-interaction',
+        'status' => 'completed',
+        'steps' => [],
+    ]),
+]);
 
         try {
             app(DailyGameAiService::class)->generate('word_shuffle', '2026-11-15');
@@ -161,18 +176,32 @@ class DailyGameAiServiceTest extends TestCase
     public function test_it_rejects_invalid_json_responses(): void
     {
         Http::fake([
-            'https://generativelanguage.googleapis.com/*' => Http::response([
-                'candidates' => [[
-                    'content' => ['parts' => [['text' => '{invalid json']]],
-                ]],
-            ]),
-        ]);
+    'https://generativelanguage.googleapis.com/v1beta/interactions' => Http::response([
+        'id' => 'invalid-json-test-interaction',
+        'status' => 'in_progress',
+    ]),
+    'https://generativelanguage.googleapis.com/v1beta/interactions/invalid-json-test-interaction' => Http::response([
+        'id' => 'invalid-json-test-interaction',
+        'status' => 'completed',
+        'steps' => [
+            [
+                'type' => 'model_output',
+                'content' => [
+                    ['type' => 'text', 'text' => '{invalid json'],
+                ],
+            ],
+        ],
+    ]),
+]);
 
         try {
             app(DailyGameAiService::class)->generate('word_shuffle', '2026-11-15');
             $this->fail('Expected invalid-JSON exception.');
         } catch (RuntimeException $exception) {
-            $this->assertSame('Gemini returned invalid JSON.', $exception->getMessage());
+            $this->assertStringStartsWith(
+    'Gemini returned invalid JSON.',
+    $exception->getMessage()
+);
         }
     }
 
@@ -210,7 +239,7 @@ class DailyGameAiServiceTest extends TestCase
             'sequence' => null,
             'math_puzzle' => null,
             ...$requiredContent[$type],
-            'answer' => 'Answer ' . $index,
+            'answer' => $type === 'word_shuffle' ? 'PALE' : 'Answer ' . $index,
             'points' => 999,
             'options' => ['incorrect', 'correct'],
             'image_url' => 'https://example.test/image.png',
