@@ -714,6 +714,8 @@
     width: 100%;
     border-collapse: collapse;
     text-align: left;
+    background: var(--lb-panel);
+    color: var(--lb-text);
 }
 
 .leaderboard-table th {
