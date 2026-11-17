@@ -32,6 +32,16 @@ function GamesHub({ onBack, onSelectMode }) {
             difficulty: 'Multiple Categories',
             color: 'knowledge',
         },
+        {
+            id: 'duel',
+            icon: '⚡',
+            title: 'Brain Duel',
+            description:
+                'Invite a rival, race through the same five questions and see who earns the most points.',
+            skills: ['Head-to-head', 'Strategy', 'Speed'],
+            difficulty: 'Invite-code Match',
+            color: 'duel',
+        },
     ]
 
     return (
@@ -84,9 +94,8 @@ function GamesHub({ onBack, onSelectMode }) {
 
                             <button
                                 onClick={() => {
-                                console.log('EXPLORE CLICKED:', mode.id)
-                                onSelectMode(mode.id)
-                            }}
+                                    onSelectMode(mode.id)
+                                }}
                             >
                                 Explore Game <span>→</span>
                             </button>

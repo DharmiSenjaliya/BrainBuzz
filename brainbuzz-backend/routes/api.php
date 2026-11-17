@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\AdminDailyGameController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\BrainTrainingResultController;
 use App\Http\Controllers\Api\KnowledgeChallengeController;
+use App\Http\Controllers\Api\BrainDuelController;
 
 // Public Authentication Routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -75,6 +76,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/knowledge-challenges/{challenge}/answer', [KnowledgeChallengeController::class, 'answer']);
     Route::post('/knowledge-challenges/{challenge}/complete', [KnowledgeChallengeController::class, 'complete']);
     Route::get('/knowledge-challenges/history', [KnowledgeChallengeController::class, 'history']);
+
+    // Brain Duel
+    Route::post('/brain-duels', [BrainDuelController::class, 'store']);
+    Route::post('/brain-duels/join', [BrainDuelController::class, 'join']);
+    Route::get('/brain-duels/{inviteCode}', [BrainDuelController::class, 'show']);
+    Route::post('/brain-duels/{inviteCode}/answer', [BrainDuelController::class, 'answer']);
 
     // Brain Training Results
     Route::post('/brain-training/results', [BrainTrainingResultController::class, 'store']);

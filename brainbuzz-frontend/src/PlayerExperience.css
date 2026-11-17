@@ -1816,6 +1816,627 @@
     font-style: normal;
 }
 
+/* Brain Duel spatial arena */
+
+.app.dark-theme .brain-duel-page {
+    --duel-text: #f5f7ff;
+    --duel-muted: #9daac2;
+    --duel-border: rgba(179, 195, 255, 0.15);
+    width: min(calc(100% - 48px), 1120px);
+    min-height: calc(100vh - 74px);
+    margin: 0 auto;
+    padding: 28px 0 72px;
+    color: var(--duel-text);
+}
+
+.brain-duel-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--duel-border);
+    border-radius: 12px;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.035);
+    color: #d3ddf2;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.brain-duel-back:hover {
+    transform: translateX(-3px);
+    border-color: rgba(34, 211, 238, 0.45);
+    background: rgba(34, 211, 238, 0.08);
+}
+
+.brain-duel-hero {
+    position: relative;
+    display: flex;
+    min-height: 235px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    margin: 24px 0 28px;
+    padding: 34px clamp(24px, 5vw, 58px);
+    overflow: hidden;
+    border: 1px solid rgba(151, 169, 255, 0.2);
+    border-radius: 26px;
+    background:
+        radial-gradient(ellipse at 86% 45%, rgba(34, 211, 238, 0.16), transparent 34%),
+        radial-gradient(ellipse at 12% 100%, rgba(139, 92, 246, 0.22), transparent 44%),
+        linear-gradient(130deg, #151d36, #101b2c 68%, #122332);
+    box-shadow: 0 26px 70px rgba(2, 6, 23, 0.36), inset 0 1px rgba(255, 255, 255, 0.07);
+    perspective: 1000px;
+}
+
+.brain-duel-hero > div:first-child {
+    position: relative;
+    z-index: 1;
+}
+
+.brain-duel-eyebrow,
+.brain-duel-kicker {
+    color: #9faeff;
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: 1.8px;
+}
+
+.brain-duel-hero h1 {
+    margin: 12px 0 7px;
+    color: #fff;
+    font-size: clamp(38px, 6vw, 62px);
+    letter-spacing: -2.7px;
+    line-height: 1;
+}
+
+.brain-duel-hero h1 span {
+    color: #67e8f9;
+    text-shadow: 0 0 32px rgba(34, 211, 238, 0.26);
+}
+
+.brain-duel-hero p {
+    margin: 13px 0 0;
+    color: #b4bfd4;
+    font-size: 14px;
+}
+
+.brain-duel-orb {
+    position: relative;
+    display: grid;
+    width: 150px;
+    height: 150px;
+    flex: 0 0 150px;
+    place-items: center;
+    transform: rotateY(-16deg) rotateX(8deg);
+    transform-style: preserve-3d;
+}
+
+.brain-duel-orb > span {
+    display: grid;
+    width: 72px;
+    height: 72px;
+    place-items: center;
+    border: 1px solid rgba(168, 237, 255, 0.5);
+    border-radius: 23px;
+    background: linear-gradient(145deg, rgba(97, 88, 220, 0.92), rgba(15, 183, 212, 0.78));
+    box-shadow: 0 22px 35px rgba(3, 10, 30, 0.48), inset 0 1px rgba(255, 255, 255, 0.48);
+    font-size: 35px;
+    transform: translateZ(24px);
+}
+
+.brain-duel-orbit {
+    position: absolute;
+    width: 132px;
+    height: 58px;
+    border: 1px solid rgba(112, 228, 255, 0.6);
+    border-radius: 50%;
+    transform: rotate(-28deg) rotateX(62deg);
+}
+
+.brain-duel-orbit-two {
+    width: 148px;
+    height: 73px;
+    border-color: rgba(167, 139, 250, 0.55);
+    transform: rotate(38deg) rotateX(65deg);
+}
+
+.brain-duel-lobby {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+    perspective: 1200px;
+}
+
+.brain-duel-panel,
+.brain-duel-player-card,
+.brain-duel-question-card {
+    border: 1px solid var(--duel-border);
+    background:
+        linear-gradient(145deg, rgba(25, 34, 57, 0.96), rgba(14, 24, 42, 0.98));
+    box-shadow: 0 22px 55px rgba(1, 5, 18, 0.25), inset 0 1px rgba(255, 255, 255, 0.045);
+}
+
+.brain-duel-panel {
+    position: relative;
+    padding: 30px;
+    overflow: hidden;
+    border-radius: 22px;
+    transform: rotateX(1deg);
+    transform-style: preserve-3d;
+}
+
+.brain-duel-create {
+    background:
+        radial-gradient(ellipse at 100% 0, rgba(139, 92, 246, 0.18), transparent 42%),
+        linear-gradient(145deg, #1a2040, #111a2b 82%);
+}
+
+.brain-duel-join {
+    background:
+        radial-gradient(ellipse at 100% 0, rgba(34, 211, 238, 0.12), transparent 42%),
+        linear-gradient(145deg, #152637, #111a2b 82%);
+}
+
+.brain-duel-panel-icon {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    place-items: center;
+    border: 1px solid rgba(175, 188, 255, 0.2);
+    border-radius: 15px;
+    background: rgba(132, 112, 255, 0.14);
+    color: #b8aaff;
+    font-size: 23px;
+    transform: translateZ(20px);
+}
+
+.brain-duel-panel .brain-duel-kicker {
+    margin: 22px 0 8px;
+}
+
+.brain-duel-panel h2,
+.brain-duel-question-card h2 {
+    margin: 0;
+    color: #f8faff;
+    font-size: clamp(22px, 3vw, 30px);
+    letter-spacing: -0.7px;
+}
+
+.brain-duel-panel > p:not(.brain-duel-kicker) {
+    max-width: 430px;
+    margin: 11px 0 24px;
+    color: var(--duel-muted);
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.brain-duel-primary,
+.brain-duel-secondary {
+    display: inline-flex;
+    min-height: 46px;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+    border: 0;
+    border-radius: 12px;
+    padding: 0 17px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 170ms ease, filter 170ms ease, border-color 170ms ease;
+}
+
+.brain-duel-primary {
+    background: linear-gradient(110deg, #7657ea, #4b7bea);
+    box-shadow: 0 9px 24px rgba(93, 88, 229, 0.25), inset 0 1px rgba(255, 255, 255, 0.28);
+    color: white;
+}
+
+.brain-duel-secondary {
+    border: 1px solid rgba(103, 232, 249, 0.26);
+    background: rgba(34, 211, 238, 0.1);
+    color: #a7f3fc;
+}
+
+.brain-duel-primary:hover,
+.brain-duel-secondary:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.12);
+}
+
+.brain-duel-primary:disabled,
+.brain-duel-secondary:disabled {
+    cursor: not-allowed;
+    filter: saturate(0.55);
+    opacity: 0.65;
+    transform: none;
+}
+
+.brain-duel-panel form {
+    display: grid;
+    gap: 10px;
+}
+
+.brain-duel-panel label,
+.brain-duel-question-card label {
+    color: #c4cce0;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.brain-duel-panel input,
+.brain-duel-question-card input {
+    width: 100%;
+    min-height: 47px;
+    box-sizing: border-box;
+    border: 1px solid rgba(172, 190, 226, 0.2);
+    border-radius: 11px;
+    padding: 0 13px;
+    background: rgba(3, 9, 22, 0.48);
+    color: #f8faff;
+    font: inherit;
+    font-size: 14px;
+}
+
+.brain-duel-panel input::placeholder,
+.brain-duel-question-card input::placeholder {
+    color: #71809c;
+}
+
+.brain-duel-panel input:focus,
+.brain-duel-question-card input:focus {
+    border-color: rgba(103, 232, 249, 0.7);
+    outline: 2px solid rgba(34, 211, 238, 0.15);
+}
+
+.brain-duel-error {
+    margin: 0 0 18px;
+    border: 1px solid rgba(251, 113, 133, 0.3);
+    border-radius: 12px;
+    padding: 12px 15px;
+    background: rgba(159, 18, 57, 0.16);
+    color: #fecdd3;
+    font-size: 13px;
+}
+
+.brain-duel-arena {
+    display: grid;
+    gap: 22px;
+    perspective: 1300px;
+}
+
+.brain-duel-scoreboard {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+}
+
+.brain-duel-player-card {
+    display: grid;
+    min-height: 140px;
+    align-content: center;
+    justify-items: center;
+    gap: 5px;
+    padding: 18px;
+    border-radius: 20px;
+    text-align: center;
+    transform: rotateY(-2deg) translateZ(8px);
+    transform-style: preserve-3d;
+}
+
+.brain-duel-player-card:last-child {
+    transform: rotateY(2deg) translateZ(8px);
+}
+
+.brain-duel-player-card.is-you {
+    border-color: rgba(139, 92, 246, 0.38);
+    background: linear-gradient(145deg, rgba(59, 45, 114, 0.46), rgba(14, 24, 42, 0.98));
+}
+
+.brain-duel-player-label {
+    color: #9caac4;
+    font-size: 9px;
+    font-weight: 850;
+    letter-spacing: 1.7px;
+}
+
+.brain-duel-player-card strong {
+    overflow: hidden;
+    max-width: 100%;
+    color: #eff4ff;
+    font-size: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.brain-duel-player-score {
+    color: #70e8f8;
+    font-size: 28px;
+    font-weight: 850;
+    line-height: 1.1;
+}
+
+.brain-duel-player-score small {
+    margin-left: 5px;
+    color: #99a9c5;
+    font-size: 9px;
+    letter-spacing: 1px;
+}
+
+.brain-duel-player-progress {
+    color: #9daac2;
+    font-size: 10px;
+}
+
+.brain-duel-versus {
+    display: grid;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+    border: 1px solid rgba(183, 167, 255, 0.34);
+    border-radius: 16px;
+    background: linear-gradient(145deg, #5545b9, #182f4b);
+    box-shadow: 0 12px 24px rgba(2, 6, 23, 0.38), inset 0 1px rgba(255, 255, 255, 0.25);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+    transform: rotateY(18deg) rotateX(-8deg);
+}
+
+.brain-duel-waiting,
+.brain-duel-result {
+    display: grid;
+    justify-items: center;
+    padding: clamp(28px, 5vw, 48px);
+    text-align: center;
+}
+
+.brain-duel-waiting > p:not(.brain-duel-kicker),
+.brain-duel-result > p:not(.brain-duel-kicker) {
+    margin-bottom: 20px;
+}
+
+.brain-duel-live-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #67e8f9;
+    box-shadow: 0 0 0 7px rgba(34, 211, 238, 0.1), 0 0 20px rgba(34, 211, 238, 0.7);
+}
+
+.brain-duel-waiting .brain-duel-kicker,
+.brain-duel-result .brain-duel-kicker {
+    margin-top: 21px;
+}
+
+.brain-duel-invite {
+    display: flex;
+    min-width: min(100%, 360px);
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    border: 1px solid rgba(103, 232, 249, 0.2);
+    border-radius: 15px;
+    padding: 10px;
+    background: rgba(4, 12, 25, 0.55);
+}
+
+.brain-duel-invite code {
+    padding-left: 8px;
+    color: #a5f3fc;
+    font-size: 20px;
+    font-weight: 850;
+    letter-spacing: 3px;
+}
+
+.brain-duel-poll-note,
+.brain-duel-rival-status {
+    margin-top: 16px;
+    color: #8594ae;
+    font-size: 11px;
+}
+
+.brain-duel-question-card {
+    position: relative;
+    padding: clamp(23px, 4vw, 38px);
+    overflow: hidden;
+    border-radius: 23px;
+    transform: rotateX(1deg) translateZ(8px);
+    transform-style: preserve-3d;
+}
+
+.brain-duel-question-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #aab8d2;
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: 1.3px;
+}
+
+.brain-duel-question-meta i {
+    margin: 0 4px;
+    color: #52617b;
+    font-style: normal;
+}
+
+.brain-duel-question-meta strong {
+    color: #a5f3fc;
+    font-size: 15px;
+}
+
+.brain-duel-question-meta small {
+    font-size: 9px;
+}
+
+.brain-duel-progress-track {
+    height: 5px;
+    margin: 13px 0 29px;
+    overflow: hidden;
+    border-radius: 9px;
+    background: rgba(146, 160, 190, 0.14);
+}
+
+.brain-duel-progress-track span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #8b5cf6, #22d3ee);
+    transition: width 250ms ease;
+}
+
+.brain-duel-question-card .brain-duel-kicker {
+    margin: 0 0 9px;
+}
+
+.brain-duel-question-card h2 {
+    max-width: 750px;
+    font-size: clamp(22px, 4vw, 34px);
+    line-height: 1.25;
+}
+
+.brain-duel-question-card ul {
+    display: grid;
+    gap: 9px;
+    margin: 18px 0 25px;
+    padding: 0;
+    list-style: none;
+}
+
+.brain-duel-question-card li {
+    border-left: 2px solid rgba(103, 232, 249, 0.6);
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.025);
+    color: #b6c3d9;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.brain-duel-question-card form {
+    display: grid;
+    gap: 9px;
+    margin-top: 22px;
+}
+
+.brain-duel-answer-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+}
+
+.brain-duel-feedback {
+    margin: 13px 0 0;
+    color: #a5f3fc;
+    font-size: 12px;
+}
+
+.brain-duel-rival-status {
+    margin-bottom: 0;
+}
+
+@media (max-width: 720px) {
+    .app.dark-theme .brain-duel-page {
+        width: min(calc(100% - 28px), 560px);
+        padding-top: 19px;
+    }
+
+    .brain-duel-hero {
+        min-height: 185px;
+        margin-top: 18px;
+        padding: 25px 20px;
+        border-radius: 20px;
+    }
+
+    .brain-duel-orb {
+        width: 90px;
+        height: 110px;
+        flex-basis: 90px;
+        transform: scale(0.72) rotateY(-16deg) rotateX(8deg);
+        transform-origin: center right;
+    }
+
+    .brain-duel-lobby {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .brain-duel-panel {
+        padding: 23px;
+        border-radius: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .brain-duel-hero {
+        min-height: 160px;
+        gap: 0;
+    }
+
+    .brain-duel-hero p {
+        max-width: 220px;
+        font-size: 12px;
+    }
+
+    .brain-duel-orb {
+        width: 66px;
+        flex-basis: 66px;
+        transform: scale(0.55) rotateY(-16deg) rotateX(8deg);
+    }
+
+    .brain-duel-scoreboard {
+        grid-template-columns: minmax(0, 1fr) 42px minmax(0, 1fr);
+        gap: 7px;
+    }
+
+    .brain-duel-player-card {
+        min-height: 122px;
+        padding: 12px 7px;
+    }
+
+    .brain-duel-player-card strong {
+        font-size: 12px;
+    }
+
+    .brain-duel-player-score {
+        font-size: 24px;
+    }
+
+    .brain-duel-versus {
+        width: 38px;
+        height: 38px;
+        border-radius: 13px;
+        font-size: 10px;
+    }
+
+    .brain-duel-answer-row {
+        grid-template-columns: 1fr;
+    }
+
+    .brain-duel-invite {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .brain-duel-invite code {
+        font-size: 16px;
+        letter-spacing: 2px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .brain-duel-back,
+    .brain-duel-primary,
+    .brain-duel-secondary,
+    .brain-duel-progress-track span {
+        transition: none;
+    }
+}
+
 @media (max-width: 900px) {
     .app.dark-theme .dashboard-arcade .dashboard-stats {
         grid-template-columns: repeat(3, minmax(0, 1fr));

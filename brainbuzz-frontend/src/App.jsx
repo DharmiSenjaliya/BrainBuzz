@@ -17,6 +17,7 @@ import DailyMiniGames from './DailyMiniGames'
 import GamesHub from './GamesHub'
 import BrainTraining from './BrainTraining'
 import KnowledgeChallenge from './KnowledgeChallenge'
+import BrainDuel from './BrainDuel'
 
 // Temporarily hide Daily Challenge while retaining its player implementation.
 const DAILY_CHALLENGE_UI_ENABLED = false
@@ -1208,6 +1209,11 @@ if (showGamesHub) {
             setSelectedGameMode('knowledge')
             return
         }
+
+        if (modeId === 'duel') {
+            setShowGamesHub(false)
+            setSelectedGameMode('duel')
+        }
     }}
 />
 
@@ -1242,6 +1248,22 @@ if (selectedGameMode === 'knowledge') {
                     setShowGamesHub(true)
                 }}
                 onChallengeComplete={fetchDashboard}
+            />
+        </div>
+    )
+}
+
+if (selectedGameMode === 'duel') {
+    return (
+        <div className={`app ${theme}-theme`}>
+            {navbar}
+
+            <BrainDuel
+                onBack={() => {
+                    setSelectedGameMode(null)
+                    setShowGamesHub(true)
+                }}
+                onDuelComplete={() => fetchDashboard(localStorage.getItem('brainbuzz_token'))}
             />
         </div>
     )

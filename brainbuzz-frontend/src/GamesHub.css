@@ -57,7 +57,7 @@
 
 .games-hub-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 22px;
 }
 
@@ -99,6 +99,10 @@
 
 .games-hub-card.knowledge .games-hub-icon {
     background: rgba(242, 166, 75, 0.15);
+}
+
+.games-hub-card.duel .games-hub-icon {
+    background: rgba(34, 211, 238, 0.14);
 }
 
 .games-hub-label {
