@@ -474,8 +474,8 @@ const fetchPlayerCategories = async (token) => {
 
             setMessage(
                 category === 'all'
-                    ? `No questions available in Level ${level}.`
-                    : `No questions available in this category for Level ${level}.`
+                    ? `No active questions are available in Level ${level}. Add questions for this level in Admin > Question Management.`
+                    : `No active questions are available for this category in Level ${level}. Add questions for this level and category in Admin > Question Management.`
             )
         }
     } catch (error) {
@@ -1271,8 +1271,11 @@ if (selectedGameMode === 'duel') {
   
     // DASHBOARD
 if (showDashboard) {
-        const maxLevelToShow = Math.max(10, currentUnlockedLevel + 4)
-        const totalLevelPages = Math.ceil(maxLevelToShow / LEVEL_PAGE_SIZE)
+        const totalLevelPages = Math.max(
+            levelPage + 1,
+            Math.ceil((currentUnlockedLevel + 4) / LEVEL_PAGE_SIZE)
+        )
+        const maxLevelToShow = totalLevelPages * LEVEL_PAGE_SIZE
         const firstLevelOnPage = (levelPage - 1) * LEVEL_PAGE_SIZE + 1
         const visibleLevelCount = Math.min(
             LEVEL_PAGE_SIZE,
@@ -1361,7 +1364,7 @@ if (showDashboard) {
                         <div className="dashboard-game-heading">
                             <span className="dashboard-section-kicker">MAIN CAMPAIGN</span>
                             <h2><span aria-hidden="true">🧠</span> BrainBuzz Levels</h2>
-                            <p>Get at least 3 correct answers out of 5 to unlock the next level.</p>
+                            <p>Get at least 3 correct answers out of 5 to unlock the next level. The campaign has no final level.</p>
                         </div>
                       
                       <div className="player-category-filter">
@@ -1467,14 +1470,14 @@ if (showDashboard) {
                                                         </button>
                                                         <span>
                                                             Levels {firstLevelOnPage}–{firstLevelOnPage + visibleLevelCount - 1}
-                                                            <small>PAGE {levelPage} / {totalLevelPages}</small>
+                                                            <small>PAGE {levelPage} · ENDLESS LEVELS</small>
                                                         </span>
                                                         <button
                                                             type="button"
                                                             onClick={() => setLevelPage(page => Math.min(totalLevelPages, page + 1))}
                                                             disabled={levelPage >= totalLevelPages}
                                                         >
-                                                            More levels →
+                                                            More levels: {levelPage * LEVEL_PAGE_SIZE + 1}–{(levelPage + 1) * LEVEL_PAGE_SIZE} →
                                                         </button>
                                                     </nav>
                                                 )}
