@@ -1366,7 +1366,7 @@
 
 .dashboard-hero-level small {
     color: #a4acce;
-    font-size: 6px;
+    font-size: 10px;
     font-weight: 900;
     letter-spacing: 0.15em;
 }
@@ -2095,9 +2095,9 @@
     }
 }
 
-/* Slightly larger dashboard typography for easier scanning. */
+/* Keep dashboard text readable across cards and smaller screens. */
 .app.dark-theme .dashboard-arcade .dashboard-welcome .level {
-    font-size: 8px;
+    font-size: 10px;
 }
 
 .app.dark-theme .dashboard-arcade .dashboard-welcome h1 {
@@ -2105,15 +2105,15 @@
 }
 
 .app.dark-theme .dashboard-arcade .dashboard-welcome-copy > p:not(.level) {
-    font-size: 12px;
+    font-size: 20px;
 }
 
 .app.dark-theme .dashboard-arcade .dashboard-welcome-meta > span {
-    font-size: 7px;
+    font-size: 9px;
 }
 
 .app.dark-theme .dashboard-arcade .stat-card p {
-    font-size: 8px;
+    font-size: 15px;
 }
 
 .app.dark-theme .dashboard-arcade .stat-card h2 {
@@ -2121,7 +2121,7 @@
 }
 
 .app.dark-theme .dashboard-arcade .games-hub-promo-content > span {
-    font-size: 8px;
+    font-size: 10px;
 }
 
 .app.dark-theme .dashboard-arcade .games-hub-promo-content h2 {
@@ -2129,11 +2129,11 @@
 }
 
 .app.dark-theme .dashboard-arcade .games-hub-promo-content p {
-    font-size: 10px;
+    font-size: 13px;
 }
 
 .app.dark-theme .dashboard-arcade .games-hub-promo-button {
-    font-size: 10px;
+    font-size: 12px;
 }
 
 .app.dark-theme .dashboard-arcade .dashboard-game-heading h2 {
@@ -2141,19 +2141,19 @@
 }
 
 .app.dark-theme .dashboard-arcade .dashboard-game-heading p {
-    font-size: 10px;
+    font-size: 13px;
 }
 
 .app.dark-theme .dashboard-arcade .dashboard-section-kicker {
-    font-size: 8px;
-}
-
-.app.dark-theme .dashboard-arcade .player-category-filter label {
     font-size: 10px;
 }
 
+.app.dark-theme .dashboard-arcade .player-category-filter label {
+    font-size: 12px;
+}
+
 .app.dark-theme .dashboard-arcade .player-category-filter select {
-    font-size: 11px;
+    font-size: 13px;
 }
 
 .app.dark-theme .dashboard-arcade .level-card h3 {
@@ -2161,15 +2161,15 @@
 }
 
 .app.dark-theme .dashboard-arcade .level-card p {
-    font-size: 9px;
+    font-size: 14px;
 }
 
 .app.dark-theme .dashboard-arcade .level-performance small {
-    font-size: 8px;
+    font-size: 10px;
 }
 
 .app.dark-theme .dashboard-arcade .level-card button {
-    font-size: 10px;
+    font-size: 14px;
 }
 
 .app.dark-theme .dashboard-arcade .dashboard-shortcuts-heading h2 {
@@ -2177,15 +2177,15 @@
 }
 
 .app.dark-theme .dashboard-arcade .dashboard-shortcuts-heading > span {
-    font-size: 7px;
-}
-
-.app.dark-theme .dashboard-arcade .dashboard-shortcut-copy {
     font-size: 9px;
 }
 
+.app.dark-theme .dashboard-arcade .dashboard-shortcut-copy {
+    font-size: 12px;
+}
+
 .app.dark-theme .dashboard-arcade .dashboard-shortcut-copy small {
-    font-size: 7px;
+    font-size: 13px;
 }
 
 @media (max-width: 650px) {
@@ -2194,15 +2194,15 @@
     }
 
     .app.dark-theme .dashboard-arcade .dashboard-welcome-copy > p:not(.level) {
-        font-size: 10px;
+        font-size: 16px;
     }
 
     .app.dark-theme .dashboard-arcade .dashboard-welcome-meta > span {
-        font-size: 6px;
+        font-size: 8px;
     }
 
     .app.dark-theme .dashboard-arcade .stat-card p {
-        font-size: 7px;
+        font-size: 12px;
     }
 
     .app.dark-theme .dashboard-arcade .stat-card h2 {
@@ -2222,11 +2222,11 @@
     }
 
     .app.dark-theme .dashboard-arcade .level-card p {
-        font-size: 8px;
+        font-size: 12px;
     }
 
     .app.dark-theme .dashboard-arcade .level-card button {
-        font-size: 9px;
+        font-size: 13px;
     }
 
     .app.dark-theme .dashboard-arcade .dashboard-shortcuts-heading h2 {
@@ -2234,10 +2234,10 @@
     }
 
     .app.dark-theme .dashboard-arcade .dashboard-shortcut-copy {
-        font-size: 9px;
+        font-size: 11px;
     }
 
     .app.dark-theme .dashboard-arcade .dashboard-shortcut-copy small {
-        font-size: 7px;
+        font-size: 11px;
     }
 }
