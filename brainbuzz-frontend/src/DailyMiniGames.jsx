@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import api from './services/api'
+import PlayerBackButton from './PlayerBackButton'
 import './DailyMiniGames.css'
 
 const formatDate = (date) => {
@@ -497,6 +498,7 @@ const [lastPage, setLastPage] = useState(1)
     if (loading) {
         return (
             <div className="mini-player-page mini-loading-page">
+                <PlayerBackButton onClick={onBack} />
                 <div className="mini-inline-loader" role="status">
                     <span className="mini-inline-spinner" aria-hidden="true">🧩</span>
                     <p>Loading your BrainBuzz game...</p>
@@ -509,13 +511,7 @@ const [lastPage, setLastPage] = useState(1)
         <div className="mini-player-page" ref={gameSceneRef}>
 
             <header className="mini-player-header">
-                <button
-                    className="mini-header-action mini-back-action"
-                    type="button"
-                    onClick={onBack}
-                >
-                    <span aria-hidden="true">←</span> Back
-                </button>
+                <PlayerBackButton onClick={onBack} className="mini-header-action mini-back-action" />
                 <div className="mini-header-brand">
                     <span className="mini-header-icon" aria-hidden="true">🎮</span>
                     <div>
@@ -624,13 +620,10 @@ const [lastPage, setLastPage] = useState(1)
                         </button>
                     </div>
 
-                    <button
-                        className="mini-return-game-btn"
-                        type="button"
+                    <PlayerBackButton
                         onClick={() => setView('game')}
-                    >
-                        <span aria-hidden="true">🎯</span> Back to today's game
-                    </button>
+                        className="mini-return-game-btn"
+                    />
                 </section>
             ) : !challenge ? (
                 <section className="mini-player-panel mini-empty">

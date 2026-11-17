@@ -1,4 +1,5 @@
 import './GamesHub.css'
+import PlayerBackButton from './PlayerBackButton'
 
 function GamesHub({ onBack, onSelectMode }) {
     const gameModes = [
@@ -46,9 +47,7 @@ function GamesHub({ onBack, onSelectMode }) {
 
     return (
         <main className="games-hub-container">
-            <button className="games-hub-back" onClick={onBack}>
-                ← Back to Dashboard
-            </button>
+            <PlayerBackButton onClick={onBack} className="games-hub-back" />
 
             <section className="games-hub-heading">
                 <span className="games-hub-eyebrow">

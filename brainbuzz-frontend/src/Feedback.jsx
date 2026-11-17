@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import api from './services/api'
+import PlayerBackButton from './PlayerBackButton'
 import './Feedback.css'
 
 function Feedback({ onBack }) {
@@ -116,10 +117,7 @@ function Feedback({ onBack }) {
         <main className="feedback-page" ref={pageRef}>
 
             <div className="feedback-topbar">
-                <button className="feedback-back-btn" type="button" onClick={onBack}>
-                    <span>←</span>
-                    Back to Dashboard
-                </button>
+                <PlayerBackButton onClick={onBack} />
 
                 <span className="feedback-brand">
                     <span className="feedback-brand-icon">B</span>

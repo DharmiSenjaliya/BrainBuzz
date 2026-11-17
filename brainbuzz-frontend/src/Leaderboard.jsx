@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import api from './services/api'
+import PlayerBackButton from './PlayerBackButton'
 import './Leaderboard.css'
 
 const formatNumber = value => Number(value || 0).toLocaleString()
@@ -201,9 +202,7 @@ function Leaderboard({ onBack }) {
     return (
         <main className="leaderboard-page" ref={pageRef}>
             <header className="leaderboard-header">
-                <button className="leaderboard-back-btn" type="button" onClick={onBack}>
-                    <span aria-hidden="true">←</span> Dashboard
-                </button>
+                <PlayerBackButton onClick={onBack} />
 
                 <div className="leaderboard-hero-copy">
                     <span className="leaderboard-eyebrow">
@@ -241,7 +240,7 @@ function Leaderboard({ onBack }) {
                     <p className="leaderboard-eyebrow">THE ARENA IS READY</p>
                     <h2>Be the first legend</h2>
                     <p>Start playing BrainBuzz and your name will appear here.</p>
-                    <button type="button" onClick={onBack}>Explore the games</button>
+                    <PlayerBackButton onClick={onBack} />
                 </div>
             ) : (
                 <>

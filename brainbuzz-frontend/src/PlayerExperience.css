@@ -1599,7 +1599,7 @@
 }
 
 .app.dark-theme .dashboard-arcade .level-cards {
-    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 11px;
     margin-top: 21px;
 }
@@ -1814,6 +1814,56 @@
     color: #ad97ff;
     font-size: 13px;
     font-style: normal;
+}
+
+.app.dark-theme .player-back-button {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid #ffffff20;
+    border-radius: 10px;
+    padding: 9px 14px;
+    background: #111a2e;
+    color: #dbe5f4;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+
+.app.dark-theme .player-back-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    border-color: #a78bfa77;
+    background: #7c3aed20;
+    color: #fff;
+}
+
+.app.dark-theme .player-back-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.app.dark-theme :is(
+    .achievements-header,
+    .how-to-play-header,
+    .leaderboard-header,
+    .profile-header
+) > .player-back-button {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    left: 0;
+}
+
+.app.dark-theme .games-hub-container > .player-back-button {
+    margin-bottom: 30px;
+}
+
+.app.dark-theme .knowledge-challenge > .player-back-button {
+    margin-bottom: 32px;
 }
 
 /* Brain Duel spatial arena */
@@ -2439,6 +2489,10 @@
 
 @media (max-width: 900px) {
     .app.dark-theme .dashboard-arcade .dashboard-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .app.dark-theme .dashboard-arcade .level-cards {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 

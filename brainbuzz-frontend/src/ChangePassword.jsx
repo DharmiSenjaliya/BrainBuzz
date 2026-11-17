@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import './ChangePassword.css'
 import api from './services/api'
+import PlayerBackButton from './PlayerBackButton'
 
 function ChangePassword({ onBack }) {
     const [currentPassword, setCurrentPassword] = useState('')
@@ -82,9 +83,7 @@ const token = localStorage.getItem('brainbuzz_token')
                     {loading ? 'Updating...' : 'Update Password'}
                 </button>
 
-                <button type="button" onClick={onBack}>
-                    Back
-                </button>
+                <PlayerBackButton onClick={onBack} />
             </form>
         </div>
     )

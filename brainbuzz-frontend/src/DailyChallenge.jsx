@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import api from './services/api'
+import PlayerBackButton from './PlayerBackButton'
 import './DailyChallenge.css'
 
 function DailyChallenge({ onBack }) {
@@ -164,6 +165,7 @@ setStreak(data.streak || {
     if (loading) {
         return (
             <main className="daily-challenge-page">
+                <PlayerBackButton onClick={onBack} />
                 <p className="daily-loading">Loading Daily Challenge...</p>
             </main>
         )
@@ -173,9 +175,7 @@ setStreak(data.streak || {
         return (
             <main className="daily-challenge-page">
                 <div className="daily-error">{error}</div>
-                <button className="daily-back-btn" onClick={onBack}>
-                    Back to Dashboard
-                </button>
+                <PlayerBackButton onClick={onBack} />
             </main>
         )
     }
@@ -184,9 +184,7 @@ setStreak(data.streak || {
         return (
             <main className="daily-challenge-page">
                 <h2>No Daily Challenge Available</h2>
-                <button className="daily-back-btn" onClick={onBack}>
-                    Back to Dashboard
-                </button>
+                <PlayerBackButton onClick={onBack} />
             </main>
         )
     }
@@ -203,27 +201,19 @@ setStreak(data.streak || {
                 </div>
 
                 <div className="daily-header-actions">
-    <button
-        className="daily-history-btn"
-        onClick={() => {
-            if (showHistory) {
-                setShowHistory(false)
-            } else {
-                fetchHistory(1)
-            }
-        }}
-        disabled={historyLoading}
-    >
-        {historyLoading
-            ? 'Loading...'
-            : showHistory
-                ? '← Back to Challenge'
-                : '📅 Challenge History'}
-    </button>
+    {showHistory ? (
+        <PlayerBackButton onClick={() => setShowHistory(false)} />
+    ) : (
+        <button
+            className="daily-history-btn"
+            onClick={() => fetchHistory(1)}
+            disabled={historyLoading}
+        >
+            {historyLoading ? 'Loading...' : '📅 Challenge History'}
+        </button>
+    )}
 
-                <button className="daily-back-btn" onClick={onBack}>
-                    ← Dashboard
-                </button>
+                <PlayerBackButton onClick={onBack} />
             </div>
             </div>
 

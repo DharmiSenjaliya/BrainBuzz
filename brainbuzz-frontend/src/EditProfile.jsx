@@ -8,6 +8,7 @@ import {
 } from 'libphonenumber-js'
 import './EditProfile.css'
 import api from './services/api'
+import PlayerBackButton from './PlayerBackButton'
 
 const countryNames = new Intl.DisplayNames(['en'], {
     type: 'region',
@@ -316,9 +317,7 @@ function EditProfile({ user, onBack, onProfileUpdated }) {
                     {loading ? 'Saving...' : 'Save Changes'}
                 </button>
 
-                <button type="button" onClick={onBack}>
-                    Cancel
-                </button>
+                <PlayerBackButton onClick={onBack} />
             </form>
         </div>
     )

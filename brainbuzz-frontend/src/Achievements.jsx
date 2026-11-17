@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import api from './services/api'
+import PlayerBackButton from './PlayerBackButton'
 import './Achievements.css'
 
 function Achievements({ onBack }) {
@@ -153,13 +154,7 @@ function Achievements({ onBack }) {
     return (
         <main className="achievements-page" ref={pageRef}>
             <header className="achievements-header">
-                <button
-                    className="achievements-back-btn"
-                    type="button"
-                    onClick={onBack}
-                >
-                    <span aria-hidden="true">←</span> Dashboard
-                </button>
+                <PlayerBackButton onClick={onBack} />
 
                 <div className="achievements-hero-copy">
                     <span className="achievements-eyebrow">
@@ -240,7 +235,7 @@ function Achievements({ onBack }) {
                             <span className="achievements-eyebrow">A FRESH START</span>
                             <h2>Your trophy room is waiting</h2>
                             <p>Play your first game and start earning badges for your best moments.</p>
-                            <button type="button" onClick={onBack}>Explore the games</button>
+                            <PlayerBackButton onClick={onBack} />
                         </div>
                     ) : (
                         <section className="achievements-collection" aria-labelledby="achievement-collection-heading">

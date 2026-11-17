@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import './Profile.css'
 import api from './services/api'
+import PlayerBackButton from './PlayerBackButton'
 
 const initialStats = {
     games_played: 0,
@@ -208,9 +209,7 @@ function Profile({ user, onBack, onEditProfile, onChangePassword }) {
     return (
         <main className="profile-page" ref={pageRef}>
             <header className="profile-header">
-                <button className="profile-back-btn" type="button" onClick={onBack}>
-                    <span aria-hidden="true">←</span> Dashboard
-                </button>
+                <PlayerBackButton onClick={onBack} />
                 <div className="profile-hero-copy">
                     <span className="profile-eyebrow">
                         <span className="profile-live-dot" />

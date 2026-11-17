@@ -1,6 +1,7 @@
 
 import { useEffect, useLayoutEffect, useState, useRef } from 'react'
 import api from './services/api'
+import PlayerBackButton from './PlayerBackButton'
 import './BrainTraining.css'
 
 const shuffle = (items) => [...items].sort(() => Math.random() - 0.5)
@@ -397,13 +398,9 @@ const saveResult = async (gameData) => {
     return (
         <main className="brain-training" ref={pageRef}>
             <div className="training-topbar">
-                <button
-                    className="training-back"
-                    type="button"
+                <PlayerBackButton
                     onClick={() => activeGame ? setActiveGame(null) : onBack()}
-                >
-                    <span aria-hidden="true">←</span> {activeGame ? 'All training games' : 'Back to games'}
-                </button>
+                />
                 <span className="training-session-chip"><i /> FOCUS MODE <b>READY</b></span>
             </div>
 

@@ -18,6 +18,7 @@ import GamesHub from './GamesHub'
 import BrainTraining from './BrainTraining'
 import KnowledgeChallenge from './KnowledgeChallenge'
 import BrainDuel from './BrainDuel'
+import PlayerBackButton from './PlayerBackButton'
 
 // Temporarily hide Daily Challenge while retaining its player implementation.
 const DAILY_CHALLENGE_UI_ENABLED = false
@@ -1586,12 +1587,7 @@ if (showDashboard) {
                         Try Again
                     </button>
 
-                    <button
-                        className="dashboard-btn"
-                        onClick={() => setShowDashboard(true)}
-                    >
-                        Back to Dashboard
-                    </button>
+                    <PlayerBackButton onClick={() => setShowDashboard(true)} />
                 </main>
             </div>
         )
@@ -1690,8 +1686,7 @@ if (showDashboard) {
                         </button>
                     )}
 
-                    <button
-                        className="dashboard-btn"
+                    <PlayerBackButton
                         disabled={savingResult}
                         onClick={async () => {
                             const token = localStorage.getItem('brainbuzz_token')
@@ -1700,9 +1695,7 @@ if (showDashboard) {
                             await fetchPlayerCategories(token)
                             setShowDashboard(true)
                         }}
-                    >
-                        Back to Dashboard
-                    </button>
+                    />
                 </main>
             </div>
         )
@@ -1717,9 +1710,7 @@ if (showDashboard) {
                 <div className="game-top-actions">
                     <p className="level">LEVEL {selectedLevel}</p>
 
-                    <button
-                        type="button"
-                        className="leave-game-btn"
+                    <PlayerBackButton
                         onClick={() => {
                             const confirmed = window.confirm(
                                 'Are you sure you want to leave this game? Your current progress will not be saved.'
@@ -1730,9 +1721,7 @@ if (showDashboard) {
                                 setShowDashboard(true)
                             }
                         }}
-                    >
-                        🚪 Leave Game
-                    </button>
+                    />
                 </div>
 
                 <p className="subtitle">

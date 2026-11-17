@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef } from 'react'
 import './HowToPlay.css'
+import PlayerBackButton from './PlayerBackButton'
 
 const steps = [
     {
@@ -153,9 +154,7 @@ function HowToPlay({ onBack, onStart }) {
     return (
         <main className="how-to-play-page" ref={pageRef}>
             <header className="how-to-play-header">
-                <button className="how-back-btn" type="button" onClick={onBack}>
-                    <span aria-hidden="true">←</span> Dashboard
-                </button>
+                <PlayerBackButton onClick={onBack} />
 
                 <div className="how-hero-copy">
                     <span className="how-eyebrow"><span /> THE PLAYER'S FIELD GUIDE</span>

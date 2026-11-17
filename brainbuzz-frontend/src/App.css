@@ -2387,7 +2387,7 @@ body.dark-theme .auth-page {
 /* BrainBuzz Levels Section */
 .level-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 22px;
     width: 100%;
     margin-top: 30px;

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import api from './services/api'
+import PlayerBackButton from './PlayerBackButton'
 
 const ACTIVE_DUEL_KEY = 'brainbuzz_active_duel'
 
@@ -189,9 +190,7 @@ function BrainDuel({ onBack, onDuelComplete }) {
 
     return (
         <main className="brain-duel-page">
-            <button className="brain-duel-back" onClick={onBack}>
-                <span aria-hidden="true">←</span> Back to games
-            </button>
+            <PlayerBackButton onClick={onBack} />
 
             <header className="brain-duel-hero">
                 <div>
@@ -346,7 +345,7 @@ function BrainDuel({ onBack, onDuelComplete }) {
                         <article className="brain-duel-panel brain-duel-result">
                             <p className="brain-duel-kicker">ARENA CLOSED</p>
                             <h2>This duel has expired</h2>
-                            <button className="brain-duel-primary" onClick={startAnotherDuel}>Back to duel lobby</button>
+                            <PlayerBackButton onClick={startAnotherDuel} />
                         </article>
                     )}
                 </section>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import api from './services/api'
+import PlayerBackButton from './PlayerBackButton'
 import './KnowledgeChallenge.css'
 
 const QUESTION_COUNT = 5
@@ -182,9 +183,7 @@ function KnowledgeChallenge({ onBack, onChallengeComplete }) {
 
     return (
         <main className="knowledge-challenge">
-            <button className="knowledge-back" onClick={onBack}>
-                <span aria-hidden="true">←</span> Back to Games
-            </button>
+            <PlayerBackButton onClick={onBack} className="knowledge-back" />
 
             <header className="knowledge-header">
                 <span className="knowledge-eyebrow">BRAINBUZZ KNOWLEDGE CHALLENGE</span>
@@ -285,7 +284,7 @@ function KnowledgeChallenge({ onBack, onChallengeComplete }) {
                     <div className="knowledge-result-actions">
                         {error && <button className="knowledge-secondary" onClick={saveChallenge} disabled={saving}>Retry saving</button>}
                         <button className="knowledge-primary" onClick={resetChallenge}>Play again <span aria-hidden="true">↻</span></button>
-                        <button className="knowledge-secondary" onClick={onBack}>Back to games</button>
+                        <PlayerBackButton onClick={onBack} />
                     </div>
                 </section>
             )}
