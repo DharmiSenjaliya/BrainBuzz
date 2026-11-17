@@ -427,7 +427,7 @@ function App() {
 
         let nextPath
 
-        if (isResetPasswordPage && !user) {
+        if (isResetPasswordPage) {
             nextPath = '/reset-password'
         } else if (showAdminLogin && !admin) {
             nextPath = '/admin/login'
@@ -781,6 +781,20 @@ const fetchPlayerCategories = async (token) => {
     }
 }
 
+const handlePasswordResetSuccess = (resetEmail) => {
+    const normalizedEmail = resetEmail.trim().toLowerCase()
+
+    if (user?.email?.toLowerCase() === normalizedEmail) {
+        localStorage.removeItem('brainbuzz_token')
+        setUser(null)
+    }
+
+    if (admin?.email?.toLowerCase() === normalizedEmail) {
+        localStorage.removeItem('brainbuzz_admin_token')
+        setAdmin(null)
+    }
+}
+
     const handleProfileUpdated = (updatedUser) => {
         setUser((previousUser) => ({
             ...previousUser,
@@ -996,12 +1010,18 @@ const checkAnswer = async () => {
     }
 
     // RESET PASSWORD
-    if (isResetPasswordPage && !user) {
+    if (isResetPasswordPage) {
         return (
             <div className={`app auth-page ${theme}-theme`}>
                 <ResetPassword
+                    key={location.search}
+                    backLabel={user || admin ? 'Back to Dashboard' : 'Back to Login'}
+                    onSuccess={handlePasswordResetSuccess}
                     onBack={() => {
-                        navigate('/login', { replace: true })
+                        navigate(
+                            admin ? '/admin/overview' : user ? '/dashboard' : '/login',
+                            { replace: true }
+                        )
                         setIsResetPasswordPage(false)
                         setAuthMode('login')
                     }}
