@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import './AdminDashboard.css'
-import api from './services/api'
+import api, { getStorageUrl } from './services/api'
 import {
     LayoutDashboard,
     FileQuestion,
@@ -23,9 +24,38 @@ import AdminDailyMiniGames from './AdminDailyMiniGames'
 
 // Temporarily hide Daily Challenge while retaining its admin implementation.
 const DAILY_CHALLENGE_UI_ENABLED = false
+const ADMIN_TAB_PATHS = {
+    overview: '/admin/overview',
+    questions: '/admin/questions',
+    categories: '/admin/categories',
+    feedback: '/admin/feedback',
+    players: '/admin/players',
+    leaderboard: '/admin/leaderboard',
+    'daily-mini-games': '/admin/daily-mini-games',
+}
 
 function AdminDashboard({ admin, onLogout }) {
-    const [activeTab, setActiveTab] = useState('overview')
+    const location = useLocation()
+    const navigate = useNavigate()
+    const activeTab = Object.keys(ADMIN_TAB_PATHS).find(
+        (tab) => ADMIN_TAB_PATHS[tab] === location.pathname
+    ) || 'overview'
+    const setActiveTab = (tab) => {
+        const path = ADMIN_TAB_PATHS[tab]
+
+        if (path && location.pathname !== path) {
+            navigate(path)
+        }
+    }
+
+    useEffect(() => {
+        const isTabPath = Object.values(ADMIN_TAB_PATHS).includes(location.pathname)
+
+        if (location.pathname.startsWith('/admin') && !isTabPath) {
+            navigate('/admin/overview', { replace: true })
+        }
+    }, [location.pathname, navigate])
+
     // Daily Challenge Management
 const [dailyChallenges, setDailyChallenges] = useState([])
 const [dailyChallengeCurrentPage, setDailyChallengeCurrentPage] = useState(1)
@@ -697,6 +727,7 @@ useEffect(() => {
     ) {
         setLeaderboardCurrentPage(1)
     } else if (
+        totalLeaderboardPages > 0 &&
         leaderboardCurrentPage > totalLeaderboardPages
     ) {
         setLeaderboardCurrentPage(totalLeaderboardPages)
@@ -763,7 +794,10 @@ useEffect(() => {
             dailyChallengeCurrentPage !== 1
         ) {
             setDailyChallengeCurrentPage(1)
-        } else if (dailyChallengeCurrentPage > totalDailyChallengePages) {
+        } else if (
+            totalDailyChallengePages > 0 &&
+            dailyChallengeCurrentPage > totalDailyChallengePages
+        ) {
             setDailyChallengeCurrentPage(totalDailyChallengePages)
         }
     }, [totalDailyChallengePages, dailyChallengeCurrentPage])
@@ -941,7 +975,10 @@ const questionPageNumbers = useMemo(() => {
     useEffect(() => {
         if (totalCategoryPages === 0 && categoryCurrentPage !== 1) {
             setCategoryCurrentPage(1)
-        } else if (categoryCurrentPage > totalCategoryPages) {
+        } else if (
+            totalCategoryPages > 0 &&
+            categoryCurrentPage > totalCategoryPages
+        ) {
             setCategoryCurrentPage(totalCategoryPages)
         }
     }, [totalCategoryPages, categoryCurrentPage])
@@ -1042,7 +1079,10 @@ useEffect(() => {
 useEffect(() => {
     if (totalFeedbackPages === 0 && feedbackCurrentPage !== 1) {
         setFeedbackCurrentPage(1)
-    } else if (feedbackCurrentPage > totalFeedbackPages) {
+    } else if (
+        totalFeedbackPages > 0 &&
+        feedbackCurrentPage > totalFeedbackPages
+    ) {
         setFeedbackCurrentPage(totalFeedbackPages)
     }
 }, [totalFeedbackPages, feedbackCurrentPage])
@@ -1104,7 +1144,10 @@ useEffect(() => {
 useEffect(() => {
     if (totalPlayerPages === 0 && playerCurrentPage !== 1) {
         setPlayerCurrentPage(1)
-    } else if (playerCurrentPage > totalPlayerPages) {
+    } else if (
+        totalPlayerPages > 0 &&
+        playerCurrentPage > totalPlayerPages
+    ) {
         setPlayerCurrentPage(totalPlayerPages)
     }
 }, [totalPlayerPages, playerCurrentPage])
@@ -2654,11 +2697,7 @@ const handleDeletePlayer = async (id) => {
                                                             <div className="admin-player-avatar">
                                                                 {player.profile_image ? (
                                                                     <img
-                                                                        src={
-                                                                            player.profile_image.startsWith('http')
-                                                                                ? player.profile_image
-                                                                                : `http://127.0.0.1:8000/storage/${player.profile_image}`
-                                                                        }
+                                                                        src={getStorageUrl(player.profile_image)}
                                                                         alt={player.name}
                                                                     />
                                                                 ) : (

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import api from './services/api'
 import './App.css'
 import Leaderboard from './Leaderboard'
@@ -263,8 +264,11 @@ function Navbar({ user, onLogout }) {
 
 // MAIN APP
 function App() {
+    const location = useLocation()
+    const navigate = useNavigate()
+    const syncingRouteRef = useRef(false)
     const [isResetPasswordPage, setIsResetPasswordPage] = useState(
-        () => window.location.pathname === '/reset-password'
+        () => location.pathname === '/reset-password'
     )
 
     const theme = 'dark'
@@ -308,7 +312,7 @@ function App() {
     const [authSubmitting, setAuthSubmitting] = useState(false)
 
     const [showProfile, setShowProfile] = useState(
-        () => sessionStorage.getItem('brainbuzz_player_page') === 'profile'
+        () => location.pathname === '/profile'
     )
 
     const [showEditProfile, setShowEditProfile] = useState(false)
@@ -332,7 +336,9 @@ function App() {
     const [showHowToPlay, setShowHowToPlay] = useState(false)
     const [showFeedback, setShowFeedback] = useState(false)
 
-    const [showAdminLogin, setShowAdminLogin] = useState(false)
+    const [showAdminLogin, setShowAdminLogin] = useState(
+        () => location.pathname.startsWith('/admin')
+    )
     const [admin, setAdmin] = useState(null)
 
     // LEVEL AND GAME STATES
@@ -373,6 +379,123 @@ function App() {
     const [resultError, setResultError] = useState('')
 
     const question = questions[currentQuestionIndex]
+
+    /* eslint-disable react-hooks/set-state-in-effect -- URL changes hydrate the legacy page-state model. */
+    useEffect(() => {
+        syncingRouteRef.current = true
+        const path = location.pathname
+        const levelMatch = path.match(/^\/game\/level\/([1-9]\d*)$/)
+        const isAdminPath = path === '/admin' || path.startsWith('/admin/')
+
+        setIsResetPasswordPage(path === '/reset-password')
+        setAuthMode(path === '/register' ? 'register' : 'login')
+        setShowAdminLogin(isAdminPath)
+        setShowForgotPassword(path === '/forgot-password')
+        setShowAchievements(path === '/achievements')
+        setShowLeaderboard(path === '/leaderboard')
+        setShowDailyMiniGames(path === '/daily-mini-games')
+        setShowGamesHub(path === '/games')
+        setShowProfile(path === '/profile')
+        setShowEditProfile(path === '/profile/edit')
+        setShowChangePassword(path === '/profile/change-password')
+        setShowHowToPlay(path === '/how-to-play')
+        setShowFeedback(path === '/feedback')
+        setSelectedGameMode(
+            path === '/brain-training'
+                ? 'training'
+                : path === '/knowledge-challenge'
+                    ? 'knowledge'
+                    : path === '/brain-duel'
+                        ? 'duel'
+                        : null
+        )
+        setShowDashboard(!levelMatch)
+
+        if (levelMatch) {
+            setSelectedLevel(Number(levelMatch[1]))
+        }
+    }, [location.pathname])
+    /* eslint-enable react-hooks/set-state-in-effect */
+
+    useEffect(() => {
+        if (syncingRouteRef.current) {
+            syncingRouteRef.current = false
+            return
+        }
+
+        if (authLoading || admin) return
+
+        let nextPath
+
+        if (isResetPasswordPage && !user) {
+            nextPath = '/reset-password'
+        } else if (showAdminLogin && !admin) {
+            nextPath = '/admin/login'
+        } else if (!user) {
+            nextPath = showForgotPassword
+                ? '/forgot-password'
+                : authMode === 'register'
+                    ? '/register'
+                    : '/login'
+        } else if (showAchievements) {
+            nextPath = '/achievements'
+        } else if (DAILY_CHALLENGE_UI_ENABLED && showDailyChallenge) {
+            nextPath = '/daily-challenge'
+        } else if (showDailyMiniGames) {
+            nextPath = '/daily-mini-games'
+        } else if (showLeaderboard) {
+            nextPath = '/leaderboard'
+        } else if (showHowToPlay) {
+            nextPath = '/how-to-play'
+        } else if (showChangePassword) {
+            nextPath = '/profile/change-password'
+        } else if (showEditProfile) {
+            nextPath = '/profile/edit'
+        } else if (showProfile) {
+            nextPath = '/profile'
+        } else if (showFeedback) {
+            nextPath = '/feedback'
+        } else if (showGamesHub) {
+            nextPath = '/games'
+        } else if (selectedGameMode === 'training') {
+            nextPath = '/brain-training'
+        } else if (selectedGameMode === 'knowledge') {
+            nextPath = '/knowledge-challenge'
+        } else if (selectedGameMode === 'duel') {
+            nextPath = '/brain-duel'
+        } else if (showDashboard) {
+            nextPath = '/dashboard'
+        } else {
+            nextPath = `/game/level/${selectedLevel}`
+        }
+
+        if (location.pathname !== nextPath) {
+            navigate(nextPath)
+        }
+    }, [
+        admin,
+        authLoading,
+        authMode,
+        isResetPasswordPage,
+        location.pathname,
+        navigate,
+        selectedGameMode,
+        selectedLevel,
+        showAchievements,
+        showAdminLogin,
+        showChangePassword,
+        showDailyChallenge,
+        showDailyMiniGames,
+        showDashboard,
+        showEditProfile,
+        showFeedback,
+        showForgotPassword,
+        showGamesHub,
+        showHowToPlay,
+        showLeaderboard,
+        showProfile,
+        user,
+    ])
 
     const resetGame = () => {
         setCurrentQuestionIndex(0)
@@ -531,6 +654,10 @@ const fetchPlayerCategories = async (token) => {
             }
 
             try {
+                const requestedLevel = Number(
+                    window.location.pathname.match(/^\/game\/level\/([1-9]\d*)$/)?.[1]
+                ) || 1
+
                 const response = await api.get('/me', {
                     headers: { Authorization: `Bearer ${token}` },
                 })
@@ -539,7 +666,10 @@ const fetchPlayerCategories = async (token) => {
                 await fetchDashboard(token)
                 await fetchLevelProgress(token)
                 await fetchPlayerCategories(token)
-                await fetchQuestions(token, 1)
+                if (requestedLevel > 1) {
+                    setSelectedLevel(requestedLevel)
+                }
+                await fetchQuestions(token, requestedLevel)
             } catch (error) {
                 console.error('Player Login Check Error:', error)
                 localStorage.removeItem('brainbuzz_token')
@@ -709,7 +839,7 @@ const fetchPlayerCategories = async (token) => {
         } finally {
             localStorage.removeItem('brainbuzz_admin_token')
             setAdmin(null)
-            setShowAdminLogin(false)
+            navigate('/admin/login')
         }
     }
 
@@ -721,6 +851,7 @@ const fetchPlayerCategories = async (token) => {
     }
 
     const token = localStorage.getItem('brainbuzz_token')
+    setSelectedLevel(level)
     setResultSaved(false)
     setResultError('')
     setShowDashboard(false)
@@ -870,7 +1001,7 @@ const checkAnswer = async () => {
             <div className={`app auth-page ${theme}-theme`}>
                 <ResetPassword
                     onBack={() => {
-                        window.history.replaceState({}, '', '/')
+                        navigate('/login', { replace: true })
                         setIsResetPasswordPage(false)
                         setAuthMode('login')
                     }}

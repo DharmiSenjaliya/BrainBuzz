@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import './Profile.css'
-import api from './services/api'
+import api, { getStorageUrl } from './services/api'
 import PlayerBackButton from './PlayerBackButton'
 
 const initialStats = {
@@ -32,11 +32,7 @@ function Profile({ user, onBack, onEditProfile, onChangePassword }) {
     const email = user?.email || 'Email not available'
     const phone = user?.phone || 'Not added'
     const image = user?.profile_image || user?.avatar || user?.profile_photo
-    const imageUrl = image
-        ? image.startsWith('http')
-            ? image
-            : `http://127.0.0.1:8000/storage/${image.replace(/^\/?storage\//, '')}`
-        : null
+    const imageUrl = image ? getStorageUrl(image) : null
     const accuracy = Math.max(0, Math.min(Number(stats.accuracy || 0), 100))
 
     const requestProfileData = useCallback(async () => {
