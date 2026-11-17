@@ -60,7 +60,7 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 ## Daily Mini Game Automation
 
-The `app:rotate-daily-game` scheduler generates and publishes today's AI mini game. It checks every 15 minutes (Asia/Kolkata) and skips generation once a game already exists for the date. Set `GEMINI_API_KEY` and, if needed, `GEMINI_MODEL` in the backend environment.
+The `app:rotate-daily-game` scheduler generates and publishes a new AI mini game every day at 00:00 (Asia/Kolkata). The game type rotates daily through Word Shuffle, Logic Detective, Pattern Master, Visual Detective, Number Ninja, and Weekend Surprise. It skips generation once a game already exists for that date. Set a valid `GEMINI_API_KEY` and, if needed, `GEMINI_MODEL` in the backend environment.
 
 On a Linux host, install this cron entry using the absolute path to the backend:
 
@@ -68,7 +68,7 @@ On a Linux host, install this cron entry using the absolute path to the backend:
 * * * * * cd /path/to/brainbuzz-backend && php artisan schedule:run >> /dev/null 2>&1
 ```
 
-For local development on Windows, keep this command running in a terminal:
+For local development on Windows, keep this command running in a terminal (or use `composer run dev`):
 
 ```powershell
 php artisan schedule:work

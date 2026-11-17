@@ -7,6 +7,7 @@ use App\Models\DailyGameChallenge;
 use App\Services\DailyGameAiService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use RuntimeException;
 
 class AdminDailyGameController extends Controller
 {
@@ -144,7 +145,23 @@ $validated = $request->validate([
                 $validated['game_type'],
                 $validated['challenge_date']
             );
+        } catch (RuntimeException $e) {
+            report($e);
 
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 502);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'AI game generation failed. Please check the server logs.',
+            ], 502);
+        }
+
+        try {
             $challenge = DailyGameChallenge::create([
                 'challenge_date' => $data['challenge_date'],
                 'game_type' => $data['game_type'],
@@ -165,14 +182,13 @@ $validated = $request->validate([
                 'message' => 'AI game generated successfully as draft.',
                 'challenge' => $challenge,
             ], 201);
-
         } catch (\Throwable $e) {
             report($e);
 
             return response()->json([
                 'success' => false,
-                'message' => 'AI game generation failed. Please check the AI configuration.',
-            ], 502);
+                'message' => 'The AI game was generated but could not be saved. Please try again.',
+            ], 500);
         }
     }
     

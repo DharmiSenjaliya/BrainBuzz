@@ -23,13 +23,7 @@ class RotateDailyGame extends Command
         ];
 
         $today = now('Asia/Kolkata');
-
-        if ($today->isWeekend()) {
-            $gameType = 'weekend_surprise';
-        } else {
-            $gameType = $gameTypes[$today->dayOfWeekIso - 1];
-        }
-
+        $gameType = $gameTypes[($today->dayOfYear - 1) % count($gameTypes)];
         $date = $today->toDateString();
 
         $this->info('Daily Game Rotation');

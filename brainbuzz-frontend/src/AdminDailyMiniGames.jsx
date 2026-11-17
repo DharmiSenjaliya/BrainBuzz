@@ -149,6 +149,9 @@ function AdminDailyMiniGames() {
     } catch (err) {
         setError(
             err.response?.data?.message ||
+            (err.request
+                ? 'Could not reach the backend. Make sure the Laravel API is running and try again.'
+                : err.message) ||
             'AI generation failed.'
         )
     } finally {

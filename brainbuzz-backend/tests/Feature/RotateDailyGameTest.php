@@ -28,12 +28,12 @@ class RotateDailyGameTest extends TestCase
         $aiService = Mockery::mock(DailyGameAiService::class);
         $aiService->shouldReceive('generate')
             ->once()
-            ->with('word_shuffle', '2026-11-16')
+            ->with('logic_detective', '2026-11-16')
             ->andReturn([
                 'challenge_date' => '2026-11-16',
-                'game_type' => 'word_shuffle',
-                'title' => 'Daily Word Shuffle',
-                'instructions' => 'Unscramble each word.',
+                'game_type' => 'logic_detective',
+                'title' => 'Daily Logic Detective',
+                'instructions' => 'Solve each logic puzzle.',
                 'items' => array_map(
                     fn (int $index): array => [
                         'id' => 'item-' . $index,
@@ -62,6 +62,7 @@ class RotateDailyGameTest extends TestCase
 
         $this->assertSame('published', $challenge->status);
         $this->assertSame('ai', $challenge->generation_source);
+        $this->assertSame('logic_detective', $challenge->game_type);
         $this->assertNotNull($challenge->generated_at);
         $this->assertNotNull($challenge->published_at);
         $this->assertNull($challenge->approved_by);
@@ -71,7 +72,7 @@ class RotateDailyGameTest extends TestCase
         $this->actingAs($player)
             ->getJson('/api/daily-mini-game')
             ->assertOk()
-            ->assertJsonPath('challenge.title', 'Daily Word Shuffle')
+            ->assertJsonPath('challenge.title', 'Daily Logic Detective')
             ->assertJsonCount(5, 'challenge.items')
             ->assertJsonMissingPath('challenge.items.0.answer');
 
@@ -90,6 +91,36 @@ class RotateDailyGameTest extends TestCase
             ->assertCreated()
             ->assertJsonPath('result.correct_answers', 5)
             ->assertJsonPath('result.total_score', 120);
+    }
+
+    public function test_game_type_changes_on_consecutive_weekend_days(): void
+    {
+        Carbon::setTestNow(Carbon::parse('2026-11-21 00:05:00', 'Asia/Kolkata'));
+
+        $aiService = Mockery::mock(DailyGameAiService::class);
+        $aiService->shouldReceive('generate')
+            ->once()
+            ->with('word_shuffle', '2026-11-21')
+            ->andReturn($this->generatedGame('word_shuffle', '2026-11-21'));
+        $aiService->shouldReceive('generate')
+            ->once()
+            ->with('logic_detective', '2026-11-22')
+            ->andReturn($this->generatedGame('logic_detective', '2026-11-22'));
+        $this->app->instance(DailyGameAiService::class, $aiService);
+
+        $this->artisan('app:rotate-daily-game')->assertExitCode(0);
+
+        Carbon::setTestNow(Carbon::parse('2026-11-22 00:05:00', 'Asia/Kolkata'));
+        $this->artisan('app:rotate-daily-game')->assertExitCode(0);
+
+        $games = DailyGameChallenge::query()
+            ->orderBy('challenge_date')
+            ->get();
+
+        $this->assertSame(
+            ['word_shuffle', 'logic_detective'],
+            $games->pluck('game_type')->all()
+        );
     }
 
     public function test_it_does_not_replace_a_game_that_already_exists_for_today(): void
@@ -124,5 +155,20 @@ class RotateDailyGameTest extends TestCase
             'draft',
             DailyGameChallenge::query()->firstOrFail()->status
         );
+    }
+
+    private function generatedGame(string $gameType, string $date): array
+    {
+        return [
+            'challenge_date' => $date,
+            'game_type' => $gameType,
+            'title' => 'Daily ' . $gameType,
+            'instructions' => 'Solve the puzzles.',
+            'items' => [],
+            'difficulty' => 'medium',
+            'duration_seconds' => 120,
+            'total_points' => 100,
+            'bonus_points' => 20,
+        ];
     }
 }
