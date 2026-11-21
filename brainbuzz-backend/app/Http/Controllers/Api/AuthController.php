@@ -14,6 +14,10 @@ class AuthController extends Controller
     // Player Registration
     public function register(Request $request)
     {
+        $request->merge([
+            'email' => strtolower(trim((string) $request->input('email'))),
+        ]);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
@@ -21,13 +25,17 @@ class AuthController extends Controller
         ]);
 
         $user = User::create([
-            'name' => $validated['name'],
+            'name' => trim($validated['name']),
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
 
+        $token = $user->createToken('brainbuzz-player')->plainTextToken;
+
         return response()->json([
             'message' => 'Registration successful!',
+            'token' => $token,
+            'access_token' => $token,
             'user' => $user,
         ], 201);
     }
@@ -35,6 +43,10 @@ class AuthController extends Controller
     // Player Login
     public function login(Request $request)
     {
+        $request->merge([
+            'email' => strtolower(trim((string) $request->input('email'))),
+        ]);
+
         $validated = $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
@@ -67,6 +79,7 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Login successful!',
             'token' => $token,
+            'access_token' => $token,
             'user' => $user,
         ]);
     }
@@ -74,6 +87,10 @@ class AuthController extends Controller
     // Admin Login
     public function adminLogin(Request $request)
     {
+        $request->merge([
+            'email' => strtolower(trim((string) $request->input('email'))),
+        ]);
+
         $validated = $request->validate([
             'email' => 'required|email',
             'password' => 'required|string',
@@ -104,6 +121,7 @@ if (!$user->is_active) {
         return response()->json([
             'message' => 'Admin login successful!',
             'token' => $token,
+            'access_token' => $token,
             'user' => $user,
         ]);
     }

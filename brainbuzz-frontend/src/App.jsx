@@ -30,6 +30,39 @@ const isUsableToken = (token) =>
     token.trim() !== '' &&
     !['undefined', 'null'].includes(token.trim().toLowerCase())
 
+const extractAuthToken = (data) => {
+    if (!data || typeof data !== 'object') return null
+
+    const candidates = [
+        data.token,
+        data.access_token,
+        data.plainTextToken,
+        data.data?.token,
+        data.data?.access_token,
+        data.data?.plainTextToken,
+    ]
+
+    for (const candidate of candidates) {
+        if (
+            typeof candidate === 'string' &&
+            candidate.trim() !== '' &&
+            !['undefined', 'null'].includes(candidate.trim().toLowerCase())
+        ) {
+            return candidate.trim()
+        }
+        if (
+            typeof candidate === 'object' &&
+            candidate !== null &&
+            typeof candidate.plainTextToken === 'string' &&
+            candidate.plainTextToken.trim() !== ''
+        ) {
+            return candidate.plainTextToken.trim()
+        }
+    }
+
+    return null
+}
+
 // NAVBAR COMPONENT
 function Navbar({ user, onLogout }) {
         const [notifications, setNotifications] = useState([])
@@ -687,6 +720,8 @@ const fetchPlayerCategories = async (token) => {
         e.preventDefault()
         setAuthMessage('')
 
+        const normalizedEmail = email.trim().toLowerCase()
+
         if (authMode === 'register' && password !== passwordConfirmation) {
             setAuthMessage('Passwords do not match!')
             return
@@ -699,16 +734,35 @@ const fetchPlayerCategories = async (token) => {
 
             const payload = authMode === 'register'
                 ? {
-                    name,
-                    email,
+                    name: name.trim(),
+                    email: normalizedEmail,
                     password,
                     password_confirmation: passwordConfirmation,
                 }
-                : { email, password }
+                : { email: normalizedEmail, password }
 
             const response = await api.post(endpoint, payload)
 
+            const token = extractAuthToken(response.data)
+            const authUser =
+                response.data?.user ||
+                response.data?.data?.user ||
+                (response.data?.id && response.data?.email ? response.data : null)
+
             if (authMode === 'register') {
+                if (token && authUser) {
+                    localStorage.setItem('brainbuzz_token', token)
+                    setUser(authUser)
+                    await fetchDashboard(token)
+                    await fetchLevelProgress(token)
+                    await fetchPlayerCategories(token)
+                    setPassword('')
+                    setPasswordConfirmation('')
+                    setAuthMessage('')
+                    await fetchQuestions(token, 1)
+                    return
+                }
+
                 setAuthMode('login')
                 setPassword('')
                 setPasswordConfirmation('')
@@ -716,21 +770,19 @@ const fetchPlayerCategories = async (token) => {
                 return
             }
 
-            const authResponse = response.data?.data ?? response.data
-            const token = authResponse?.token
-
-            if (!isUsableToken(token)) {
+            if (!token) {
                 localStorage.removeItem('brainbuzz_token')
                 console.error(
-                    'Login response is missing a token. Response fields:',
-                    Object.keys(response.data || {})
+                    'Login response is missing a valid token. Response fields:',
+                    Object.keys(response.data || {}),
+                    response.data
                 )
                 setAuthMessage('Login response did not include a valid token. Please try again.')
                 return
             }
 
             localStorage.setItem('brainbuzz_token', token)
-            setUser(authResponse.user || response.data.user)
+            setUser(authUser)
 
             await fetchDashboard(token)
             await fetchLevelProgress(token)
@@ -752,7 +804,7 @@ const fetchPlayerCategories = async (token) => {
             } else {
                 setAuthMessage(
                     error.response?.data?.message ||
-                    'Something went wrong. Please try again.'
+                    'Something went wrong. Please check your credentials.'
                 )
             }
         } finally {
@@ -761,25 +813,39 @@ const fetchPlayerCategories = async (token) => {
     }
 
     const handleAdminLogin = async (adminData) => {
-    try {
-        const response = await api.post('/admin/login', adminData)
+        try {
+            const normalizedData = {
+                ...adminData,
+                email: adminData.email?.trim().toLowerCase(),
+            }
+            const response = await api.post('/admin/login', normalizedData)
 
-        const token = response.data.token
+            const token = extractAuthToken(response.data)
 
-        localStorage.setItem('brainbuzz_admin_token', token)
+            if (!token) {
+                alert('Admin login response did not include a valid token.')
+                return
+            }
 
-        setAdmin(response.data.user)
-        setShowAdminLogin(false)
+            localStorage.setItem('brainbuzz_admin_token', token)
 
-    } catch (error) {
-        console.error('Admin Login Error:', error)
+            const adminUser =
+                response.data?.user ||
+                response.data?.data?.user ||
+                response.data
 
-        alert(
-            error.response?.data?.message ||
-            'Admin login failed. Please try again.'
-        )
+            setAdmin(adminUser)
+            setShowAdminLogin(false)
+
+        } catch (error) {
+            console.error('Admin Login Error:', error)
+
+            alert(
+                error.response?.data?.message ||
+                'Admin login failed. Please try again.'
+            )
+        }
     }
-}
 
 const handlePasswordResetSuccess = (resetEmail) => {
     const normalizedEmail = resetEmail.trim().toLowerCase()
