@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use App\Models\User;
 
 class PaymentController extends Controller
 {
@@ -16,7 +17,7 @@ class PaymentController extends Controller
     public function config()
     {
         $keyId = env('RAZORPAY_KEY_ID', '');
-        $merchantUpi = env('MERCHANT_UPI_ID', 'brainbuzz@upi');
+        $merchantUpi = env('MERCHANT_UPI_ID', 'brainbuzz.games@okhdfcbank');
         $isConfigured = !empty($keyId) && !empty(env('RAZORPAY_KEY_SECRET'));
 
         return response()->json([
@@ -25,6 +26,109 @@ class PaymentController extends Controller
             'merchant_upi' => $merchantUpi,
             'currency' => 'INR',
             'is_configured' => $isConfigured,
+        ]);
+    }
+
+    /**
+     * Get User's Real-Time Coin Balance & Wallet
+     */
+    public function wallet(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated',
+            ], 401);
+        }
+
+        return response()->json([
+            'success' => true,
+            'coins' => $user->coins ?? 100,
+            'hints' => $user->hints ?? 3,
+            'lifelines' => $user->lifelines ?? 2,
+        ]);
+    }
+
+    /**
+     * Add Coins to User (e.g. Rewarded Video Ads, Daily Rewards)
+     */
+    public function addCoins(Request $request)
+    {
+        $request->validate([
+            'coins' => 'required|integer|min:1|max:100000',
+            'reason' => 'nullable|string|max:100',
+        ]);
+
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please login to save coins to your account.',
+            ], 401);
+        }
+
+        $coinsToAdd = (int) $request->input('coins');
+        $user->coins = ($user->coins ?? 100) + $coinsToAdd;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => "+{$coinsToAdd} Coins saved to your account!",
+            'coins' => $user->coins,
+            'reason' => $request->input('reason', 'reward'),
+        ]);
+    }
+
+    /**
+     * Spend Coins (e.g. Buying In-Game Hints, 50-50 Lifelines, Extra Lives)
+     */
+    public function spendCoins(Request $request)
+    {
+        $request->validate([
+            'coins' => 'required|integer|min:1',
+            'item' => 'required|string|in:hint,lifeline,extra_life',
+        ]);
+
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please login to use coins.',
+            ], 401);
+        }
+
+        $cost = (int) $request->input('coins');
+        $currentCoins = $user->coins ?? 100;
+
+        if ($currentCoins < $cost) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Insufficient coins! Please visit the Coin Shop.',
+                'coins' => $currentCoins,
+            ], 422);
+        }
+
+        $user->coins = $currentCoins - $cost;
+
+        $item = $request->input('item');
+        if ($item === 'hint') {
+            $user->hints = ($user->hints ?? 3) + 1;
+        } elseif ($item === 'lifeline' || $item === 'extra_life') {
+            $user->lifelines = ($user->lifelines ?? 2) + 1;
+        }
+
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Purchase successful!',
+            'coins' => $user->coins,
+            'hints' => $user->hints,
+            'lifelines' => $user->lifelines,
         ]);
     }
 
@@ -95,7 +199,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Verify Razorpay payment signature
+     * Verify Razorpay payment signature & Credit Coins in Database
      */
     public function verifyPayment(Request $request)
     {
@@ -119,7 +223,6 @@ class PaymentController extends Controller
             $expectedSignature = hash_hmac('sha256', $orderId . '|' . $paymentId, $keySecret);
             $isVerified = hash_equals($expectedSignature, $signature);
         } else {
-            // If payment_id exists and starts with pay_
             $isVerified = !empty($paymentId) && (str_starts_with($paymentId, 'pay_') || str_starts_with($paymentId, 'UPI_'));
         }
 
@@ -130,17 +233,25 @@ class PaymentController extends Controller
             ], 400);
         }
 
+        // Credit coins to logged-in user in database
+        $user = $request->user();
+        if ($user) {
+            $user->coins = ($user->coins ?? 100) + $coins;
+            $user->save();
+        }
+
         return response()->json([
             'success' => true,
-            'message' => 'Payment verified successfully.',
+            'message' => 'Payment verified & Coins added to Database!',
             'payment_id' => $paymentId,
             'order_id' => $orderId,
             'coins' => $coins,
+            'total_coins' => $user?->coins ?? null,
         ]);
     }
 
     /**
-     * Verify Direct UPI Payment (UTR / Ref No verification)
+     * Verify Direct UPI Payment (UTR / Ref No verification) & Credit Coins in Database
      */
     public function verifyUpi(Request $request)
     {
@@ -171,12 +282,31 @@ class PaymentController extends Controller
 
         $orderId = 'GPA.' . mt_rand(1000, 9999) . '-' . mt_rand(1000, 9999) . '-' . mt_rand(1000, 9999);
 
+        // Credit coins to logged-in user in database
+        $user = $request->user();
+        if ($user) {
+            $user->coins = ($user->coins ?? 100) + $coins;
+
+            // Pack bonuses
+            if ($packId === 'pack_brainiac') {
+                $user->hints = ($user->hints ?? 3) + 2;
+            } elseif ($packId === 'pack_master') {
+                $user->lifelines = ($user->lifelines ?? 2) + 5;
+            } elseif ($packId === 'pack_vip') {
+                $user->hints = ($user->hints ?? 3) + 10;
+                $user->lifelines = ($user->lifelines ?? 2) + 10;
+            }
+
+            $user->save();
+        }
+
         return response()->json([
             'success' => true,
-            'message' => 'UPI Payment Verified Successfully!',
+            'message' => 'UPI Payment Verified & Coins Saved to Database!',
             'payment_id' => 'UPI_' . $utr,
             'order_id' => $orderId,
             'coins' => $coins,
+            'total_coins' => $user?->coins ?? null,
         ]);
     }
 }

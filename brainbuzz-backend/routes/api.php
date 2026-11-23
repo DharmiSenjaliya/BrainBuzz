@@ -56,6 +56,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/profile/update', [ProfileController::class, 'update']);
 
+    // Player Coin Wallet & Database Persistence
+    Route::get('/user/wallet', [PaymentController::class, 'wallet']);
+    Route::post('/user/coins/add', [PaymentController::class, 'addCoins']);
+    Route::post('/user/coins/spend', [PaymentController::class, 'spendCoins']);
+
     // Player Questions
     Route::get('/questions', [QuestionController::class, 'index']);
     Route::post('/check-answer', [QuestionController::class, 'checkAnswer']);

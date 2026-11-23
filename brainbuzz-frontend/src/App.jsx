@@ -193,13 +193,15 @@ function Navbar({ user, onLogout, onOpenRewards, onOpenStore }) {
                 <button
                     type="button"
                     className="nav-action-pill shop"
-                    title="Coin & Lifelines Store"
+                    title="Coin & Lifelines Store (Click to Buy Coins)"
                     onClick={() => {
                         soundService.playClick()
                         if (onOpenStore) onOpenStore()
                     }}
                 >
-                    🪙 Shop
+                    <span className="nav-shop-icon">🪙</span>
+                    <span className="nav-coin-count">{score > 0 ? score.toLocaleString() : 'Store'}</span>
+                    <span className="nav-shop-plus">+</span>
                 </button>
 
                 <button
@@ -767,7 +769,18 @@ const fetchPlayerCategories = async (token) => {
                     headers: { Authorization: `Bearer ${token}` },
                 })
 
-               setUser(response.data.user)
+                const loadedUser = response.data.user
+                setUser(loadedUser)
+                if (loadedUser?.coins !== undefined) {
+                    setScore(Number(loadedUser.coins) || 0)
+                }
+                if (loadedUser?.hints !== undefined) {
+                    setHintsRemaining(Number(loadedUser.hints) || 3)
+                }
+                if (loadedUser?.lifelines !== undefined) {
+                    setFiftyFiftyRemaining(Number(loadedUser.lifelines) || 2)
+                    setExtraLivesRemaining(Number(loadedUser.lifelines) || 2)
+                }
                 await fetchDashboard(token)
                 await fetchLevelProgress(token)
                 await fetchPlayerCategories(token)
@@ -855,6 +868,16 @@ const fetchPlayerCategories = async (token) => {
 
             localStorage.setItem('brainbuzz_token', token)
             setUser(authUser)
+            if (authUser?.coins !== undefined) {
+                setScore(Number(authUser.coins) || 0)
+            }
+            if (authUser?.hints !== undefined) {
+                setHintsRemaining(Number(authUser.hints) || 3)
+            }
+            if (authUser?.lifelines !== undefined) {
+                setFiftyFiftyRemaining(Number(authUser.lifelines) || 2)
+                setExtraLivesRemaining(Number(authUser.lifelines) || 2)
+            }
 
             await fetchDashboard(token)
             await fetchLevelProgress(token)
@@ -1517,7 +1540,9 @@ const checkAnswer = async () => {
                 isOpen={showStoreModal}
                 onClose={() => setShowStoreModal(false)}
                 onPurchaseComplete={(pack) => {
-                    setScore((prev) => prev + (pack.coins || 0))
+                    const addedCoins = pack.coins || 0
+                    setScore((prev) => prev + addedCoins)
+                    setUser((prev) => prev ? { ...prev, coins: (prev.coins || 0) + addedCoins } : prev)
                     if (pack.type === 'purchase') {
                         setHintsRemaining((prev) => prev + 2)
                         setFiftyFiftyRemaining((prev) => prev + 2)

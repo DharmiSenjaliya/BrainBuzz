@@ -19,6 +19,9 @@ class User extends Authenticatable
         'email',
         'phone',
         'profile_image',
+        'coins',
+        'hints',
+        'lifelines',
         'is_admin',
         'is_active',
         'password',
@@ -34,6 +37,9 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'coins' => 'integer',
+            'hints' => 'integer',
+            'lifelines' => 'integer',
             'is_admin' => 'boolean',
             'is_active' => 'boolean',
         ];

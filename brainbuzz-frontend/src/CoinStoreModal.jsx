@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import './CoinStoreModal.css'
 import soundService from './services/soundService'
+import api from './services/api'
 import GamePaymentModal from './GamePaymentModal'
 import RewardedAdPlayer from './RewardedAdPlayer'
 
@@ -83,11 +84,21 @@ export default function CoinStoreModal({ isOpen, onClose, onPurchaseComplete }) 
         }
     }
 
-    // Rewarded Ad Success Callback
-    const handleAdRewardEarned = (reward) => {
+    // Rewarded Ad Success Callback (Persists to Database)
+    const handleAdRewardEarned = async (reward) => {
         setAdRewardedCount((prev) => prev + 1)
         setPurchaseMsg(`🎉 +100 Coins Claimed from Rewarded Ad!`)
         setTimeout(() => setPurchaseMsg(''), 4000)
+
+        // Save Coins to Database via Backend API
+        try {
+            await api.post('/user/coins/add', {
+                coins: 100,
+                reason: 'rewarded_ad',
+            })
+        } catch (err) {
+            console.log('User not logged in or offline, coins kept in state')
+        }
 
         if (onPurchaseComplete) {
             onPurchaseComplete({
