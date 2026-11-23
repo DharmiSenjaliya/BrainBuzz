@@ -23,15 +23,15 @@ export default function HeroGameBanner({
 
                 <div className="hero-badge">
                     <Sparkles size={14} className="text-cyan" />
-                    <span>3D CYBER MIND &amp; IQ ARENA</span>
+                    <span>3D CYBER TRIVIA ARCADE</span>
                 </div>
 
                 <h1 className="hero-title">
-                    BRAINBUZZ <span className="neon-gradient">RUN</span>
+                    BRAIN<span className="neon-gradient">BUZZ</span>
                 </h1>
 
                 <p className="hero-tagline">
-                    Train Your Mind • Connect The Clues • Level Up!
+                    Train Your Mind • Connect The Clues • Level Up
                 </p>
 
                 <div className="hero-actions">
@@ -41,7 +41,7 @@ export default function HeroGameBanner({
                         className="cyber-button-lg cyber-button-glow hero-play-btn"
                     >
                         <Gamepad2 size={24} />
-                        <span>PLAY NOW (LEVEL {currentLevel})</span>
+                        <span>PLAY LEVEL {currentLevel}</span>
                     </button>
 
                     {onExploreGames && (

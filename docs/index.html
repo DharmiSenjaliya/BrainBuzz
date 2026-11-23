@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrainBuzz - Commercial Product Documentation</title>
+    <style>
+        :root {
+            --bg: #090d16;
+            --card: #111a2e;
+            --primary: #6366f1;
+            --secondary: #38bdf8;
+            --accent: #ec4899;
+            --text: #f8fafc;
+            --subtext: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        .badge {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--secondary);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 0.3rem 0.9rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-bottom: 0.8rem;
+        }
+        h1 { margin: 0.4rem 0; font-size: 2.5rem; }
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1.5rem 4rem 1.5rem;
+        }
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        h2 { color: var(--secondary); margin-top: 0; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
+        h3 { color: #f1f5f9; margin-top: 1.25rem; }
+        code {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--secondary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        pre {
+            background: #050811;
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow-x: auto;
+            color: #38bdf8;
+            font-size: 0.9rem;
+        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .feature-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            border-left: 3px solid var(--primary);
+        }
+        .feature-item strong { display: block; color: #fff; margin-bottom: 0.25rem; }
+        .feature-item span { font-size: 0.85rem; color: var(--subtext); }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { color: var(--secondary); font-size: 0.85rem; }
+        td { font-size: 0.9rem; }
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <span class="badge">COMMERCIAL PRODUCT MANUAL</span>
+        <h1>⚡ BrainBuzz Cyber Trivia & Arcade</h1>
+        <p style="color: var(--subtext); max-width: 600px; margin: 0 auto;">
+            Full-Stack Trivia & Gaming Platform built with Laravel 11, React 19, Three.js 3D, and Web Audio API. Ready for CodeCanyon, SaaS, or Client Deployment.
+        </p>
+    </header>
+
+    <div class="container">
+        <!-- Overview -->
+        <section class="card">
+            <h2>📦 Product Overview</h2>
+            <p>
+                <strong>BrainBuzz</strong> is a high-engagement, modern trivia and puzzle gaming platform featuring 5 unique game modes (5-Clue Word Puzzle, 1v1 PvP Brain Duel, Memory Speed Training, Knowledge Challenge, and Daily Mini Games), an interactive Three.js 3D background, Web Audio SFX sound engine, Daily Rewards Spin Wheel, In-Game Coin Store, and an Admin Panel with CSV bulk imports, visual analytics, and AI question generation.
+            </p>
+
+            <div class="grid-2">
+                <div class="feature-item">
+                    <strong>🎮 5 Diverse Game Modes</strong>
+                    <span>5-Clue Core Levels, 1v1 Duel with Room Codes, Brain Training, Knowledge Challenge & Daily Mini Games.</span>
+                </div>
+                <div class="feature-item">
+                    <strong>🔊 Web Audio API Synthesizer</strong>
+                    <span>Built-in synthesizer with zero external audio assets to 404. Chimes, buzzers, victory fanfare & ambient lo-fi synth.</span>
+                </div>
+                <div class="feature-item">
+                    <strong>🎁 7-Day Streak & Lucky Spin Wheel</strong>
+                    <span>Daily retention loop with login rewards and an interactive HTML5 canvas prize wheel.</span>
+                </div>
+                <div class="feature-item">
+                    <strong>📥 Bulk CSV Import & Export</strong>
+                    <span>Add 1000+ questions in 1-click via CSV spreadsheet with sample template download.</span>
+                </div>
+                <div class="feature-item">
+                    <strong>🤖 AI Question Generator</strong>
+                    <span>Generate rich 5-clue trivia questions by entering any topic inside the Admin Panel.</span>
+                </div>
+                <div class="feature-item">
+                    <strong>💰 Monetization Ready</strong>
+                    <span>Google AdSense banners, 5-second Rewarded Video Ads, and Virtual Coin/Perk Shop.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Installation -->
+        <section class="card">
+            <h2>🚀 5-Minute Setup & Installation</h2>
+            <h3>1. Backend Setup (Laravel 11)</h3>
+            <pre><code>cd brainbuzz-backend
+composer install
+cp .env.example .env
+php artisan key:generate
+
+# Configure your database in .env:
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=brainbuzz
+# DB_USERNAME=root
+# DB_PASSWORD=
+
+php artisan migrate --seed
+php artisan serve --port=8001</code></pre>
+
+            <h3>2. Frontend Setup (React / Vite)</h3>
+            <pre><code>cd brainbuzz-frontend
+npm install
+npm run dev</code></pre>
+
+            <h3>3. Default Admin Credentials</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Email</th>
+                        <th>Password</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Super Admin</strong></td>
+                        <td><code>admin@brainbuzz.game</code></td>
+                        <td><code>admin123456</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Demo Player</strong></td>
+                        <td><code>alex@example.com</code></td>
+                        <td><code>password123</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Monetization Guide -->
+        <section class="card">
+            <h2>💰 Monetization & Ad Placement</h2>
+            <p>BrainBuzz is designed to generate revenue through multiple monetization streams:</p>
+            <ul>
+                <li><strong>Google AdSense Banners:</strong> Navigate to <code>/admin/settings</code>, paste your Publisher ID (<code>ca-pub-XXXXXXXXXXXXXXXX</code>) and toggle Ads ON.</li>
+                <li><strong>Rewarded Video Ads:</strong> Players watch a 5-second video to earn +100 Coins or +1 Lifeline, maximizing eCPM revenue.</li>
+                <li><strong>Virtual Coin Shop:</strong> Packages ranging from $0.99 to $14.99 (VIP Lifetime Pass). Ready to connect to Stripe or Razorpay.</li>
+            </ul>
+        </section>
+
+        <!-- Support -->
+        <section class="card">
+            <h2>📞 Commercial Support & Customization</h2>
+            <p>
+                BrainBuzz is fully modular and cleanly documented. For custom white-label branding, translations, or payment gateway connections, all styles and components are centralized in <code>brainbuzz-frontend/src</code> and <code>brainbuzz-backend/app/Http/Controllers/Api</code>.
+            </p>
+        </section>
+    </div>
+</body>
+</html>

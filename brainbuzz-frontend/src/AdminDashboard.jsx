@@ -19,8 +19,16 @@ import {
     RefreshCw,
     X,
     Plus,
+    Settings as SettingsIcon,
+    Download,
+    Upload,
+    Bot,
 } from 'lucide-react'
 import AdminDailyMiniGames from './AdminDailyMiniGames'
+import AdminCsvImportModal from './AdminCsvImportModal'
+import AdminAiQuestionModal from './AdminAiQuestionModal'
+import AdminAnalyticsView from './AdminAnalyticsView'
+import AdminSettingsTab from './AdminSettingsTab'
 
 // Temporarily hide Daily Challenge while retaining its admin implementation.
 const DAILY_CHALLENGE_UI_ENABLED = false
@@ -32,6 +40,7 @@ const ADMIN_TAB_PATHS = {
     players: '/admin/players',
     leaderboard: '/admin/leaderboard',
     'daily-mini-games': '/admin/daily-mini-games',
+    settings: '/admin/settings',
 }
 
 function AdminDashboard({ admin, onLogout }) {
@@ -76,6 +85,37 @@ const [dailyChallengeForm, setDailyChallengeForm] = useState({
     bonus_points: 50,
     is_active: true,
 })
+
+    const [isCsvModalOpen, setIsCsvModalOpen] = useState(false)
+    const [isAiModalOpen, setIsAiModalOpen] = useState(false)
+    const [exportingCsv, setExportingCsv] = useState(false)
+
+    const handleExportCsv = async () => {
+        try {
+            setExportingCsv(true)
+            const token = localStorage.getItem('brainbuzz_token')
+            const response = await api.get('/admin/questions/export-csv', {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { token },
+                responseType: 'blob',
+            })
+            const blob = new Blob([response.data], { type: 'text/csv' })
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `brainbuzz-questions-${new Date().toISOString().slice(0, 10)}.csv`
+            document.body.appendChild(a)
+            a.click()
+            window.URL.revokeObjectURL(url)
+            document.body.removeChild(a)
+        } catch (err) {
+            console.error('Export CSV Error:', err)
+            const token = localStorage.getItem('brainbuzz_token')
+            window.open(`${api.defaults.baseURL || '/api'}/admin/questions/export-csv?token=${token}`, '_blank')
+        } finally {
+            setExportingCsv(false)
+        }
+    }
 
     const [questions, setQuestions] = useState([])
     // Category Management
@@ -1609,6 +1649,16 @@ const handleDeletePlayer = async (id) => {
     Daily Mini Games
 </button>
 
+<button
+    className={`admin-nav-btn ${
+        activeTab === 'settings' ? 'active' : ''
+    }`}
+    onClick={() => setActiveTab('settings')}
+>
+    <span><SettingsIcon size={18} /></span>
+    Settings
+</button>
+
 </aside>
 
                 <main className="admin-main">
@@ -1628,61 +1678,36 @@ const handleDeletePlayer = async (id) => {
                                     </p>
                                 </div>
 
-                                <button
-                                    className="admin-primary-btn"
-                                    onClick={openAddQuestion}
-                                >
-                                    + Add Question
-                                </button>
+                                <div className="admin-heading-actions">
+                                    <button
+                                        className="admin-secondary-btn"
+                                        onClick={() => setIsCsvModalOpen(true)}
+                                    >
+                                        <Upload size={16} /> Import CSV
+                                    </button>
+                                    <button
+                                        className="admin-secondary-btn"
+                                        onClick={handleExportCsv}
+                                        disabled={exportingCsv}
+                                    >
+                                        <Download size={16} /> {exportingCsv ? 'Exporting...' : 'Export CSV'}
+                                    </button>
+                                    <button
+                                        className="admin-secondary-btn ai-action-btn"
+                                        onClick={() => setIsAiModalOpen(true)}
+                                    >
+                                        <Bot size={16} /> AI Generator
+                                    </button>
+                                    <button
+                                        className="admin-primary-btn"
+                                        onClick={openAddQuestion}
+                                    >
+                                        + Add Question
+                                    </button>
+                                </div>
                             </div>
 
-                            <div className="admin-stats-grid">
-
-                                <div className="admin-stat-card">
-                                    <div className="admin-stat-icon purple">
-                                    <FileQuestion size={22} />
-                                </div>
-
-                                    <div>
-                                        <span>Total Questions</span>
-                                        <strong>{questions.length}</strong>
-                                    </div>
-                                </div>
-
-                                <div className="admin-stat-card">
-                                    <div className="admin-stat-icon green">
-                                        <CheckCircle2 size={22} />
-                                    </div>
-
-                                    <div>
-                                        <span>Active Questions</span>
-                                        <strong>{activeQuestions}</strong>
-                                    </div>
-                                </div>
-
-                                <div className="admin-stat-card">
-                                    <div className="admin-stat-icon orange">
-                                        <MessageCircle size={22} />
-                                    </div>
-
-                                    <div>
-                                        <span>Total Feedback</span>
-                                        <strong>{feedback.length}</strong>
-                                    </div>
-                                </div>
-
-                                <div className="admin-stat-card">
-                                    <div className="admin-stat-icon blue">
-                                        <Star size={22} />
-                                    </div>
-
-                                    <div>
-                                        <span>Average Rating</span>
-                                        <strong>{averageRating}</strong>
-                                    </div>
-                                </div>
-
-                            </div>
+                            <AdminAnalyticsView />
 
                             <div className="admin-overview-grid">
 
@@ -1823,12 +1848,33 @@ const handleDeletePlayer = async (id) => {
                                     </p>
                                 </div>
 
-                                <button
-                                    className="admin-primary-btn"
-                                    onClick={openAddQuestion}
-                                >
-                                    + Add Question
-                                </button>
+                                <div className="admin-heading-actions">
+                                    <button
+                                        className="admin-secondary-btn"
+                                        onClick={() => setIsCsvModalOpen(true)}
+                                    >
+                                        <Upload size={16} /> Import CSV
+                                    </button>
+                                    <button
+                                        className="admin-secondary-btn"
+                                        onClick={handleExportCsv}
+                                        disabled={exportingCsv}
+                                    >
+                                        <Download size={16} /> {exportingCsv ? 'Exporting...' : 'Export CSV'}
+                                    </button>
+                                    <button
+                                        className="admin-secondary-btn ai-action-btn"
+                                        onClick={() => setIsAiModalOpen(true)}
+                                    >
+                                        <Bot size={16} /> AI Generator
+                                    </button>
+                                    <button
+                                        className="admin-primary-btn"
+                                        onClick={openAddQuestion}
+                                    >
+                                        + Add Question
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="admin-toolbar">
@@ -3563,6 +3609,11 @@ const handleDeletePlayer = async (id) => {
         <AdminDailyMiniGames />
     </section>
 )}
+    {activeTab === 'settings' && (
+    <section className="admin-section">
+        <AdminSettingsTab />
+    </section>
+)}
                     </main>
                 </div>
 
@@ -3892,6 +3943,19 @@ const handleDeletePlayer = async (id) => {
                         </div>
                     </div>
                 )}
+
+                <AdminCsvImportModal
+                    isOpen={isCsvModalOpen}
+                    onClose={() => setIsCsvModalOpen(false)}
+                    onImportSuccess={() => fetchQuestions()}
+                />
+
+                <AdminAiQuestionModal
+                    isOpen={isAiModalOpen}
+                    onClose={() => setIsAiModalOpen(false)}
+                    categories={categories}
+                    onGenerateSuccess={() => fetchQuestions()}
+                />
 
             </div>
         )

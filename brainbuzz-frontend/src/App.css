@@ -774,9 +774,9 @@ body.dark-theme .auth-page {
 /* DASHBOARD */
 
 .dashboard-container {
-  width: 90%;
-  max-width: 1100px;
-  margin: 45px auto;
+  width: 92%;
+  max-width: 1240px;
+  margin: 25px auto 50px auto;
 }
 
 .dashboard-welcome {
@@ -2656,4 +2656,262 @@ body.dark-theme .auth-page {
     .games-hub-promo-content h2 {
         font-size: 21px;
     }
+}
+
+/* COMMERCIAL EXTENSIONS: NAVBAR BUTTONS & AUDIO */
+.nav-action-pill {
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.nav-action-pill.rewards {
+    background: linear-gradient(135deg, #ec4899, #8b5cf6);
+    color: #ffffff;
+    box-shadow: 0 2px 10px rgba(236, 72, 153, 0.35);
+}
+
+.nav-action-pill.rewards:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.5);
+}
+
+.nav-action-pill.shop {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #ffffff;
+    box-shadow: 0 2px 10px rgba(245, 158, 11, 0.35);
+}
+
+.nav-action-pill.shop:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.5);
+}
+
+.nav-audio-toggle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+    cursor: pointer;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.nav-audio-toggle:hover {
+    background: rgba(255, 255, 255, 0.18);
+    border-color: #38bdf8;
+    transform: scale(1.05);
+}
+
+/* GAMEPLAY LIFELINES BAR */
+.game-lifelines-bar {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 14px;
+    padding: 1rem;
+    margin: 1.25rem 0;
+    text-align: center;
+}
+
+.lifeline-title-wrap {
+    margin-bottom: 0.65rem;
+}
+
+.lifeline-kicker {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: #38bdf8;
+}
+
+.lifelines-btn-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+.lifeline-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    color: #e2e8f0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.lifeline-chip:hover:not(:disabled) {
+    background: rgba(56, 189, 248, 0.15);
+    border-color: #38bdf8;
+    color: #38bdf8;
+    transform: translateY(-2px);
+}
+
+.lifeline-chip.active {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: #10b981;
+    color: #34d399;
+}
+
+.lifeline-chip:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.lifeline-reveal-text {
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #34d399;
+    padding: 0.65rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    margin-top: 0.75rem;
+}
+
+/* SHARE SCORE BUTTON */
+.share-score-trigger-btn {
+    width: 100%;
+    padding: 0.85rem;
+    background: linear-gradient(135deg, #06b6d4, #3b82f6);
+    border: none;
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 0.75rem;
+    box-shadow: 0 4px 15px rgba(6, 182, 212, 0.35);
+    transition: all 0.2s ease;
+}
+
+.share-score-trigger-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+}
+
+/* ENHANCED 50:50 & EXTRA LIFE LIFELINES */
+.fifty-fifty-box {
+    margin-top: 1rem;
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(236, 72, 153, 0.4);
+    border-radius: 14px;
+    padding: 1.1rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(236, 72, 153, 0.2);
+    animation: fadeInFifty 0.25s ease-out;
+}
+
+@keyframes fadeInFifty {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fifty-fifty-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: #f472b6;
+    background: rgba(236, 72, 153, 0.15);
+    border: 1px solid rgba(236, 72, 153, 0.35);
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    margin-bottom: 0.85rem;
+    text-transform: uppercase;
+}
+
+.fifty-fifty-options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem;
+    margin-bottom: 0.5rem;
+}
+
+.fifty-choice-card {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.85));
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.fifty-choice-card:hover {
+    border-color: #ec4899;
+    background: linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(139, 92, 246, 0.25));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.35);
+}
+
+.choice-tag {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #ec4899;
+    background: rgba(236, 72, 153, 0.2);
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.choice-text {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.choice-tap {
+    font-size: 0.68rem;
+    color: #38bdf8;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.fifty-fifty-subtext {
+    margin: 0.35rem 0 0 0;
+    font-size: 0.78rem;
+    color: #94a3b8;
+}
+
+.extra-life-banner {
+    margin-top: 0.75rem;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+    padding: 0.6rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    animation: pulseHeart 0.3s ease-out;
+}
+
+@keyframes pulseHeart {
+    0% { transform: scale(0.95); opacity: 0; }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); opacity: 1; }
 }

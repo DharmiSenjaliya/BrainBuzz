@@ -22,6 +22,10 @@ import BrainDuel from './BrainDuel'
 import PlayerBackButton from './PlayerBackButton'
 import GameWallpaper3D from './GameWallpaper3D'
 import HeroGameBanner from './HeroGameBanner'
+import soundService from './services/soundService'
+import DailyRewardModal from './DailyRewardModal'
+import ShareScoreModal from './ShareScoreModal'
+import CoinStoreModal from './CoinStoreModal'
 
 // Temporarily hide Daily Challenge while retaining its player implementation.
 const DAILY_CHALLENGE_UI_ENABLED = false
@@ -66,11 +70,13 @@ const extractAuthToken = (data) => {
 }
 
 // NAVBAR COMPONENT
-function Navbar({ user, onLogout }) {
-        const [notifications, setNotifications] = useState([])
+function Navbar({ user, onLogout, onOpenRewards, onOpenStore }) {
+    const [notifications, setNotifications] = useState([])
     const [unreadCount, setUnreadCount] = useState(0)
     const [showNotifications, setShowNotifications] = useState(false)
     const [notificationLoading, setNotificationLoading] = useState(false)
+    const [isMuted, setIsMuted] = useState(soundService.isMuted())
+    const [isBgmMuted, setIsBgmMuted] = useState(soundService.isBgmMuted())
 
     const fetchNotifications = async () => {
         const token = localStorage.getItem('brainbuzz_token')
@@ -172,7 +178,53 @@ function Navbar({ user, onLogout }) {
             <h2>🧠 BrainBuzz</h2>
 
             <div className="user-area">
-                
+                <button
+                    type="button"
+                    className="nav-action-pill rewards"
+                    title="Claim Daily Login Rewards & Spin Wheel"
+                    onClick={() => {
+                        soundService.playClick()
+                        if (onOpenRewards) onOpenRewards()
+                    }}
+                >
+                    🎁 Rewards
+                </button>
+
+                <button
+                    type="button"
+                    className="nav-action-pill shop"
+                    title="Coin & Lifelines Store"
+                    onClick={() => {
+                        soundService.playClick()
+                        if (onOpenStore) onOpenStore()
+                    }}
+                >
+                    🪙 Shop
+                </button>
+
+                <button
+                    type="button"
+                    className="nav-audio-toggle"
+                    title={isMuted ? 'Turn Sound SFX ON' : 'Turn Sound SFX OFF'}
+                    onClick={() => {
+                        const next = soundService.toggleSound()
+                        setIsMuted(!next)
+                    }}
+                >
+                    {isMuted ? '🔇' : '🔊'}
+                </button>
+
+                <button
+                    type="button"
+                    className="nav-audio-toggle"
+                    title={isBgmMuted ? 'Play Ambient Music' : 'Pause Ambient Music'}
+                    onClick={() => {
+                        const next = soundService.toggleBgm()
+                        setIsBgmMuted(!next)
+                    }}
+                >
+                    {isBgmMuted ? '🔈' : '🎵'}
+                </button>
 
                 <div className="notification-wrapper">
                     <button
@@ -414,6 +466,17 @@ function App() {
     const [resultError, setResultError] = useState('')
     const [showLevelIntro, setShowLevelIntro] = useState(false)
 
+    // COMMERCIAL EXTENSIONS: REWARDS, STORE, SHARE & LIFELINES
+    const [showDailyRewardModal, setShowDailyRewardModal] = useState(false)
+    const [showShareModal, setShowShareModal] = useState(false)
+    const [showStoreModal, setShowStoreModal] = useState(false)
+    const [scoreToShare, setScoreToShare] = useState(null)
+    const [fiftyFiftyRemaining, setFiftyFiftyRemaining] = useState(2)
+    const [extraLivesRemaining, setExtraLivesRemaining] = useState(2)
+    const [fiftyFiftyActive, setFiftyFiftyActive] = useState(false)
+    const [fiftyFiftyChoices, setFiftyFiftyChoices] = useState([])
+    const [extraLifeNotice, setExtraLifeNotice] = useState('')
+
     const question = questions[currentQuestionIndex]
 
     /* eslint-disable react-hooks/set-state-in-effect -- URL changes hydrate the legacy page-state model. */
@@ -548,6 +611,11 @@ function App() {
         setAnsweredCorrectly(false)
         setQuestionFinished(false)
         setShowLevelIntro(false)
+        setFiftyFiftyRemaining(2)
+        setExtraLivesRemaining(2)
+        setFiftyFiftyActive(false)
+        setFiftyFiftyChoices([])
+        setExtraLifeNotice('')
     }
 
   const fetchLevelProgress = async (token) => {
@@ -988,6 +1056,7 @@ const checkAnswer = async () => {
         )
 
         if (response.data.correct === true) {
+            soundService.playCorrect()
             setScore((previous) => previous + response.data.points)
             setCorrectCount((previous) => previous + 1)
 
@@ -998,6 +1067,7 @@ const checkAnswer = async () => {
             setAnsweredCorrectly(true)
             setAnswer('')
         } else {
+            soundService.playWrong()
             const remaining = attempts - 1
             setAttempts(remaining)
             setAnswer('')
@@ -1024,6 +1094,119 @@ const checkAnswer = async () => {
     }
 }
 
+    // Helper to get 50-50 distractor for a question
+    const getFiftyFiftyDistractor = (currQ, allQ = []) => {
+        if (!currQ || !currQ.answer) return 'Alternate Choice'
+        const ans = currQ.answer.trim()
+        const ansLower = ans.toLowerCase()
+
+        const knownPairs = {
+            'neil armstrong': 'Buzz Aldrin',
+            'buzz aldrin': 'Neil Armstrong',
+            'saturn': 'Jupiter',
+            'jupiter': 'Saturn',
+            'mars': 'Venus',
+            'sun': 'Moon',
+            'moon': 'Sun',
+            'venus': 'Mars',
+            'earth': 'Mars',
+            'apple': 'Microsoft',
+            'google': 'Yahoo',
+            'cpu': 'RAM',
+            'internet': 'Intranet',
+            'github': 'GitLab',
+            'firewall': 'Antivirus',
+            'phishing': 'Malware',
+            'vpn': 'Proxy',
+            'encryption': 'Hashing',
+            'gold': 'Silver',
+            'water': 'Hydrogen',
+            'clock': 'Hourglass',
+            'football': 'Rugby',
+            'cricket': 'Baseball',
+            'mount everest': 'K2',
+            'amazon river': 'Nile River',
+            'paris': 'Rome',
+            'colosseum': 'Parthenon',
+            'great wall': 'Forbidden City',
+            'egypt': 'Mesopotamia',
+            'leonardo da vinci': 'Michelangelo',
+            'tiger': 'Leopard',
+            'whale': 'Shark',
+            'panda': 'Koala',
+        }
+
+        if (knownPairs[ansLower]) {
+            return knownPairs[ansLower]
+        }
+
+        if (Array.isArray(allQ)) {
+            const other = allQ.find((q) => q && q.answer && q.answer.trim().toLowerCase() !== ansLower)
+            if (other && other.answer) {
+                return other.answer.trim()
+            }
+        }
+
+        return `${ans} (Alternate)`
+    }
+
+    const handleUseFiftyFifty = async () => {
+        if (fiftyFiftyActive || fiftyFiftyRemaining <= 0 || !question) return
+        soundService.playPowerup()
+
+        // 1. Try to use pre-packaged fifty_fifty_choices from backend question
+        if (Array.isArray(question.fifty_fifty_choices) && question.fifty_fifty_choices.length === 2) {
+            setFiftyFiftyChoices(question.fifty_fifty_choices)
+            setFiftyFiftyActive(true)
+            setFiftyFiftyRemaining((prev) => Math.max(0, prev - 1))
+            return
+        }
+
+        // 2. Fetch from backend lifeline endpoint
+        try {
+            const token = localStorage.getItem('brainbuzz_token')
+            const res = await api.post(
+                '/lifeline/fifty-fifty',
+                { question_id: question.id },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            if (res.data?.success && Array.isArray(res.data.choices) && res.data.choices.length === 2) {
+                setFiftyFiftyChoices(res.data.choices)
+                setFiftyFiftyActive(true)
+                setFiftyFiftyRemaining((prev) => Math.max(0, prev - 1))
+                return
+            }
+        } catch (err) {
+            console.warn('FiftyFifty API error:', err)
+        }
+
+        // 3. Fallback if answer exists
+        const ans = question.answer ? String(question.answer).trim() : ''
+        if (ans) {
+            const distractor = getFiftyFiftyDistractor(question, questions)
+            const choices = Math.random() > 0.5 ? [ans, distractor] : [distractor, ans]
+            setFiftyFiftyChoices(choices)
+            setFiftyFiftyActive(true)
+            setFiftyFiftyRemaining((prev) => Math.max(0, prev - 1))
+            return
+        }
+
+        // 4. Default smart fallback
+        const defaultPair = ['Hexagon', 'Octagon']
+        setFiftyFiftyChoices(defaultPair)
+        setFiftyFiftyActive(true)
+        setFiftyFiftyRemaining((prev) => Math.max(0, prev - 1))
+    }
+
+    const handleUseExtraLife = () => {
+        if (extraLivesRemaining <= 0) return
+        soundService.playPowerup()
+        setExtraLivesRemaining((prev) => prev - 1)
+        setAttempts((prev) => prev + 1)
+        setExtraLifeNotice('❤️ +1 Extra Attempt Added to your life pool!')
+        setTimeout(() => setExtraLifeNotice(''), 3500)
+    }
+
     // NEXT QUESTION / SAVE RESULT
     const nextQuestion = async () => {
         if (currentQuestionIndex + 1 < questions.length) {
@@ -1035,6 +1218,9 @@ const checkAnswer = async () => {
             setHintUsedForQuestion(false)
             setAnsweredCorrectly(false)
             setQuestionFinished(false)
+            setFiftyFiftyActive(false)
+            setFiftyFiftyChoices([])
+            setExtraLifeNotice('')
             return
         }
 
@@ -1043,6 +1229,18 @@ const checkAnswer = async () => {
         const finalWrong = totalQuestions - finalCorrect
         const finalScore = score
         const passed = totalQuestions > 0 && finalCorrect >= Math.min(3, totalQuestions)  
+        if (passed) {
+            soundService.playWin()
+        } else {
+            soundService.playWrong()
+        }
+        setScoreToShare({
+            level: selectedLevel,
+            score: finalScore,
+            correctAnswers: finalCorrect,
+            totalQuestions,
+            passed,
+        })
         setCompleted(true)
         setMessage('')
         setSavingResult(true)
@@ -1286,11 +1484,48 @@ const checkAnswer = async () => {
     }
 
     const navbar = (
-        <Navbar
-            user={user}
-            onLogout={handleLogout}
-            theme={theme}
-        />
+        <>
+            <Navbar
+                user={user}
+                onLogout={handleLogout}
+                theme={theme}
+                onOpenRewards={() => setShowDailyRewardModal(true)}
+                onOpenStore={() => setShowStoreModal(true)}
+            />
+
+            <DailyRewardModal
+                isOpen={showDailyRewardModal}
+                onClose={() => setShowDailyRewardModal(false)}
+                onRewardClaimed={(reward) => {
+                    setScore((prev) => prev + (reward.coins || 0))
+                    if (reward.hints) setHintsRemaining((prev) => prev + reward.hints)
+                    if (reward.lifelines) {
+                        setFiftyFiftyRemaining((prev) => prev + reward.lifelines)
+                        setExtraLivesRemaining((prev) => prev + reward.lifelines)
+                    }
+                }}
+            />
+
+            <ShareScoreModal
+                isOpen={showShareModal}
+                onClose={() => setShowShareModal(false)}
+                scoreData={scoreToShare}
+                playerName={user?.name}
+            />
+
+            <CoinStoreModal
+                isOpen={showStoreModal}
+                onClose={() => setShowStoreModal(false)}
+                onPurchaseComplete={(pack) => {
+                    setScore((prev) => prev + (pack.coins || 0))
+                    if (pack.type === 'purchase') {
+                        setHintsRemaining((prev) => prev + 2)
+                        setFiftyFiftyRemaining((prev) => prev + 2)
+                        setExtraLivesRemaining((prev) => prev + 2)
+                    }
+                }}
+            />
+        </>
     )
 
     if (loading) {
@@ -1519,29 +1754,6 @@ if (showDashboard) {
                         userName={user.name}
                     />
 
-                    <section className="dashboard-welcome">
-                        <div className="dashboard-welcome-copy">
-                            <p className="level"><span aria-hidden="true">✦</span> PLAYER DASHBOARD</p>
-                            <h1>Welcome back,<strong>{user.name}!</strong></h1>
-                            <p>Your next brain-boosting challenge is waiting. Pick a game and make this run count.</p>
-                            <div className="dashboard-welcome-meta">
-                                <span><i /> LEVEL {currentUnlockedLevel} UNLOCKED</span>
-                                <span><i /> READY WHEN YOU ARE</span>
-                            </div>
-                        </div>
-                        <div className="dashboard-hero-art" aria-hidden="true">
-                            <span className="dashboard-hero-orbit dashboard-hero-orbit-one" />
-                            <span className="dashboard-hero-orbit dashboard-hero-orbit-two" />
-                            <span className="dashboard-hero-brain">🧠</span>
-                            <span className="dashboard-hero-spark dashboard-hero-spark-one">✦</span>
-                            <span className="dashboard-hero-spark dashboard-hero-spark-two">✧</span>
-                            <span className="dashboard-hero-level">
-                                <small>NEXT UP</small>
-                                <strong>LEVEL {currentUnlockedLevel}</strong>
-                            </span>
-                        </div>
-                    </section>
-
                     <section className="dashboard-stats" aria-label="Your game statistics">
                         <article className="stat-card stat-card-games">
                             <span className="stat-icon" aria-hidden="true">🎮</span>
@@ -1574,29 +1786,25 @@ if (showDashboard) {
                         </article>
                     </section>
 
-{/* BRAINBUZZ GAMES HUB */}
-<section className="games-hub-promo">
-    <div className="games-hub-promo-content">
-        <span>🧠 EXPLORE MORE</span>
-        <h2>Discover BrainBuzz Games</h2>
-        <p>
-            Challenge your logic, train your memory and expand
-            your knowledge with three exciting game modes.
-        </p>
-    </div>
+                    <section className="games-hub-promo">
+                        <div className="games-hub-promo-content">
+                            <h2>Arcade Games Hub</h2>
+                            <p>PvP Duels, Speed Training &amp; Knowledge Challenges.</p>
+                        </div>
 
-    <button
-        className="games-hub-promo-button"
-        onClick={() => setShowGamesHub(true)}
-    >
-        Explore Games <span>→</span>
-    </button>
-</section>
+                        <button
+                            className="games-hub-promo-button"
+                            onClick={() => setShowGamesHub(true)}
+                        >
+                            Play Other Modes <span>→</span>
+                        </button>
+                    </section>
+
                     <section className="dashboard-game">
                         <div className="dashboard-game-heading">
                             <span className="dashboard-section-kicker">MAIN CAMPAIGN</span>
                             <h2><span aria-hidden="true">🧠</span> BrainBuzz Levels</h2>
-                            <p>Get at least 3 correct answers out of 5 to unlock the next level. The campaign has no final level.</p>
+                            <p>Clear at least 3 questions to unlock the next level.</p>
                         </div>
                       
                       <div className="player-category-filter">
@@ -1919,6 +2127,24 @@ if (showDashboard) {
                         </button>
                     )}
 
+                    <button
+                        type="button"
+                        className="share-score-trigger-btn"
+                        onClick={() => {
+                            soundService.playClick()
+                            setScoreToShare({
+                                level: selectedLevel,
+                                score,
+                                correctAnswers: correctCount,
+                                totalQuestions,
+                                passed,
+                            })
+                            setShowShareModal(true)
+                        }}
+                    >
+                        📤 Share Score Card & Challenge Friends
+                    </button>
+
                     <PlayerBackButton
                         disabled={savingResult}
                         onClick={async () => {
@@ -2043,48 +2269,84 @@ if (showDashboard) {
                 )}
 
                 {!questionFinished && !answeredCorrectly && (
-    <div className="hint-section">
-        <p className="hints-remaining">
-            💡 Hints Remaining: {hintsRemaining}/3
-        </p>
+                    <div className="game-lifelines-bar">
+                        <div className="lifelines-btn-row">
+                            <button
+                                type="button"
+                                className={`lifeline-chip ${showHint ? 'active' : ''}`}
+                                disabled={!hintUsedForQuestion && hintsRemaining === 0}
+                                onClick={() => {
+                                    soundService.playPowerup()
+                                    if (hintUsedForQuestion) {
+                                        setShowHint(!showHint)
+                                        return
+                                    }
+                                    if (hintsRemaining > 0) {
+                                        setHintsRemaining((prev) => prev - 1)
+                                        setHintUsedForQuestion(true)
+                                        setShowHint(true)
+                                    }
+                                }}
+                            >
+                                <span>💡</span> Hint ({hintsRemaining})
+                            </button>
 
-        {question.hint ? (
-            <>
-                <button
-                    type="button"
-                    className="hint"
-                    disabled={!hintUsedForQuestion && hintsRemaining === 0}
-                    onClick={() => {
-                        if (hintUsedForQuestion) {
-                            setShowHint(!showHint)
-                            return
-                        }
+                            <button
+                                type="button"
+                                className={`lifeline-chip ${fiftyFiftyActive ? 'active' : ''}`}
+                                disabled={fiftyFiftyActive || fiftyFiftyRemaining === 0}
+                                onClick={handleUseFiftyFifty}
+                                title="50-50 Lifeline: Get 2 choices (1 correct, 1 wrong)"
+                            >
+                                <span>✂️</span> 50-50 ({fiftyFiftyRemaining})
+                            </button>
 
-                        if (hintsRemaining > 0) {
-                            setHintsRemaining((previous) => previous - 1)
-                            setHintUsedForQuestion(true)
-                            setShowHint(true)
-                        }
-                    }}
-                >
-                    💡 {hintUsedForQuestion
-                        ? showHint ? 'Hide Hint' : 'Show Hint'
-                        : hintsRemaining > 0
-                            ? 'Use Hint'
-                            : 'No Hints Remaining'}
-                </button>
+                            <button
+                                type="button"
+                                className="lifeline-chip"
+                                disabled={extraLivesRemaining === 0}
+                                onClick={handleUseExtraLife}
+                                title="Add +1 extra attempt to your life pool"
+                            >
+                                <span>❤️</span> +1 Attempt ({extraLivesRemaining})
+                            </button>
+                        </div>
 
-                {showHint && (
-                    <p className="hint-text">
-                        {question.hint}
-                    </p>
+                        {showHint && question.hint && (
+                            <p className="hint-text">💡 <strong>Hint:</strong> {question.hint}</p>
+                        )}
+
+                        {extraLifeNotice && (
+                            <div className="extra-life-banner">
+                                {extraLifeNotice}
+                            </div>
+                        )}
+
+                        {fiftyFiftyActive && fiftyFiftyChoices.length === 2 && (
+                            <div className="fifty-fifty-box">
+                                <div className="fifty-fifty-badge">✂️ 50-50 LIFELINE: 1 IS CORRECT, 1 IS WRONG</div>
+                                <div className="fifty-fifty-options-grid">
+                                    {fiftyFiftyChoices.map((choice, idx) => (
+                                        <button
+                                            key={idx}
+                                            type="button"
+                                            className="fifty-choice-card"
+                                            onClick={() => {
+                                                soundService.playClick()
+                                                setAnswer(choice)
+                                            }}
+                                        >
+                                            <span className="choice-tag">{idx === 0 ? 'A' : 'B'}</span>
+                                            <span className="choice-text">{choice}</span>
+                                            <span className="choice-tap">Tap to Select</span>
+                                        </button>
+                                    ))}
+                                </div>
+                                <p className="fifty-fifty-subtext">👆 Click an option above to fill your answer directly!</p>
+                            </div>
+                        )}
+                    </div>
                 )}
-            </>
-        ) : (
-            <p className="hint-text">No hint available for this question.</p>
-        )}
-    </div>
-)}
 
                 <div className="score">
                     <span>⭐ Score: {score}</span>

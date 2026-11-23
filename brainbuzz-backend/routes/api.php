@@ -19,6 +19,9 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\BrainTrainingResultController;
 use App\Http\Controllers\Api\KnowledgeChallengeController;
 use App\Http\Controllers\Api\BrainDuelController;
+use App\Http\Controllers\Api\AdminAnalyticsController;
+use App\Http\Controllers\Api\AdminSettingController;
+use App\Http\Controllers\Api\PaymentController;
 
 // Public Authentication Routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -26,6 +29,15 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/admin/login', [AuthController::class, 'adminLogin']);
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+Route::get('/settings', [AdminSettingController::class, 'getSettings']);
+Route::get('/questions/sample-csv', [QuestionController::class, 'sampleCsv']);
+Route::get('/admin/questions/export-csv', [QuestionController::class, 'exportCsv']);
+
+// Razorpay & In-App Payment Routes
+Route::get('/payment/config', [PaymentController::class, 'config']);
+Route::post('/payment/create-order', [PaymentController::class, 'createOrder']);
+Route::post('/payment/verify-payment', [PaymentController::class, 'verifyPayment']);
+Route::post('/payment/verify-upi', [PaymentController::class, 'verifyUpi']);
 
 // Protected Player Routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -47,6 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Player Questions
     Route::get('/questions', [QuestionController::class, 'index']);
     Route::post('/check-answer', [QuestionController::class, 'checkAnswer']);
+    Route::post('/lifeline/fifty-fifty', [QuestionController::class, 'fiftyFiftyLifeline']);
 
     // Player Feedback
     Route::post('/feedback', [FeedbackController::class, 'store']);
@@ -95,6 +108,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/admin/questions', [QuestionController::class, 'adminIndex']);
         Route::put('/questions/{question}', [QuestionController::class, 'update']);
         Route::delete('/questions/{question}', [QuestionController::class, 'destroy']);
+        Route::post('/admin/questions/import-csv', [QuestionController::class, 'importCsv']);
+        Route::get('/admin/questions/export-csv', [QuestionController::class, 'exportCsv']);
+        Route::post('/admin/questions/generate-ai', [QuestionController::class, 'generateWithAi']);
+
+        // Analytics & System Settings
+        Route::get('/admin/analytics', [AdminAnalyticsController::class, 'overview']);
+        Route::get('/admin/settings', [AdminSettingController::class, 'getSettings']);
+        Route::post('/admin/settings', [AdminSettingController::class, 'updateSettings']);
 
         // Feedback Management
         Route::get('/admin/feedback', [AdminFeedbackController::class, 'index']);

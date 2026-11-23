@@ -1,0 +1,238 @@
+.admin-analytics-view {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.analytics-loading {
+    padding: 2rem;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+.analytics-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.kpi-card {
+    background: rgba(30, 41, 59, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 1.25rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(99, 102, 241, 0.4);
+}
+
+.kpi-icon {
+    font-size: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.5rem;
+    border-radius: 12px;
+}
+
+.kpi-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.kpi-label {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.kpi-value {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #f8fafc;
+}
+
+/* Charts Grid */
+.analytics-charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+.chart-card {
+    background: rgba(30, 41, 59, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1.5rem;
+}
+
+.chart-header {
+    margin-bottom: 1.25rem;
+}
+
+.chart-header h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #f1f5f9;
+}
+
+.chart-subtitle {
+    font-size: 0.78rem;
+    color: #94a3b8;
+}
+
+/* SVG Chart */
+.svg-chart-container {
+    width: 100%;
+}
+
+.activity-svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.activity-bar {
+    fill: #38bdf8;
+    transition: height 0.3s ease;
+}
+
+.activity-bar:hover {
+    fill: #818cf8;
+}
+
+.bar-value-text {
+    fill: #38bdf8;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: Inter, sans-serif;
+}
+
+.bar-label-text {
+    fill: #94a3b8;
+    font-size: 11px;
+    font-family: Inter, sans-serif;
+}
+
+/* Category Bars */
+.category-bars-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.cat-bar-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.cat-bar-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.82rem;
+}
+
+.cat-name {
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.cat-count {
+    color: #94a3b8;
+    font-size: 0.78rem;
+}
+
+.cat-progress-track {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.cat-progress-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+}
+
+/* Recent Games Table */
+.recent-games-card {
+    margin-top: 0.5rem;
+}
+
+.recent-table-wrap {
+    overflow-x: auto;
+}
+
+.recent-games-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    text-align: left;
+}
+
+.recent-games-table th {
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 0.78rem;
+}
+
+.recent-games-table td {
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #f1f5f9;
+}
+
+.user-email-sub {
+    display: block;
+    font-size: 0.72rem;
+    color: #64748b;
+}
+
+.level-badge {
+    background: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.result-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+}
+
+.result-tag.passed {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+}
+
+.result-tag.failed {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+.time-col {
+    color: #94a3b8 !important;
+    font-size: 0.8rem;
+}
+
+.empty-chart-note {
+    text-align: center;
+    color: #64748b;
+    font-size: 0.85rem;
+    padding: 1rem;
+}
