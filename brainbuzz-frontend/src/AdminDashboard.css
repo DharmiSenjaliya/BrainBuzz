@@ -42,6 +42,14 @@
     font-weight: 800;
 }
 
+.admin-logo-img {
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    object-fit: cover;
+    box-shadow: 0 0 16px rgba(56, 189, 248, 0.45);
+}
+
 .admin-brand h2 {
     margin: 0;
     font-size: 21px;

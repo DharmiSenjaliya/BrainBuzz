@@ -26,6 +26,7 @@ import soundService from './services/soundService'
 import DailyRewardModal from './DailyRewardModal'
 import ShareScoreModal from './ShareScoreModal'
 import CoinStoreModal from './CoinStoreModal'
+import GameSplashScreen from './GameSplashScreen'
 
 // Temporarily hide Daily Challenge while retaining its player implementation.
 const DAILY_CHALLENGE_UI_ENABLED = false
@@ -175,7 +176,10 @@ function Navbar({ user, onLogout, onOpenRewards, onOpenStore, score = 0 }) {
 
     return (
         <header className="navbar">
-            <h2>⚡ ClueShift</h2>
+            <div className="nav-brand">
+                <img src="/clueshift-logo.png" alt="ClueShift" className="nav-brand-logo" />
+                <h2>ClueShift</h2>
+            </div>
 
             <div className="user-area">
                 <button
@@ -399,6 +403,7 @@ function App() {
     const [user, setUser] = useState(null)
     const [authMode, setAuthMode] = useState('login')
     const [authLoading, setAuthLoading] = useState(true)
+    const [initialSplashDone, setInitialSplashDone] = useState(false)
     const [authSubmitting, setAuthSubmitting] = useState(false)
 
     const [showProfile, setShowProfile] = useState(
@@ -1324,11 +1329,14 @@ const checkAnswer = async () => {
         )
     }
 
-    if (authLoading) {
+    if (!initialSplashDone || authLoading) {
         return (
-            <div className={`app ${theme}-theme`}>
-                <h2 className="loading">Checking your account...</h2>
-            </div>
+            <GameSplashScreen
+                isReady={!authLoading}
+                minDuration={2000}
+                loadingText={authLoading ? 'Synchronizing Account & Cloud Data...' : 'Launching ClueShift Arcade...'}
+                onFinish={() => setInitialSplashDone(true)}
+            />
         )
     }
 
@@ -1369,7 +1377,10 @@ const checkAnswer = async () => {
             <div className={`app auth-page ${theme}-theme game-view-wrapper`}>
                 <GameWallpaper3D level={1} />
                 <main className="auth-container glassmorphic">
-                    <div className="auth-logo">⚡ ClueShift</div>
+                    <div className="auth-logo">
+                        <img src="/clueshift-logo.png" alt="ClueShift" className="auth-logo-img" />
+                        <span>ClueShift</span>
+                    </div>
 
                     <p className="auth-subtitle">
                         Train Your Brain, Challenge Yourself!
@@ -1558,10 +1569,10 @@ const checkAnswer = async () => {
 
     if (loading) {
         return (
-            <div className={`app ${theme}-theme`}>
-                {navbar}
-                <h2 className="loading">Loading ClueShift...</h2>
-            </div>
+            <GameSplashScreen
+                minDuration={750}
+                loadingText="Loading Questions & Clues..."
+            />
         )
     }
 

@@ -1516,7 +1516,7 @@ const handleDeletePlayer = async (id) => {
 
             <header className="admin-header">
                 <div className="admin-brand">
-                    <div className="admin-logo">C</div>
+                    <img src="/clueshift-logo.png" alt="ClueShift" className="admin-logo-img" />
 
                     <div>
                         <h2>ClueShift Admin</h2>

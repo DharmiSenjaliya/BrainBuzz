@@ -27,10 +27,26 @@
     backdrop-filter: blur(16px);
 }
 
+.app.dark-theme .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-shrink: 0;
+}
+
+.app.dark-theme .nav-brand-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.45);
+    object-fit: cover;
+}
+
 .app.dark-theme .navbar h2 {
-    color: #ddd6fe;
-    font-size: 23px;
-    letter-spacing: -0.5px;
+    color: #f1f5f9;
+    font-size: 20px;
+    letter-spacing: -0.3px;
+    margin: 0;
 }
 
 .app.dark-theme .user-area {
@@ -1181,6 +1197,16 @@
         flex-wrap: nowrap;
         align-items: center;
         justify-content: space-between;
+    }
+
+    .app.dark-theme .nav-brand {
+        gap: 6px;
+    }
+
+    .app.dark-theme .nav-brand-logo {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
     }
 
     .app.dark-theme .navbar h2 {

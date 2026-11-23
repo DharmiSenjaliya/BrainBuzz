@@ -1,0 +1,448 @@
+/* ==========================================================================
+   ClueShift AAA Mobile Game Splash / Loading Screen
+   Aesthetic: Cyberpunk Holographic Arcade, Neon Glow, Glassmorphism
+   Inspired by AAA mobile titles (Candy Crush, Cyberpunk 2077 Arcade)
+   ========================================================================== */
+
+.clueshift-splash-screen {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #060913;
+    background-image: 
+        radial-gradient(circle at 50% 15%, rgba(0, 240, 255, 0.12) 0%, transparent 60%),
+        radial-gradient(circle at 50% 85%, rgba(255, 0, 122, 0.14) 0%, transparent 65%),
+        linear-gradient(180deg, rgba(6, 9, 19, 0.72) 0%, rgba(6, 9, 19, 0.94) 100%),
+        url('/clueshift-3d-splash.jpg?v=3');
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: #ffffff;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    overflow: hidden;
+    opacity: 1;
+    transform: scale(1);
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.clueshift-splash-screen.fade-out {
+    opacity: 0;
+    transform: scale(1.03);
+    pointer-events: none;
+}
+
+/* Ambient glow blobs */
+.splash-ambient {
+    position: absolute;
+    width: 380px;
+    height: 380px;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    opacity: 0.55;
+    z-index: 1;
+}
+
+.splash-ambient.cyan {
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(0, 240, 255, 0.55) 0%, transparent 70%);
+    animation: ambientPulseCyan 4s ease-in-out infinite alternate;
+}
+
+.splash-ambient.magenta {
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(255, 0, 122, 0.5) 0%, transparent 70%);
+    animation: ambientPulseMagenta 4.5s ease-in-out infinite alternate;
+}
+
+@keyframes ambientPulseCyan {
+    0% { transform: translateX(-50%) scale(0.9); opacity: 0.4; }
+    100% { transform: translateX(-50%) scale(1.15); opacity: 0.7; }
+}
+
+@keyframes ambientPulseMagenta {
+    0% { transform: translateX(-50%) scale(1.1); opacity: 0.35; }
+    100% { transform: translateX(-50%) scale(0.9); opacity: 0.65; }
+}
+
+/* Grid scanning line overlay */
+.splash-grid-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background: linear-gradient(
+        rgba(255, 255, 255, 0) 50%,
+        rgba(0, 0, 0, 0.22) 50%
+    ),
+    linear-gradient(
+        90deg,
+        rgba(0, 240, 255, 0.02),
+        rgba(0, 0, 0, 0) 1px,
+        transparent 32px
+    );
+    background-size: 100% 4px, 32px 100%;
+}
+
+/* Container */
+.splash-container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: clamp(2rem, 5vh, 3.5rem) 1.5rem clamp(1.8rem, 4vh, 2.8rem);
+    box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Center / Brand Pod
+   ========================================================================== */
+
+.splash-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: auto;
+    margin-bottom: auto;
+    padding-bottom: 2rem;
+}
+
+/* Logo Pod with Floating Animation & Glow */
+.splash-logo-pod {
+    position: relative;
+    width: clamp(100px, 24vw, 136px);
+    height: clamp(100px, 24vw, 136px);
+    margin-bottom: 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: splashLogoFloat 3.6s ease-in-out infinite alternate;
+}
+
+.splash-logo-glow {
+    position: absolute;
+    inset: -12px;
+    border-radius: 36px;
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.6), rgba(255, 0, 122, 0.6));
+    filter: blur(24px);
+    opacity: 0.8;
+    animation: splashGlowPulse 2.8s ease-in-out infinite alternate;
+}
+
+.splash-logo-img {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: clamp(22px, 5vw, 30px);
+    border: 2px solid rgba(0, 240, 255, 0.45);
+    box-shadow: 
+        0 14px 34px rgba(0, 0, 0, 0.65),
+        0 0 28px rgba(0, 240, 255, 0.45),
+        inset 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes splashLogoFloat {
+    0% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    100% {
+        transform: translateY(-8px) rotate(1deg);
+    }
+}
+
+@keyframes splashGlowPulse {
+    0% {
+        opacity: 0.55;
+        filter: blur(20px);
+    }
+    100% {
+        opacity: 0.95;
+        filter: blur(28px);
+    }
+}
+
+/* Cyber Season Chip */
+.splash-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(13, 23, 44, 0.75);
+    border: 1px solid rgba(0, 240, 255, 0.35);
+    box-shadow: 0 4px 18px rgba(0, 240, 255, 0.16);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #4ce7ff;
+    text-transform: uppercase;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    margin-bottom: 0.85rem;
+}
+
+.splash-chip-spark {
+    color: #ffb703;
+    font-size: 0.85rem;
+    animation: chipSparkSpin 2s infinite ease-in-out alternate;
+}
+
+.splash-chip-dot {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.splash-chip-season {
+    color: #ff4df0;
+    font-weight: 800;
+}
+
+@keyframes chipSparkSpin {
+    0% { transform: scale(0.9); }
+    100% { transform: scale(1.2); }
+}
+
+/* Splash Title */
+.splash-title {
+    margin: 0 0 0.5rem 0;
+    font-size: clamp(2.3rem, 7.5vw, 3.4rem);
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    line-height: 1.05;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+}
+
+.splash-title .title-clue {
+    color: #ffffff;
+    text-shadow: 
+        0 0 16px rgba(255, 255, 255, 0.75),
+        0 0 35px rgba(0, 240, 255, 0.55);
+}
+
+.splash-title .title-shift {
+    background: linear-gradient(135deg, #00f0ff 0%, #a855f7 50%, #ff007a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 24px rgba(255, 0, 122, 0.65));
+}
+
+/* Tagline */
+.splash-tagline {
+    margin: 0;
+    font-size: clamp(0.72rem, 2.4vw, 0.84rem);
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: rgba(210, 230, 255, 0.78);
+    text-transform: uppercase;
+}
+
+/* ==========================================================================
+   Bottom / Loading Pod (Candy Crush Style)
+   ========================================================================== */
+
+.splash-loading-pod {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+/* Status Text + Percentage Row */
+.splash-status-row {
+    width: 100%;
+    max-width: 380px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0.25rem;
+    box-sizing: border-box;
+}
+
+.splash-status-text {
+    font-size: clamp(0.8rem, 2.6vw, 0.92rem);
+    font-weight: 600;
+    color: #e2e8f0;
+    letter-spacing: 0.04em;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.splash-percentage {
+    font-size: clamp(0.85rem, 2.8vw, 0.98rem);
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace, sans-serif;
+    color: #00f0ff;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.75);
+}
+
+/* AAA Glowing Capsule Progress Bar */
+.splash-progress-track {
+    position: relative;
+    width: 100%;
+    max-width: 380px;
+    height: clamp(14px, 2.2vh, 18px);
+    background: rgba(7, 14, 28, 0.88);
+    border-radius: 999px;
+    border: 1.5px solid rgba(0, 240, 255, 0.45);
+    box-shadow: 
+        0 4px 20px rgba(0, 0, 0, 0.7),
+        0 0 16px rgba(0, 240, 255, 0.22),
+        inset 0 2px 6px rgba(0, 0, 0, 0.9);
+    padding: 2px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.splash-progress-fill {
+    position: relative;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(
+        90deg,
+        #00f0ff 0%,
+        #3b82f6 40%,
+        #a855f7 75%,
+        #ff007a 100%
+    );
+    box-shadow: 0 0 14px rgba(0, 240, 255, 0.85);
+    transition: width 0.08s ease-out;
+    background-size: 200% 100%;
+    animation: splashFillShift 3s linear infinite;
+}
+
+@keyframes splashFillShift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
+}
+
+/* Sparkle leading head of progress */
+.splash-progress-sparkle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 12px;
+    border-radius: 999px;
+    background: #ffffff;
+    box-shadow: 
+        0 0 12px #ffffff,
+        0 0 20px rgba(0, 240, 255, 0.9);
+    animation: sparkleBlink 1.2s infinite alternate;
+}
+
+@keyframes sparkleBlink {
+    0% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* Rotating Tip Box */
+.splash-tip {
+    margin: 0.35rem 0 0 0;
+    padding: 0.45rem 0.95rem;
+    max-width: 420px;
+    text-align: center;
+    font-size: clamp(0.72rem, 2.3vw, 0.82rem);
+    color: rgba(226, 232, 240, 0.82);
+    line-height: 1.35;
+    background: rgba(13, 23, 44, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: opacity 0.3s ease;
+    animation: tipFadeIn 0.4s ease;
+}
+
+.splash-tip .tip-badge {
+    color: #ffb703;
+    font-weight: 700;
+    margin-right: 0.25rem;
+}
+
+@keyframes tipFadeIn {
+    0% { opacity: 0; transform: translateY(4px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Engine version footer */
+.splash-footer {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: rgba(148, 163, 184, 0.6);
+    margin-top: 0.2rem;
+}
+
+/* ==========================================================================
+   Mobile Specific Responsiveness (< 600px)
+   ========================================================================== */
+
+@media (max-width: 600px) {
+    .splash-container {
+        padding: 2.2rem 1.1rem 1.8rem;
+    }
+
+    .splash-logo-pod {
+        width: 104px;
+        height: 104px;
+        margin-bottom: 1rem;
+    }
+
+    .splash-chip {
+        font-size: 0.66rem;
+        padding: 0.28rem 0.75rem;
+        margin-bottom: 0.65rem;
+    }
+
+    .splash-title {
+        font-size: 2.35rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .splash-tagline {
+        font-size: 0.68rem;
+        letter-spacing: 0.12em;
+    }
+
+    .splash-status-row,
+    .splash-progress-track {
+        max-width: 320px;
+    }
+
+    .splash-progress-track {
+        height: 14px;
+    }
+
+    .splash-tip {
+        max-width: 320px;
+        font-size: 0.72rem;
+        padding: 0.4rem 0.75rem;
+    }
+}

@@ -70,11 +70,35 @@ button:disabled {
   transition: all 0.3s ease;
 }
 
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.nav-brand-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.45);
+  object-fit: cover;
+  transition: transform 0.25s ease;
+  display: block;
+}
+
+.nav-brand:hover .nav-brand-logo {
+  transform: scale(1.08) rotate(3deg);
+}
+
 .navbar h2 {
-  font-size: 25px;
+  font-size: 24px;
   font-weight: 800;
   color: #6255d9;
   letter-spacing: 0.5px;
+  margin: 0;
 }
 
 .user-area {
@@ -160,10 +184,22 @@ button:disabled {
 }
 
 .auth-logo {
-  font-size: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 32px;
   font-weight: 800;
   color: #6255d9;
   margin-bottom: 8px;
+}
+
+.auth-logo-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(98, 85, 217, 0.4);
+  object-fit: cover;
 }
 
 .auth-subtitle {
