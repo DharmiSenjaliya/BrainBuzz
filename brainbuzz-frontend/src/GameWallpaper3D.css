@@ -1,0 +1,322 @@
+/* ==========================================================================
+   GAME WALLPAPER 3D - CYBERPUNK COSMIC BACKGROUND
+   ========================================================================== */
+
+.game-wallpaper-3d-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 45%, rgba(14, 12, 38, 0.6) 0%, rgba(6, 5, 18, 0.95) 100%),
+                url('/brainbuzz-3d-splash.jpg') no-repeat center center / cover;
+}
+
+.game-wallpaper-canvas-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Subtle glowing cyber perspective grid floor */
+.game-wallpaper-cyber-grid {
+    position: absolute;
+    bottom: -15%;
+    left: -25%;
+    width: 150%;
+    height: 60%;
+    z-index: 2;
+    background-image: 
+        linear-gradient(rgba(139, 92, 246, 0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(6, 182, 212, 0.15) 1px, transparent 1px);
+    background-size: 55px 55px;
+    transform: perspective(600px) rotateX(65deg);
+    transform-origin: center bottom;
+    mask-image: radial-gradient(ellipse at 50% 100%, rgba(0, 0, 0, 0.8) 0%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 100%, rgba(0, 0, 0, 0.8) 0%, transparent 75%);
+    animation: gridDrift 20s linear infinite;
+}
+
+@keyframes gridDrift {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 0 55px;
+    }
+}
+
+/* Atmospheric glow and edge vignette */
+.game-wallpaper-vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(6, 5, 18, 0.7) 100%);
+    box-shadow: inset 0 0 120px rgba(10, 8, 25, 0.85);
+}
+
+/* ==========================================================================
+   GAMEPLAY CONTAINER ENHANCEMENT FOR 3D WALLPAPER
+   ========================================================================== */
+
+/* Make the game wrapper relative so it stacks on top of the 3D canvas */
+.game-view-wrapper {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+}
+
+/* Glassmorphism on game container during gameplay */
+.game-container.glassmorphic {
+    background: rgba(26, 23, 54, 0.82) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(139, 92, 246, 0.35) !important;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.45),
+        0 0 35px rgba(139, 92, 246, 0.2),
+        inset 0 1px 1px rgba(255, 255, 255, 0.15) !important;
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+}
+
+.game-container.glassmorphic::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 200%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #38bdf8, #ec4899, #8b5cf6, transparent);
+    animation: shimmerBorder 6s ease-in-out infinite;
+}
+
+@keyframes shimmerBorder {
+    0%, 100% {
+        transform: translateX(-30%);
+        opacity: 0.5;
+    }
+    50% {
+        transform: translateX(30%);
+        opacity: 1;
+    }
+}
+
+/* Glowing Clues in 3D Mode */
+.game-container.glassmorphic .clue {
+    background: rgba(38, 34, 76, 0.75) !important;
+    border: 1px solid rgba(139, 92, 246, 0.3) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25) !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    color: #f1f5f9 !important;
+    backdrop-filter: blur(8px);
+}
+
+.game-container.glassmorphic .clue:hover {
+    transform: translateY(-3px) scale(1.02);
+    border-color: rgba(56, 189, 248, 0.6) !important;
+    box-shadow: 0 8px 25px rgba(56, 189, 248, 0.3) !important;
+}
+
+/* Level badge styling */
+.game-container.glassmorphic .level {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 15px rgba(124, 58, 237, 0.45);
+    border: 1px solid rgba(196, 181, 253, 0.3);
+}
+
+/* 3D LEVEL READY MODAL / INTRO BANNER */
+.level-intro-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(8, 7, 20, 0.78);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    animation: fadeInIntro 0.3s ease-out;
+}
+
+@keyframes fadeInIntro {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.level-intro-card {
+    position: relative;
+    width: 90%;
+    max-width: 520px;
+    background: linear-gradient(145deg, rgba(32, 28, 68, 0.94), rgba(18, 15, 42, 0.96));
+    border: 1px solid rgba(139, 92, 246, 0.45);
+    border-radius: 28px;
+    padding: 38px 30px;
+    text-align: center;
+    box-shadow: 
+        0 25px 70px rgba(0, 0, 0, 0.6),
+        0 0 50px rgba(139, 92, 246, 0.35);
+    animation: popUpCard 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
+}
+
+@keyframes popUpCard {
+    from {
+        transform: scale(0.85) translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+.level-intro-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(139, 92, 246, 0.15) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.level-intro-icon-wrapper {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(6, 182, 212, 0.25));
+    border: 2px solid rgba(139, 92, 246, 0.5);
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.45);
+    animation: iconFloat 3s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.level-intro-icon {
+    font-size: 44px;
+    line-height: 1;
+}
+
+.level-intro-badge {
+    display: inline-block;
+    padding: 6px 18px;
+    background: linear-gradient(135deg, #ec4899, #8b5cf6);
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 30px;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.35);
+}
+
+.level-intro-card h2 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0 0 10px 0;
+    letter-spacing: -0.5px;
+}
+
+.level-intro-desc {
+    color: #cbd5e1;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.level-intro-rules {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.level-intro-rule-pill {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 7px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.level-intro-start-btn {
+    width: 100%;
+    padding: 15px 25px;
+    background: linear-gradient(135deg, #06b6d4, #8b5cf6, #ec4899);
+    background-size: 200% auto;
+    color: #ffffff;
+    border: none;
+    border-radius: 16px;
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 30px rgba(139, 92, 246, 0.45);
+    transition: all 0.3s ease;
+    animation: gradientShift 4s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.level-intro-start-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 12px 38px rgba(139, 92, 246, 0.6);
+}
+
+.auth-container.glassmorphic {
+    background: rgba(26, 23, 54, 0.82) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(139, 92, 246, 0.35) !important;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.45),
+        0 0 35px rgba(139, 92, 246, 0.2),
+        inset 0 1px 1px rgba(255, 255, 255, 0.15) !important;
+    position: relative;
+    z-index: 2;
+}

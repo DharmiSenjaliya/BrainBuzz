@@ -20,6 +20,8 @@ import BrainTraining from './BrainTraining'
 import KnowledgeChallenge from './KnowledgeChallenge'
 import BrainDuel from './BrainDuel'
 import PlayerBackButton from './PlayerBackButton'
+import GameWallpaper3D from './GameWallpaper3D'
+import HeroGameBanner from './HeroGameBanner'
 
 // Temporarily hide Daily Challenge while retaining its player implementation.
 const DAILY_CHALLENGE_UI_ENABLED = false
@@ -410,6 +412,7 @@ function App() {
     const [savingResult, setSavingResult] = useState(false)
     const [resultSaved, setResultSaved] = useState(false)
     const [resultError, setResultError] = useState('')
+    const [showLevelIntro, setShowLevelIntro] = useState(false)
 
     const question = questions[currentQuestionIndex]
 
@@ -544,6 +547,7 @@ function App() {
         setCompleted(false)
         setAnsweredCorrectly(false)
         setQuestionFinished(false)
+        setShowLevelIntro(false)
     }
 
   const fetchLevelProgress = async (token) => {
@@ -935,6 +939,7 @@ const handlePasswordResetSuccess = (resetEmail) => {
     setResultSaved(false)
     setResultError('')
     setShowDashboard(false)
+    setShowLevelIntro(true)
 
     await fetchQuestions(token, level, selectedCategory)
 }
@@ -1138,8 +1143,9 @@ const checkAnswer = async () => {
     // LOGIN / REGISTER
     if (!user) {
         return (
-            <div className={`app auth-page ${theme}-theme`}>
-                <main className="auth-container">
+            <div className={`app auth-page ${theme}-theme game-view-wrapper`}>
+                <GameWallpaper3D level={1} />
+                <main className="auth-container glassmorphic">
                     <div className="auth-logo">🧠 BrainBuzz</div>
 
                     <p className="auth-subtitle">
@@ -1505,6 +1511,14 @@ if (showDashboard) {
                 {navbar}
 
                 <main className="dashboard-container dashboard-arcade">
+                    <HeroGameBanner
+                        currentLevel={currentUnlockedLevel}
+                        onPlay={() => startLevel(currentUnlockedLevel)}
+                        onExploreGames={() => setShowGamesHub(true)}
+                        onLeaderboard={() => setShowLeaderboard(true)}
+                        userName={user.name}
+                    />
+
                     <section className="dashboard-welcome">
                         <div className="dashboard-welcome-copy">
                             <p className="level"><span aria-hidden="true">✦</span> PLAYER DASHBOARD</p>
@@ -1788,10 +1802,11 @@ if (showDashboard) {
     // NO QUESTIONS
     if (questions.length === 0) {
         return (
-            <div className={`app ${theme}-theme`}>
+            <div className={`app ${theme}-theme game-view-wrapper`}>
+                <GameWallpaper3D level={selectedLevel} />
                 {navbar}
 
-                <main className="game-container">
+                <main className="game-container glassmorphic">
                     <h2>{message || 'No questions available.'}</h2>
 
                     <button
@@ -1828,10 +1843,11 @@ if (showDashboard) {
         }
 
         return (
-            <div className={`app ${theme}-theme`}>
+            <div className={`app ${theme}-theme game-view-wrapper`}>
+                <GameWallpaper3D level={selectedLevel} />
                 {navbar}
 
-                <main className="game-container">
+                <main className="game-container glassmorphic">
                     <p className="level">
                         {passed ? 'LEVEL COMPLETED' : 'LEVEL NOT COMPLETED'}
                     </p>
@@ -1920,10 +1936,38 @@ if (showDashboard) {
 
     // MAIN GAME SCREEN
     return (
-        <div className={`app ${theme}-theme`}>
+        <div className={`app ${theme}-theme game-view-wrapper`}>
+            <GameWallpaper3D level={selectedLevel} />
             {navbar}
 
-            <main className="game-container">
+            {showLevelIntro && (
+                <div className="level-intro-overlay">
+                    <div className="level-intro-card">
+                        <div className="level-intro-icon-wrapper">
+                            <span className="level-intro-icon">🧠</span>
+                        </div>
+                        <span className="level-intro-badge">Level {selectedLevel} Ready</span>
+                        <h2>Level {selectedLevel} Challenge</h2>
+                        <p className="level-intro-desc">
+                            Find the secret word that connects all 5 clues. Stay sharp, test your logic, and level up!
+                        </p>
+                        <div className="level-intro-rules">
+                            <div className="level-intro-rule-pill"><span>❓</span> 5 Questions</div>
+                            <div className="level-intro-rule-pill"><span>❤️</span> 3 Attempts</div>
+                            <div className="level-intro-rule-pill"><span>💡</span> 3 Hints</div>
+                        </div>
+                        <button
+                            type="button"
+                            className="level-intro-start-btn"
+                            onClick={() => setShowLevelIntro(false)}
+                        >
+                            🚀 START GAMEPLAY
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            <main className="game-container glassmorphic">
                 <div className="game-top-actions">
                     <p className="level">LEVEL {selectedLevel}</p>
 
