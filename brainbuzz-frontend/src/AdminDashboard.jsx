@@ -1389,7 +1389,7 @@ useEffect(() => {
             await api.put(
                 `/questions/${question.id}`,
                 {
-                    is_active: !Boolean(question.is_active),
+                    is_active: !question.is_active,
                 },
                 authConfig
             )
@@ -1399,7 +1399,7 @@ useEffect(() => {
                     item.id === question.id
                         ? {
                             ...item,
-                            is_active: !Boolean(item.is_active),
+                            is_active: !item.is_active,
                         }
                         : item
                 )
@@ -1451,7 +1451,7 @@ useEffect(() => {
 // Update Player Active / Inactive Status
 const handlePlayerStatusToggle = async (player) => {
     try {
-        const newStatus = !Boolean(player.is_active)
+        const newStatus = !player.is_active
 
         await api.put(
             `/admin/players/${player.id}/status`,

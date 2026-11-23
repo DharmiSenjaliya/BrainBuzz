@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import './DailyRewardModal.css'
 import soundService from './services/soundService'
 
@@ -35,26 +35,8 @@ export default function DailyRewardModal({ isOpen, onClose, onRewardClaimed }) {
     const canvasRef = useRef(null)
     const currentAngleRef = useRef(0)
 
-    useEffect(() => {
-        if (!isOpen) return
-
-        // Load streak and claim date
-        const savedStreak = parseInt(localStorage.getItem('brainbuzz_login_streak') || '1', 10)
-        const lastClaimDate = localStorage.getItem('brainbuzz_last_streak_claim')
-        const todayStr = new Date().toISOString().slice(0, 10)
-
-        setStreakCount(savedStreak)
-        setAlreadyClaimedToday(lastClaimDate === todayStr)
-
-        // Spin state
-        const lastSpinDate = localStorage.getItem('brainbuzz_last_spin_date')
-        setSpinAlreadyUsed(lastSpinDate === todayStr)
-
-        drawWheel(0)
-    }, [isOpen])
-
     // Draw the 8-slice canvas wheel
-    const drawWheel = (rotationAngle) => {
+    const drawWheel = useCallback((rotationAngle) => {
         const canvas = canvasRef.current
         if (!canvas) return
         const ctx = canvas.getContext('2d')
@@ -109,7 +91,25 @@ export default function DailyRewardModal({ isOpen, onClose, onRewardClaimed }) {
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText('⚡', centerX, centerY)
-    }
+    }, [])
+
+    useEffect(() => {
+        if (!isOpen) return
+
+        // Load streak and claim date
+        const savedStreak = parseInt(localStorage.getItem('brainbuzz_login_streak') || '1', 10)
+        const lastClaimDate = localStorage.getItem('brainbuzz_last_streak_claim')
+        const todayStr = new Date().toISOString().slice(0, 10)
+
+        setStreakCount(savedStreak)
+        setAlreadyClaimedToday(lastClaimDate === todayStr)
+
+        // Spin state
+        const lastSpinDate = localStorage.getItem('brainbuzz_last_spin_date')
+        setSpinAlreadyUsed(lastSpinDate === todayStr)
+
+        drawWheel(0)
+    }, [isOpen, drawWheel])
 
     // Spin wheel action
     const spinWheel = () => {

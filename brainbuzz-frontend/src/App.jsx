@@ -369,6 +369,7 @@ function App() {
 
     const [showAchievements, setShowAchievements] = useState(false)
     const [showLeaderboard, setShowLeaderboard] = useState(false)
+    const [showLevelsView, setShowLevelsView] = useState(false)
     const [showDailyChallenge, setShowDailyChallenge] = useState(false)
     const [showDailyMiniGames, setShowDailyMiniGames] = useState(false)
     const [showGamesHub, setShowGamesHub] = useState(false)
@@ -427,6 +428,7 @@ function App() {
     const [password, setPassword] = useState('')
     const [passwordConfirmation, setPasswordConfirmation] = useState('')
     const [authMessage, setAuthMessage] = useState('')
+    const [authMessageType, setAuthMessageType] = useState('')
 
     const [showHowToPlay, setShowHowToPlay] = useState(false)
     const [showFeedback, setShowFeedback] = useState(false)
@@ -453,7 +455,7 @@ function App() {
     const [answer, setAnswer] = useState('')
     const [score, setScore] = useState(0)
     const [correctCount, setCorrectCount] = useState(0)
-    const [wrongCount, setWrongCount] = useState(0)
+    const [_wrongCount, setWrongCount] = useState(0)
 
     const [attempts, setAttempts] = useState(3)
     const [message, setMessage] = useState('')
@@ -488,7 +490,6 @@ function App() {
 
     const question = questions[currentQuestionIndex]
 
-    /* eslint-disable react-hooks/set-state-in-effect -- URL changes hydrate the legacy page-state model. */
     useEffect(() => {
         syncingRouteRef.current = true
         const path = location.pathname
@@ -501,6 +502,7 @@ function App() {
         setShowForgotPassword(path === '/forgot-password')
         setShowAchievements(path === '/achievements')
         setShowLeaderboard(path === '/leaderboard')
+        setShowLevelsView(path === '/levels')
         setShowDailyMiniGames(path === '/daily-mini-games')
         setShowGamesHub(path === '/games')
         setShowProfile(path === '/profile')
@@ -523,7 +525,6 @@ function App() {
             setSelectedLevel(Number(levelMatch[1]))
         }
     }, [location.pathname])
-    /* eslint-enable react-hooks/set-state-in-effect */
 
     useEffect(() => {
         if (syncingRouteRef.current) {
@@ -553,6 +554,8 @@ function App() {
             nextPath = '/daily-mini-games'
         } else if (showLeaderboard) {
             nextPath = '/leaderboard'
+        } else if (showLevelsView) {
+            nextPath = '/levels'
         } else if (showHowToPlay) {
             nextPath = '/how-to-play'
         } else if (showChangePassword) {
@@ -601,6 +604,7 @@ function App() {
         showGamesHub,
         showHowToPlay,
         showLeaderboard,
+        showLevelsView,
         showProfile,
         user,
     ])
@@ -811,11 +815,13 @@ const fetchPlayerCategories = async (token) => {
     const handleAuth = async (e) => {
         e.preventDefault()
         setAuthMessage('')
+        setAuthMessageType('')
 
         const normalizedEmail = email.trim().toLowerCase()
 
         if (authMode === 'register' && password !== passwordConfirmation) {
             setAuthMessage('Passwords do not match!')
+            setAuthMessageType('error')
             return
         }
 
@@ -842,23 +848,14 @@ const fetchPlayerCategories = async (token) => {
                 (response.data?.id && response.data?.email ? response.data : null)
 
             if (authMode === 'register') {
-                if (token && authUser) {
-                    localStorage.setItem('brainbuzz_token', token)
-                    setUser(authUser)
-                    await fetchDashboard(token)
-                    await fetchLevelProgress(token)
-                    await fetchPlayerCategories(token)
-                    setPassword('')
-                    setPasswordConfirmation('')
-                    setAuthMessage('')
-                    await fetchQuestions(token, 1)
-                    return
-                }
-
+                localStorage.removeItem('brainbuzz_token')
+                setUser(null)
                 setAuthMode('login')
                 setPassword('')
                 setPasswordConfirmation('')
-                setAuthMessage('Registration successful! Please login now.')
+                setAuthMessage('Registration successful! Please login with your password.')
+                setAuthMessageType('success')
+                navigate('/login', { replace: true })
                 return
             }
 
@@ -870,6 +867,7 @@ const fetchPlayerCategories = async (token) => {
                     response.data
                 )
                 setAuthMessage('Login response did not include a valid token. Please try again.')
+                setAuthMessageType('error')
                 return
             }
 
@@ -893,10 +891,12 @@ const fetchPlayerCategories = async (token) => {
             setPassword('')
             setPasswordConfirmation('')
             setAuthMessage('')
+            setAuthMessageType('')
 
             await fetchQuestions(token, 1)
         } catch (error) {
             console.error('Authentication Error:', error)
+            setAuthMessageType('error')
 
             const errors = error.response?.data?.errors
 
@@ -999,6 +999,7 @@ const handlePasswordResetSuccess = (resetEmail) => {
             setAuthMessage('')
             setShowAchievements(false)
             setShowLeaderboard(false)
+            setShowLevelsView(false)
             setLevelProgress([])
             setCurrentUnlockedLevel(1)
             setLevelPage(1)
@@ -1392,6 +1393,7 @@ const checkAnswer = async () => {
                             onClick={() => {
                                 setAuthMode('login')
                                 setAuthMessage('')
+                                setAuthMessageType('')
                             }}
                         >
                             Login
@@ -1402,6 +1404,7 @@ const checkAnswer = async () => {
                             onClick={() => {
                                 setAuthMode('register')
                                 setAuthMessage('')
+                                setAuthMessageType('')
                             }}
                         >
                             Register
@@ -1472,7 +1475,10 @@ const checkAnswer = async () => {
                         )}
 
                         {authMessage && (
-                            <p className="auth-message">{authMessage}</p>
+                            <p className={`auth-message ${authMessageType === 'success' ? 'auth-message-success' : 'auth-message-error'}`}>
+                                {authMessageType === 'success' ? '✅ ' : '⚠️ '}
+                                {authMessage}
+                            </p>
                         )}
 
                         <button
@@ -1498,6 +1504,7 @@ const checkAnswer = async () => {
                             onClick={() => {
                                 setAuthMode(authMode === 'login' ? 'register' : 'login')
                                 setAuthMessage('')
+                                setAuthMessageType('')
                             }}
                         >
                             {authMode === 'login' ? 'Register' : 'Login'}
@@ -1567,6 +1574,17 @@ const checkAnswer = async () => {
         </>
     )
 
+    const totalLevelPages = Math.max(
+        levelPage + 1,
+        Math.ceil((currentUnlockedLevel + 4) / LEVEL_PAGE_SIZE)
+    )
+    const maxLevelToShow = totalLevelPages * LEVEL_PAGE_SIZE
+    const firstLevelOnPage = (levelPage - 1) * LEVEL_PAGE_SIZE + 1
+    const visibleLevelCount = Math.min(
+        LEVEL_PAGE_SIZE,
+        maxLevelToShow - firstLevelOnPage + 1
+    )
+
     if (loading) {
         return (
             <GameSplashScreen
@@ -1613,6 +1631,135 @@ if (showDailyMiniGames) {
             <div className={`app ${theme}-theme`}>
                 {navbar}
                 <Leaderboard onBack={() => setShowLeaderboard(false)} />
+            </div>
+        )
+    }
+
+    if (showLevelsView) {
+        return (
+            <div className={`app ${theme}-theme game-view-wrapper`}>
+                <GameWallpaper3D level={currentUnlockedLevel} />
+                {navbar}
+                <main className="dashboard-container levels-standalone-view">
+                    <PlayerBackButton
+                        onBack={() => setShowLevelsView(false)}
+                        label="Back to Lobby"
+                    />
+                    <section className="dashboard-game" style={{ marginTop: '1rem' }}>
+                        <div className="dashboard-game-heading">
+                            <span className="dashboard-section-kicker">MAIN CAMPAIGN</span>
+                            <h2><span aria-hidden="true">⚡</span> ClueShift Levels (1-100)</h2>
+                            <p>Choose an unlocked level to play. Clear at least 3 questions to unlock the next level.</p>
+                        </div>
+
+                        <div className="player-category-filter">
+                            <label htmlFor="player-category-levels-view">
+                                Choose Category
+                            </label>
+                            <select
+                                id="player-category-levels-view"
+                                value={selectedCategory}
+                                onChange={(e) =>
+                                    fetchQuestions(
+                                        localStorage.getItem('brainbuzz_token'),
+                                        selectedLevel,
+                                        e.target.value
+                                    )
+                                }
+                                disabled={loadingPlayerCategories}
+                            >
+                                <option value="all">All Categories</option>
+                                {playerCategories.map((category) => (
+                                    <option key={category.id} value={String(category.id)}>
+                                        {category.icon ? `${category.icon} ` : ''}
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="level-cards">
+                            {Array.from({ length: visibleLevelCount }, (_, index) => {
+                                const level = firstLevelOnPage + index
+                                const progress = levelProgress.find(
+                                    (item) => Number(item.level) === level
+                                )
+                                const unlocked = level <= currentUnlockedLevel
+                                const isCompleted = Boolean(progress?.is_completed)
+
+                                return (
+                                    <div
+                                        className={`level-card ${
+                                            isCompleted ? 'completed' : ''
+                                        } ${unlocked ? 'unlocked' : 'locked'}`}
+                                        key={level}
+                                    >
+                                        <h3>Level {level}</h3>
+                                        <p>
+                                            {isCompleted
+                                                ? '✅ Completed'
+                                                : unlocked
+                                                    ? '🔓 Unlocked'
+                                                    : '🔒 Locked'}
+                                        </p>
+                                        {progress && (
+                                            <div className="level-performance">
+                                                <div className="level-stars">
+                                                    {progress.stars > 0
+                                                        ? '⭐'.repeat(Number(progress.stars)) +
+                                                          '☆'.repeat(3 - Number(progress.stars))
+                                                        : '☆☆☆'}
+                                                </div>
+                                                <small>
+                                                    Best Correct: {progress.best_correct_answers || 0}/5
+                                                </small>
+                                            </div>
+                                        )}
+                                        <button
+                                            className="submit-btn"
+                                            disabled={!unlocked}
+                                            onClick={() => {
+                                                setShowLevelsView(false)
+                                                startLevel(level)
+                                            }}
+                                        >
+                                            {isCompleted
+                                                ? 'Play Again'
+                                                : unlocked
+                                                    ? 'Start Level'
+                                                    : 'Locked'}
+                                        </button>
+                                    </div>
+                                )
+                            })}
+                        </div>
+
+                        {totalLevelPages > 1 && (
+                            <nav className="level-pagination" aria-label="Level pages">
+                                <button
+                                    type="button"
+                                    onClick={() => setLevelPage((page) => Math.max(1, page - 1))}
+                                    disabled={levelPage === 1}
+                                >
+                                    ← Earlier levels
+                                </button>
+                                <span>
+                                    Levels {firstLevelOnPage}–{firstLevelOnPage + visibleLevelCount - 1}
+                                    <small>PAGE {levelPage} · ENDLESS LEVELS</small>
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setLevelPage((page) => Math.min(totalLevelPages, page + 1))
+                                    }
+                                    disabled={levelPage >= totalLevelPages}
+                                >
+                                    More levels: {levelPage * LEVEL_PAGE_SIZE + 1}–{(levelPage + 1) * LEVEL_PAGE_SIZE} →
+                                </button>
+                            </nav>
+                        )}
+                    </section>
+                </main>
             </div>
         )
     }
@@ -1768,18 +1915,7 @@ if (selectedGameMode === 'duel') {
 }
   
     // DASHBOARD
-if (showDashboard) {
-        const totalLevelPages = Math.max(
-            levelPage + 1,
-            Math.ceil((currentUnlockedLevel + 4) / LEVEL_PAGE_SIZE)
-        )
-        const maxLevelToShow = totalLevelPages * LEVEL_PAGE_SIZE
-        const firstLevelOnPage = (levelPage - 1) * LEVEL_PAGE_SIZE + 1
-        const visibleLevelCount = Math.min(
-            LEVEL_PAGE_SIZE,
-            maxLevelToShow - firstLevelOnPage + 1
-        )
-
+    if (showDashboard) {
         return (
             <div className={`app ${theme}-theme`}>
                 {navbar}
@@ -1790,8 +1926,10 @@ if (showDashboard) {
                         onPlay={() => startLevel(currentUnlockedLevel)}
                         onExploreGames={() => setShowGamesHub(true)}
                         onLeaderboard={() => setShowLeaderboard(true)}
-                        onViewLevels={() => setMobileDashboardTab('levels')}
-                        userName={user.name}
+                        onViewLevels={() => {
+                            soundService.playClick()
+                            setShowLevelsView(true)
+                        }}
                     />
 
                     <section className="dashboard-stats" aria-label="Your game statistics">
@@ -1840,7 +1978,7 @@ if (showDashboard) {
                         </button>
                     </section>
 
-                    <section className="dashboard-game">
+                    <section className="dashboard-game" id="campaign-levels-section">
                         <div className="dashboard-game-heading">
                             <span className="dashboard-section-kicker">MAIN CAMPAIGN</span>
                             <h2><span aria-hidden="true">⚡</span> ClueShift Levels</h2>
@@ -2060,10 +2198,10 @@ if (showDashboard) {
 
                     <button
                         type="button"
-                        className={`mobile-nav-btn ${mobileDashboardTab === 'levels' ? 'active' : ''}`}
+                        className={`mobile-nav-btn ${mobileDashboardTab === 'levels' || showLevelsView ? 'active' : ''}`}
                         onClick={() => {
                             soundService.playClick()
-                            setMobileDashboardTab('levels')
+                            setShowLevelsView(true)
                         }}
                     >
                         <span className="mobile-nav-icon">⚡</span>

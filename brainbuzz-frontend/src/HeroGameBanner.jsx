@@ -1,5 +1,4 @@
-import React from 'react'
-import { Sparkles, Gamepad2, Zap, Shield, Trophy, ArrowRight, Brain } from 'lucide-react'
+import { Gamepad2, Zap, Shield, Trophy, ArrowRight, Brain } from 'lucide-react'
 import './HeroGameBanner.css'
 
 export default function HeroGameBanner({
@@ -8,7 +7,6 @@ export default function HeroGameBanner({
     onExploreGames,
     onLeaderboard,
     onViewLevels,
-    userName = 'Player',
 }) {
     return (
         <section className="hero-section">

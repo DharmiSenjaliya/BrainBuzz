@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import './GameWallpaper3D.css'
 
@@ -253,7 +253,7 @@ export default function GameWallpaper3D({ level = 1 }) {
             ring3.rotation.y = elapsedTime * 0.18
 
             // Animate floating satellites
-            satellites.forEach((sat, idx) => {
+            satellites.forEach((sat) => {
                 sat.rotation.x += sat.userData.rotSpeedX
                 sat.rotation.y += sat.userData.rotSpeedY
 

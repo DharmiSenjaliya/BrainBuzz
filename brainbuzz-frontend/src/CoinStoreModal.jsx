@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import './CoinStoreModal.css'
 import soundService from './services/soundService'
 import api from './services/api'
