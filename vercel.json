@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "cd brainbuzz-frontend && npm install && npm run build",
-  "outputDirectory": "brainbuzz-frontend/dist",
+  "buildCommand": "cd ClueShift-frontend && npm install && npm run build",
+  "outputDirectory": "ClueShift-frontend/dist",
   "framework": "vite",
   "rewrites": [
     {

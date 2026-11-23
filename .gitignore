@@ -1,4 +1,4 @@
-# Laravel backend
+# Backend
 /brainbuzz-backend/.env
 /brainbuzz-backend/.env.*
 !/brainbuzz-backend/.env.example
@@ -7,9 +7,31 @@
 /brainbuzz-backend/storage/logs/
 /brainbuzz-backend/bootstrap/cache/*.php
 
-# React frontend
+/clueshift-backend/.env
+/clueshift-backend/.env.*
+!/clueshift-backend/.env.example
+/clueshift-backend/vendor/
+/clueshift-backend/storage/*.key
+/clueshift-backend/storage/logs/
+/clueshift-backend/bootstrap/cache/*.php
+
+/ClueShift-backend/.env
+/ClueShift-backend/.env.*
+!/ClueShift-backend/.env.example
+/ClueShift-backend/vendor/
+/ClueShift-backend/storage/*.key
+/ClueShift-backend/storage/logs/
+/ClueShift-backend/bootstrap/cache/*.php
+
+# Frontend
 /brainbuzz-frontend/node_modules/
 /brainbuzz-frontend/dist/
+
+/clueshift-frontend/node_modules/
+/clueshift-frontend/dist/
+
+/ClueShift-frontend/node_modules/
+/ClueShift-frontend/dist/
 
 # General
 .DS_Store
