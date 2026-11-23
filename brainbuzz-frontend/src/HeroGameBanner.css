@@ -15,8 +15,8 @@
   max-width: 1240px;
   border-radius: 26px;
   overflow: hidden;
-  background: radial-gradient(circle at 50% 45%, rgba(10, 15, 35, 0.45) 0%, rgba(5, 7, 20, 0.92) 100%),
-              url('/brainbuzz-3d-splash.jpg') no-repeat center center / cover;
+  background: radial-gradient(circle at 50% 50%, rgba(5, 7, 24, 0.2) 0%, rgba(5, 7, 24, 0.78) 100%),
+              url('/clueshift-3d-splash.jpg?v=3') no-repeat center center / cover;
   border: 1px solid rgba(53, 231, 255, 0.3);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65), 0 0 45px rgba(53, 231, 255, 0.2);
 }
@@ -50,74 +50,155 @@
   margin: 0 auto;
 }
 
-.hero-logo-emblem {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 18px;
-}
+/* ==========================================================================
+   FROSTED CYBER TITLE POD & LOGO
+   ========================================================================== */
 
-.hero-brand-icon {
-  width: 76px;
-  height: 76px;
-  border-radius: 20px;
-  display: flex;
+.hero-title-pod {
+  display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #35e7ff, #aa00ff 50%, #ff2a85);
-  animation: voltFloat 3s ease-in-out infinite;
-  box-shadow: 0 0 35px rgba(53, 231, 255, 0.7), 0 0 70px rgba(170, 0, 255, 0.5);
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  margin-bottom: 24px;
+  max-width: 820px;
+  width: 100%;
 }
 
-@keyframes voltFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-.hero-badge {
+.hero-top-chip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   padding: 6px 20px;
-  background: rgba(53, 231, 255, 0.1);
-  border: 1px solid rgba(53, 231, 255, 0.4);
+  background: rgba(10, 15, 35, 0.65);
+  border: 1px solid rgba(56, 189, 248, 0.45);
   border-radius: 100px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.12em;
-  color: #35e7ff;
-  margin-bottom: 18px;
+  letter-spacing: 0.14em;
+  color: #38bdf8;
+  margin-bottom: 14px;
   text-transform: uppercase;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+}
+
+.hero-chip-pulse {
+  color: #facc15;
+  font-size: 13px;
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 2px #facc15);
+    transform: scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px #facc15);
+    transform: scale(1.15);
+  }
+}
+
+.hero-chip-text {
+  color: #e2e8f0;
+}
+
+.hero-chip-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #38bdf8;
+  opacity: 0.8;
+}
+
+.hero-chip-season {
+  color: #38bdf8;
+  font-weight: 900;
 }
 
 .hero-title {
-  font-size: 58px;
+  font-size: clamp(46px, 6.5vw, 74px);
   font-weight: 900;
-  letter-spacing: 0.04em;
-  line-height: 1.1;
-  margin-bottom: 12px;
-  color: #ffffff;
-  text-shadow: 0 0 35px rgba(53, 231, 255, 0.6);
+  letter-spacing: 0.08em;
+  line-height: 1.05;
+  margin: 0 0 14px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-transform: uppercase;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  filter: drop-shadow(0 6px 25px rgba(0, 0, 0, 0.95));
 }
 
-.neon-gradient {
-  background: linear-gradient(135deg, #35e7ff 0%, #aa00ff 50%, #ff2a85 100%);
+.title-clue {
+  background: linear-gradient(180deg, #ffffff 15%, #d8f5ff 55%, #38bdf8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 28px rgba(56, 189, 248, 0.8)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.9));
+}
+
+.title-shift {
+  background: linear-gradient(180deg, #38bdf8 0%, #818cf8 45%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 32px rgba(192, 132, 252, 0.85)) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.9));
+  margin-left: 2px;
+}
+
+.hero-title-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 420px;
+  margin-bottom: 12px;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.6), transparent);
+}
+
+.divider-spark {
+  color: #38bdf8;
+  font-size: 11px;
+  filter: drop-shadow(0 0 6px #38bdf8);
 }
 
 .hero-tagline {
-  font-size: 19px;
-  font-weight: 600;
-  color: #cbd5e1;
-  letter-spacing: 0.03em;
-  margin-bottom: 28px;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: clamp(11px, 1.6vw, 13px);
+  font-weight: 700;
+  color: #e2e8f0;
+  letter-spacing: 0.16em;
+  margin: 0;
+  text-transform: uppercase;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95), 0 0 15px rgba(56, 189, 248, 0.4);
+}
+
+.hero-tagline span {
+  color: #f1f5f9;
+}
+
+.tagline-dot {
+  color: #38bdf8;
+  font-style: normal;
+  font-size: 10px;
 }
 
 .hero-actions {
@@ -183,6 +264,31 @@
   transform: translateY(-2px);
 }
 
+.hero-view-levels-btn {
+  grid-column: 1 / -1;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(147, 51, 234, 0.15);
+  border: 1px dashed rgba(168, 85, 247, 0.45);
+  border-radius: 10px;
+  color: #c084fc;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 2px;
+}
+
+.hero-view-levels-btn:hover {
+  background: rgba(147, 51, 234, 0.3);
+  border-color: #c084fc;
+  color: #ffffff;
+}
+
 .hero-stats-bar {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -228,16 +334,220 @@
   color: #fbbf24;
 }
 
-@media (max-width: 768px) {
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS: DESKTOP, TABLET & MOBILE
+   ========================================================================== */
+
+/* TABLET VIEW (769px - 1024px) */
+@media (max-width: 1024px) {
+  .hero-section {
+    padding: 44px 20px 34px;
+    min-height: 440px;
+    margin-bottom: 24px;
+    border-radius: 22px;
+  }
   .hero-title {
-    font-size: 36px;
+    font-size: clamp(40px, 5.5vw, 56px);
+  }
+  .hero-actions {
+    gap: 12px;
+    margin-bottom: 28px;
   }
   .hero-stats-bar {
     grid-template-columns: repeat(2, 1fr);
     gap: 14px;
+    padding: 16px 20px;
   }
+}
+
+/* MOBILE VIEW (481px - 768px) */
+@media (max-width: 768px) {
   .hero-section {
-    padding: 40px 16px 30px;
+    padding: 26px 16px 20px;
+    border-radius: 18px;
+    margin-bottom: 20px;
     min-height: auto;
+    background: radial-gradient(circle at 50% 40%, rgba(6, 9, 26, 0.62) 0%, rgba(5, 7, 24, 0.92) 100%),
+                url('/clueshift-3d-splash.jpg?v=3') no-repeat center 32% / cover;
+  }
+  .hero-title-pod {
+    padding: 0;
+    margin-bottom: 14px;
+  }
+  .hero-top-chip {
+    font-size: 10px;
+    padding: 4px 14px;
+    margin-bottom: 10px;
+  }
+  .hero-title {
+    font-size: clamp(32px, 7.5vw, 44px);
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+  }
+  .hero-title-divider {
+    max-width: 260px;
+    margin-bottom: 10px;
+  }
+  .hero-tagline {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    gap: 8px;
+  }
+  .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  .cyber-button-lg {
+    grid-column: 1 / -1;
+    width: 100%;
+    padding: 13px 20px;
+    font-size: 14.5px;
+    justify-content: center;
+  }
+  .cyber-button-secondary {
+    width: 100%;
+    padding: 11px 14px;
+    font-size: 12.5px;
+    justify-content: center;
+  }
+  .hero-stats-bar {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(10, 15, 35, 0.82);
+  }
+  .hero-stat-item {
+    gap: 8px;
+    padding: 6px 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .hero-stat-item svg {
+    flex-shrink: 0;
+  }
+  .hero-stat-item .stat-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .hero-stat-item .stat-sub {
+    font-size: 9.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* COMPACT MOBILE VIEW (<= 480px) */
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 20px 12px 16px;
+    border-radius: 16px;
+    margin-bottom: 16px;
+    min-height: auto;
+    background: radial-gradient(circle at 50% 38%, rgba(6, 9, 26, 0.68) 0%, rgba(5, 7, 24, 0.95) 100%),
+                url('/clueshift-3d-splash.jpg?v=3') no-repeat center 30% / cover;
+  }
+  .hero-title-pod {
+    margin-bottom: 12px;
+  }
+  .hero-top-chip {
+    font-size: 9px;
+    padding: 4px 10px;
+    gap: 5px;
+    margin-bottom: 7px;
+  }
+  .hero-title {
+    font-size: clamp(28px, 9vw, 36px);
+    gap: 2px;
+    margin-bottom: 7px;
+  }
+  .hero-title-divider {
+    max-width: 180px;
+    margin-bottom: 7px;
+  }
+  .hero-tagline {
+    font-size: 9.5px;
+    letter-spacing: 0.05em;
+    gap: 6px;
+  }
+  .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .cyber-button-lg {
+    grid-column: 1 / -1;
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 13.5px;
+    border-radius: 12px;
+  }
+  .cyber-button-secondary {
+    width: 100%;
+    padding: 10px 8px;
+    font-size: 12px;
+    border-radius: 12px;
+  }
+  .hero-stats-bar {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    padding: 8px 8px;
+    border-radius: 12px;
+    background: rgba(10, 15, 35, 0.88);
+  }
+  .hero-stat-item {
+    gap: 6px;
+    padding: 5px 6px;
+    background: rgba(255, 255, 255, 0.035);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .hero-stat-item svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  .hero-stat-item .stat-label {
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .hero-stat-item .stat-sub {
+    font-size: 9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* ULTRA-NARROW SCREENS (<= 360px) */
+@media (max-width: 360px) {
+  .hero-section {
+    padding: 16px 8px 14px;
+    border-radius: 12px;
+  }
+  .hero-title {
+    font-size: 25px;
+  }
+  .hero-tagline {
+    font-size: 8.5px;
+    gap: 4px;
+  }
+  .hero-stats-bar {
+    grid-template-columns: 1fr;
+    gap: 5px;
+    padding: 6px 8px;
   }
 }

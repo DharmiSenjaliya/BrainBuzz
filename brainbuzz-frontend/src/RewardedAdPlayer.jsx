@@ -72,7 +72,7 @@ const PLAYSTORE_GAMES = [
         id: 'neonvolt',
         name: 'NeonVolt Run 3D',
         tagline: '3D Cyber Matrix Runner',
-        developer: 'BrainBuzz Studios',
+        developer: 'ClueShift Studios',
         category: 'Action • Sci-Fi Runner',
         icon: '⚡',
         rating: '4.9★',
@@ -563,7 +563,7 @@ export default function RewardedAdPlayer({ isOpen, onClose, onRewardEarned }) {
 
                             <h2>Ad Watched Successfully!</h2>
                             <p className="endcard-sub">
-                                You supported BrainBuzz and unlocked your reward.
+                                You supported ClueShift and unlocked your reward.
                             </p>
 
                             {/* Promoted Play Store App Card - Clickable */}

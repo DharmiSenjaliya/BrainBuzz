@@ -194,7 +194,7 @@ function BrainDuel({ onBack, onDuelComplete }) {
 
             <header className="brain-duel-hero">
                 <div>
-                    <span className="brain-duel-eyebrow">BRAINBUZZ // HEAD-TO-HEAD</span>
+                    <span className="brain-duel-eyebrow">CLUESHIFT // HEAD-TO-HEAD</span>
                     <h1>Brain <span>Duel</span></h1>
                     <p>Five questions. One rival. Outsmart each other.</p>
                 </div>
@@ -266,7 +266,7 @@ function BrainDuel({ onBack, onDuelComplete }) {
                             <span className="brain-duel-live-dot" />
                             <p className="brain-duel-kicker">ARENA CREATED</p>
                             <h2>Waiting for your rival</h2>
-                            <p>Send this invite code to another BrainBuzz player to start the duel.</p>
+                            <p>Send this invite code to another ClueShift player to start the duel.</p>
                             <div className="brain-duel-invite">
                                 <code>{duel.invite_code}</code>
                                 <button className="brain-duel-secondary" onClick={copyInviteCode}>

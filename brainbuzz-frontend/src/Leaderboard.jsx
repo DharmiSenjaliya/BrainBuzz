@@ -187,9 +187,9 @@ function Leaderboard({ onBack }) {
             <main className="leaderboard-splash" role="status" aria-label="Loading leaderboard">
                 <div className="leaderboard-splash-card">
                     <div className="leaderboard-splash-mark" aria-hidden="true">
-                        🧠<span>B</span>
+                        ⚡<span>C</span>
                     </div>
-                    <p className="leaderboard-splash-eyebrow">BRAINBUZZ ARCADE</p>
+                    <p className="leaderboard-splash-eyebrow">CLUESHIFT ARCADE</p>
                     <h1>Loading the <span>champions</span></h1>
                     <p className="leaderboard-splash-copy">Finding your place on the leaderboard...</p>
                     <div className="leaderboard-splash-track" aria-hidden="true"><span /></div>
@@ -207,7 +207,7 @@ function Leaderboard({ onBack }) {
                 <div className="leaderboard-hero-copy">
                     <span className="leaderboard-eyebrow">
                         <span className="leaderboard-live-dot" />
-                        BRAINBUZZ CHAMPIONSHIP
+                        CLUESHIFT CHAMPIONSHIP
                     </span>
                     <h1>Hall of <span>Legends</span></h1>
                     <p>Every great score tells a story. See how your journey ranks.</p>
@@ -239,7 +239,7 @@ function Leaderboard({ onBack }) {
                     <span className="leaderboard-state-icon" aria-hidden="true">🕹️</span>
                     <p className="leaderboard-eyebrow">THE ARENA IS READY</p>
                     <h2>Be the first legend</h2>
-                    <p>Start playing BrainBuzz and your name will appear here.</p>
+                    <p>Start playing ClueShift and your name will appear here.</p>
                     <PlayerBackButton onClick={onBack} />
                 </div>
             ) : (

@@ -17,7 +17,7 @@ class PaymentController extends Controller
     public function config()
     {
         $keyId = env('RAZORPAY_KEY_ID', '');
-        $merchantUpi = env('MERCHANT_UPI_ID', 'brainbuzz.games@okhdfcbank');
+        $merchantUpi = env('MERCHANT_UPI_ID', 'clueshift.games@okhdfcbank');
         $isConfigured = !empty($keyId) && !empty(env('RAZORPAY_KEY_SECRET'));
 
         return response()->json([

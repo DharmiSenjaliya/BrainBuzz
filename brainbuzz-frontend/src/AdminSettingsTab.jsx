@@ -4,7 +4,7 @@ import api from './services/api'
 
 export default function AdminSettingsTab() {
     const [settings, setSettings] = useState({
-        app_name: 'BrainBuzz Cyber Trivia',
+        app_name: 'ClueShift Cyber Puzzle',
         currency_name: 'Coins',
         default_timer_seconds: 30,
         points_per_correct: 10,
@@ -13,7 +13,7 @@ export default function AdminSettingsTab() {
         maintenance_mode: false,
         ads_enabled: true,
         adsense_publisher_id: 'ca-pub-0000000000000000',
-        contact_email: 'support@brainbuzz.game',
+        contact_email: 'support@clueshift.game',
     })
 
     const [loading, setLoading] = useState(true)

@@ -186,7 +186,7 @@ function KnowledgeChallenge({ onBack, onChallengeComplete }) {
             <PlayerBackButton onClick={onBack} className="knowledge-back" />
 
             <header className="knowledge-header">
-                <span className="knowledge-eyebrow">BRAINBUZZ KNOWLEDGE CHALLENGE</span>
+                <span className="knowledge-eyebrow">CLUESHIFT KNOWLEDGE CHALLENGE</span>
                 <h1>Curiosity, put to the test.</h1>
                 <p>Five questions. Three tries each. How much do you know?</p>
             </header>

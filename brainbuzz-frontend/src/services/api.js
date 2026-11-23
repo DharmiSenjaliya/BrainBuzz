@@ -40,8 +40,8 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-    const adminToken = localStorage.getItem('brainbuzz_admin_token')
-    const playerToken = localStorage.getItem('brainbuzz_token')
+    const adminToken = localStorage.getItem('clueshift_admin_token') || localStorage.getItem('brainbuzz_admin_token')
+    const playerToken = localStorage.getItem('clueshift_token') || localStorage.getItem('brainbuzz_token')
 
     const token = adminToken || playerToken
 

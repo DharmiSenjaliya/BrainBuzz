@@ -501,7 +501,7 @@ const [lastPage, setLastPage] = useState(1)
                 <PlayerBackButton onClick={onBack} />
                 <div className="mini-inline-loader" role="status">
                     <span className="mini-inline-spinner" aria-hidden="true">🧩</span>
-                    <p>Loading your BrainBuzz game...</p>
+                    <p>Loading your ClueShift game...</p>
                 </div>
             </div>
         )

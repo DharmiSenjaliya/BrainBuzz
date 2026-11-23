@@ -15,9 +15,9 @@ class CommercialDemoSeeder extends Seeder
     {
         // 1. Ensure Super Admin Exists
         User::firstOrCreate(
-            ['email' => 'admin@brainbuzz.game'],
+            ['email' => 'admin@clueshift.game'],
             [
-                'name' => 'BrainBuzz Admin',
+                'name' => 'ClueShift Admin',
                 'password' => Hash::make('admin123456'),
                 'is_admin' => true,
                 'is_active' => true,

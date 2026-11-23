@@ -7,6 +7,7 @@ export default function HeroGameBanner({
     onPlay,
     onExploreGames,
     onLeaderboard,
+    onViewLevels,
     userName = 'Player',
 }) {
     return (
@@ -15,24 +16,34 @@ export default function HeroGameBanner({
             <div className="hero-glow-sphere magenta" />
 
             <div className="hero-content">
-                <div className="hero-logo-emblem">
-                    <span className="hero-brand-icon">
-                        <Gamepad2 size={38} color="#ffffff" />
-                    </span>
+                {/* Sleek Frosted Cyber Title Pod */}
+                <div className="hero-title-pod">
+                    <div className="hero-top-chip">
+                        <span className="hero-chip-pulse">⚡</span>
+                        <span className="hero-chip-text">CYBER PUZZLE ARCADE</span>
+                        <span className="hero-chip-dot" />
+                        <span className="hero-chip-season">SEASON 1</span>
+                    </div>
+
+                    <h1 className="hero-title">
+                        <span className="title-clue">CLUE</span>
+                        <span className="title-shift">SHIFT</span>
+                    </h1>
+
+                    <div className="hero-title-divider">
+                        <span className="divider-line" />
+                        <span className="divider-spark">✦</span>
+                        <span className="divider-line" />
+                    </div>
+
+                    <p className="hero-tagline">
+                        <span>CONNECT THE CLUES</span>
+                        <i className="tagline-dot">•</i>
+                        <span>TEST YOUR IQ</span>
+                        <i className="tagline-dot">•</i>
+                        <span>LEVEL UP</span>
+                    </p>
                 </div>
-
-                <div className="hero-badge">
-                    <Sparkles size={14} className="text-cyan" />
-                    <span>3D CYBER TRIVIA ARCADE</span>
-                </div>
-
-                <h1 className="hero-title">
-                    BRAIN<span className="neon-gradient">BUZZ</span>
-                </h1>
-
-                <p className="hero-tagline">
-                    Train Your Mind • Connect The Clues • Level Up
-                </p>
 
                 <div className="hero-actions">
                     <button
@@ -63,6 +74,17 @@ export default function HeroGameBanner({
                         >
                             <span>Ranks</span>
                             <Trophy size={18} />
+                        </button>
+                    )}
+
+                    {onViewLevels && (
+                        <button
+                            type="button"
+                            onClick={onViewLevels}
+                            className="hero-view-levels-btn"
+                        >
+                            <span>⚡ Select Campaign Level (1-100)</span>
+                            <ArrowRight size={14} />
                         </button>
                     )}
                 </div>

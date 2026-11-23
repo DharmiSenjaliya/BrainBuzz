@@ -219,12 +219,12 @@ export default function GameWallpaper3D({ level = 1 }) {
         window.addEventListener('resize', handleResize)
 
         // ANIMATION LOOP
-        let clock = new THREE.Clock()
+        const startTime = performance.now()
 
         const animate = () => {
             animationFrameId = requestAnimationFrame(animate)
 
-            const elapsedTime = clock.getElapsedTime()
+            const elapsedTime = (performance.now() - startTime) * 0.001
 
             // Smooth mouse parallax interpolation
             targetX += (mouseX - targetX) * 0.05

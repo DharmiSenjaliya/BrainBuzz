@@ -468,7 +468,7 @@ class QuestionController extends Controller
 
         $headers = [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="brainbuzz-questions.csv"',
+            'Content-Disposition' => 'attachment; filename="clueshift-questions.csv"',
         ];
 
         $callback = function () use ($questions) {
@@ -503,7 +503,7 @@ class QuestionController extends Controller
     {
         $headers = [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="brainbuzz-sample-template.csv"',
+            'Content-Disposition' => 'attachment; filename="clueshift-sample-template.csv"',
         ];
 
         $callback = function () {

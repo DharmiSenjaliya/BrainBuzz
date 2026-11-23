@@ -8,7 +8,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// BrainBuzz Daily Mini Game Rotation
+// ClueShift Daily Mini Game Rotation
 Schedule::command('app:rotate-daily-game')
     ->dailyAt('00:00')
     ->timezone('Asia/Kolkata')

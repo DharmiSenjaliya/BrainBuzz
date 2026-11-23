@@ -6,7 +6,7 @@ function GamesHub({ onBack, onSelectMode }) {
         {
             id: 'iq',
             icon: '🧩',
-            title: 'BrainBuzz IQ Challenge',
+            title: 'ClueShift IQ Challenge',
             description:
                 'Test your logical thinking, pattern recognition, number series and problem-solving skills.',
             skills: ['Logic', 'Patterns', 'Reasoning'],
@@ -16,7 +16,7 @@ function GamesHub({ onBack, onSelectMode }) {
         {
             id: 'training',
             icon: '🧠',
-            title: 'BrainBuzz Brain Training',
+            title: 'ClueShift Brain Training',
             description:
                 'Improve memory, focus, reaction speed and spatial thinking through interactive exercises.',
             skills: ['Memory', 'Focus', 'Reaction'],
@@ -26,7 +26,7 @@ function GamesHub({ onBack, onSelectMode }) {
         {
             id: 'knowledge',
             icon: '🌍',
-            title: 'BrainBuzz Knowledge Challenge',
+            title: 'ClueShift Knowledge Challenge',
             description:
                 'Explore science, technology, history, geography, sports and general knowledge.',
             skills: ['Science', 'History', 'Technology'],
@@ -36,7 +36,7 @@ function GamesHub({ onBack, onSelectMode }) {
         {
             id: 'duel',
             icon: '⚡',
-            title: 'Brain Duel',
+            title: 'ClueShift 1v1 Duel',
             description:
                 'Invite a rival, race through the same five questions and see who earns the most points.',
             skills: ['Head-to-head', 'Strategy', 'Speed'],
@@ -54,7 +54,7 @@ function GamesHub({ onBack, onSelectMode }) {
                     EXPLORE YOUR MIND
                 </span>
 
-                <h1>Welcome to BrainBuzz Games</h1>
+                <h1>Welcome to ClueShift Games</h1>
 
                 <p>
                     Challenge your thinking, train your brain and expand
@@ -73,7 +73,7 @@ function GamesHub({ onBack, onSelectMode }) {
                         </div>
 
                         <span className="games-hub-label">
-                            BRAINBUZZ GAME MODE
+                            CLUESHIFT GAME MODE
                         </span>
 
                         <h2>{mode.title}</h2>

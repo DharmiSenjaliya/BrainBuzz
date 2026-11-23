@@ -39,7 +39,7 @@ class DailyGameAiService
         ];
 
         $prompt = "
-Create a BrainBuzz daily mini game.
+Create a ClueShift daily mini game.
 
 Game type: {$gameType}
 Date: {$date}

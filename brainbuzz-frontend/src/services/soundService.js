@@ -3,8 +3,8 @@
 class SoundService {
     constructor() {
         this.ctx = null
-        this.muted = localStorage.getItem('brainbuzz_sfx_muted') === 'true'
-        this.bgmMuted = localStorage.getItem('brainbuzz_bgm_muted') !== 'false' // BGM off by default
+        this.muted = (localStorage.getItem('clueshift_sfx_muted') ?? localStorage.getItem('brainbuzz_sfx_muted')) === 'true'
+        this.bgmMuted = (localStorage.getItem('clueshift_bgm_muted') ?? localStorage.getItem('brainbuzz_bgm_muted')) !== 'false' // BGM off by default
         this.bgmOsc1 = null
         this.bgmOsc2 = null
         this.bgmGain = null
@@ -29,7 +29,7 @@ class SoundService {
 
     toggleSound() {
         this.muted = !this.muted
-        localStorage.setItem('brainbuzz_sfx_muted', String(this.muted))
+        localStorage.setItem('clueshift_sfx_muted', String(this.muted))
         if (!this.muted) {
             this.playClick()
         }
@@ -246,7 +246,7 @@ class SoundService {
     // Ambient Cyber Lo-Fi BGM Toggle
     toggleBgm() {
         this.bgmMuted = !this.bgmMuted
-        localStorage.setItem('brainbuzz_bgm_muted', String(this.bgmMuted))
+        localStorage.setItem('clueshift_bgm_muted', String(this.bgmMuted))
 
         if (this.bgmMuted) {
             this.stopBgm()

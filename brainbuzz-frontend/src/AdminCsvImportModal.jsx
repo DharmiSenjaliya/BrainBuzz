@@ -119,7 +119,7 @@ export default function AdminCsvImportModal({ isOpen, onClose, onImportSuccess }
                             ) : (
                                 <>
                                     <strong>Click or drag CSV file here</strong>
-                                    <span>Supports .csv files formatted with BrainBuzz question columns</span>
+                                    <span>Supports .csv files formatted with ClueShift question columns</span>
                                 </>
                             )}
                         </label>

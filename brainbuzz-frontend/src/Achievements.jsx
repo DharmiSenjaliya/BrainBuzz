@@ -159,7 +159,7 @@ function Achievements({ onBack }) {
                 <div className="achievements-hero-copy">
                     <span className="achievements-eyebrow">
                         <span className="achievements-live-dot" />
-                        YOUR BRAINBUZZ TROPHY ROOM
+                        YOUR CLUESHIFT TROPHY ROOM
                     </span>
                     <h1>Proof you <span>played to win.</span></h1>
                     <p>

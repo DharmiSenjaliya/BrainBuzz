@@ -159,7 +159,7 @@ function HowToPlay({ onBack, onStart }) {
                 <div className="how-hero-copy">
                     <span className="how-eyebrow"><span /> THE PLAYER'S FIELD GUIDE</span>
                     <h1>Play smart. <span>Level up.</span></h1>
-                    <p>Six quick moves to turn your next BrainBuzz session into a winning streak.</p>
+                    <p>Six quick moves to turn your next ClueShift session into a winning streak.</p>
                 </div>
 
                 <div className="how-hero-console" aria-label="Game stats: 3 tries, 3 hints, earn stars">

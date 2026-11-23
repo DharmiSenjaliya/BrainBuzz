@@ -11,8 +11,8 @@
     z-index: 0;
     pointer-events: none;
     overflow: hidden;
-    background: radial-gradient(circle at 50% 45%, rgba(14, 12, 38, 0.6) 0%, rgba(6, 5, 18, 0.95) 100%),
-                url('/brainbuzz-3d-splash.jpg') no-repeat center center / cover;
+    background: radial-gradient(circle at 50% 50%, rgba(6, 8, 26, 0.3) 0%, rgba(4, 5, 18, 0.85) 100%),
+                url('/clueshift-3d-splash.jpg?v=3') no-repeat center center / cover;
 }
 
 .game-wallpaper-canvas-container {

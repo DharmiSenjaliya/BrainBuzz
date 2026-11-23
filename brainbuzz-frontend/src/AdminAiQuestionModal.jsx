@@ -125,14 +125,14 @@ export default function AdminAiQuestionModal({ isOpen, onClose, categories = [],
                 <div className="admin-modal-header">
                     <div>
                         <h2>AI Question Generator</h2>
-                        <p>Generate 5-clue trivia questions automatically.</p>
+                        <p>Generate 5-clue ClueShift questions automatically.</p>
                     </div>
                     <button className="admin-modal-close" onClick={onClose}>✕</button>
                 </div>
 
                 <form onSubmit={handleGenerate} className="ai-form">
                     <div className="ai-input-group">
-                        <label>Trivia Topic / Theme:</label>
+                        <label>ClueShift Topic / Theme:</label>
                         <input
                             type="text"
                             placeholder="e.g. Space, World History, Cyber Security, Marvel..."

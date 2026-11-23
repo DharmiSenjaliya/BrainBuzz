@@ -70,7 +70,7 @@ const extractAuthToken = (data) => {
 }
 
 // NAVBAR COMPONENT
-function Navbar({ user, onLogout, onOpenRewards, onOpenStore }) {
+function Navbar({ user, onLogout, onOpenRewards, onOpenStore, score = 0 }) {
     const [notifications, setNotifications] = useState([])
     const [unreadCount, setUnreadCount] = useState(0)
     const [showNotifications, setShowNotifications] = useState(false)
@@ -175,7 +175,7 @@ function Navbar({ user, onLogout, onOpenRewards, onOpenStore }) {
 
     return (
         <header className="navbar">
-            <h2>🧠 BrainBuzz</h2>
+            <h2>⚡ ClueShift</h2>
 
             <div className="user-area">
                 <button
@@ -187,7 +187,8 @@ function Navbar({ user, onLogout, onOpenRewards, onOpenStore }) {
                         if (onOpenRewards) onOpenRewards()
                     }}
                 >
-                    🎁 Rewards
+                    <span className="pill-icon">🎁</span>
+                    <span className="pill-text">Rewards</span>
                 </button>
 
                 <button
@@ -200,7 +201,7 @@ function Navbar({ user, onLogout, onOpenRewards, onOpenStore }) {
                     }}
                 >
                     <span className="nav-shop-icon">🪙</span>
-                    <span className="nav-coin-count">{score > 0 ? score.toLocaleString() : 'Store'}</span>
+                    <span className="nav-coin-count">{(score || user?.coins || 0) > 0 ? (score || user?.coins || 0).toLocaleString() : 'Store'}</span>
                     <span className="nav-shop-plus">+</span>
                 </button>
 
@@ -218,7 +219,7 @@ function Navbar({ user, onLogout, onOpenRewards, onOpenStore }) {
 
                 <button
                     type="button"
-                    className="nav-audio-toggle"
+                    className="nav-audio-toggle bgm-toggle"
                     title={isBgmMuted ? 'Play Ambient Music' : 'Pause Ambient Music'}
                     onClick={() => {
                         const next = soundService.toggleBgm()
@@ -341,7 +342,7 @@ function Navbar({ user, onLogout, onOpenRewards, onOpenStore }) {
                     )}
                 </div>
 
-                <span>Hi, {user.name}</span>
+                <span className="user-greeting">Hi, {user.name}</span>
 
                 <button className="logout-btn" onClick={onLogout}>
                     Logout
@@ -462,6 +463,7 @@ function App() {
     const [loading, setLoading] = useState(false)
     const [checking, setChecking] = useState(false)
     const [showDashboard, setShowDashboard] = useState(true)
+    const [mobileDashboardTab, setMobileDashboardTab] = useState('play') // 'play' (lobby) | 'levels' | 'stats'
 
     const [savingResult, setSavingResult] = useState(false)
     const [resultSaved, setResultSaved] = useState(false)
@@ -1367,7 +1369,7 @@ const checkAnswer = async () => {
             <div className={`app auth-page ${theme}-theme game-view-wrapper`}>
                 <GameWallpaper3D level={1} />
                 <main className="auth-container glassmorphic">
-                    <div className="auth-logo">🧠 BrainBuzz</div>
+                    <div className="auth-logo">⚡ ClueShift</div>
 
                     <p className="auth-subtitle">
                         Train Your Brain, Challenge Yourself!
@@ -1401,7 +1403,7 @@ const checkAnswer = async () => {
 
                     <p className="auth-description">
                         {authMode === 'login'
-                            ? 'Login to continue playing BrainBuzz.'
+                            ? 'Login to continue playing ClueShift.'
                             : 'Create your account and start playing.'}
                     </p>
 
@@ -1510,6 +1512,7 @@ const checkAnswer = async () => {
         <>
             <Navbar
                 user={user}
+                score={score}
                 onLogout={handleLogout}
                 theme={theme}
                 onOpenRewards={() => setShowDailyRewardModal(true)}
@@ -1557,7 +1560,7 @@ const checkAnswer = async () => {
         return (
             <div className={`app ${theme}-theme`}>
                 {navbar}
-                <h2 className="loading">Loading BrainBuzz...</h2>
+                <h2 className="loading">Loading ClueShift...</h2>
             </div>
         )
     }
@@ -1664,7 +1667,7 @@ if (showDailyMiniGames) {
     }
 
 
-    // BRAINBUZZ GAMES HUB
+    // CLUESHIFT GAMES HUB
 if (showGamesHub) {
     return (
         <div className={`app ${theme}-theme`}>
@@ -1705,7 +1708,7 @@ if (showGamesHub) {
     )
 }
 
-    // BRAINBUZZ BRAIN TRAINING
+    // CLUESHIFT BRAIN TRAINING
 if (selectedGameMode === 'training') {
     return (
         <div className={`app ${theme}-theme`}>
@@ -1770,12 +1773,13 @@ if (showDashboard) {
             <div className={`app ${theme}-theme`}>
                 {navbar}
 
-                <main className="dashboard-container dashboard-arcade">
+                <main className={`dashboard-container dashboard-arcade tab-active-${mobileDashboardTab}`}>
                     <HeroGameBanner
                         currentLevel={currentUnlockedLevel}
                         onPlay={() => startLevel(currentUnlockedLevel)}
                         onExploreGames={() => setShowGamesHub(true)}
                         onLeaderboard={() => setShowLeaderboard(true)}
+                        onViewLevels={() => setMobileDashboardTab('levels')}
                         userName={user.name}
                     />
 
@@ -1828,7 +1832,7 @@ if (showDashboard) {
                     <section className="dashboard-game">
                         <div className="dashboard-game-heading">
                             <span className="dashboard-section-kicker">MAIN CAMPAIGN</span>
-                            <h2><span aria-hidden="true">🧠</span> BrainBuzz Levels</h2>
+                            <h2><span aria-hidden="true">⚡</span> ClueShift Levels</h2>
                             <p>Clear at least 3 questions to unlock the next level.</p>
                         </div>
                       
@@ -2022,12 +2026,63 @@ if (showDashboard) {
                                                         onClick={() => setShowFeedback(true)}
                                                     >
                                                         <span className="dashboard-shortcut-icon">💬</span>
-                                                        <span className="dashboard-shortcut-copy">Share Feedback<small>Help make BrainBuzz better</small></span>
+                                                        <span className="dashboard-shortcut-copy">Share Feedback<small>Help make ClueShift better</small></span>
                                                         <i aria-hidden="true">↗</i>
                                                     </button>
                                                 </section>
                     </section>
                 </main>
+
+                {/* Real Mobile Game Console Bottom Nav Bar */}
+                <nav className="mobile-game-bottom-nav" aria-label="Game Navigation">
+                    <button
+                        type="button"
+                        className={`mobile-nav-btn ${mobileDashboardTab === 'play' ? 'active' : ''}`}
+                        onClick={() => {
+                            soundService.playClick()
+                            setMobileDashboardTab('play')
+                        }}
+                    >
+                        <span className="mobile-nav-icon">🎮</span>
+                        <span className="mobile-nav-label">Play</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        className={`mobile-nav-btn ${mobileDashboardTab === 'levels' ? 'active' : ''}`}
+                        onClick={() => {
+                            soundService.playClick()
+                            setMobileDashboardTab('levels')
+                        }}
+                    >
+                        <span className="mobile-nav-icon">⚡</span>
+                        <span className="mobile-nav-label">Levels</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        className={`mobile-nav-btn ${mobileDashboardTab === 'stats' ? 'active' : ''}`}
+                        onClick={() => {
+                            soundService.playClick()
+                            setMobileDashboardTab('stats')
+                        }}
+                    >
+                        <span className="mobile-nav-icon">📊</span>
+                        <span className="mobile-nav-label">Stats</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        className="mobile-nav-btn"
+                        onClick={() => {
+                            soundService.playClick()
+                            setShowGamesHub(true)
+                        }}
+                    >
+                        <span className="mobile-nav-icon">🕹️</span>
+                        <span className="mobile-nav-label">Arcade</span>
+                    </button>
+                </nav>
             </div>
         )
     }

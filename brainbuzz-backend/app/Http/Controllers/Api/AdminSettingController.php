@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Cache;
 class AdminSettingController extends Controller
 {
     private $defaultSettings = [
-        'app_name' => 'BrainBuzz Cyber Trivia',
+        'app_name' => 'ClueShift Cyber Puzzle',
         'currency_name' => 'Coins',
         'default_timer_seconds' => 30,
         'points_per_correct' => 10,
@@ -18,12 +18,12 @@ class AdminSettingController extends Controller
         'maintenance_mode' => false,
         'ads_enabled' => true,
         'adsense_publisher_id' => 'ca-pub-0000000000000000',
-        'contact_email' => 'support@brainbuzz.game',
+        'contact_email' => 'support@clueshift.game',
     ];
 
     public function getSettings()
     {
-        $settings = Cache::get('brainbuzz_system_settings', $this->defaultSettings);
+        $settings = Cache::get('clueshift_system_settings', $this->defaultSettings);
         return response()->json([
             'success' => true,
             'settings' => $settings,
@@ -32,7 +32,7 @@ class AdminSettingController extends Controller
 
     public function updateSettings(Request $request)
     {
-        $current = Cache::get('brainbuzz_system_settings', $this->defaultSettings);
+        $current = Cache::get('clueshift_system_settings', $this->defaultSettings);
 
         $validated = $request->validate([
             'app_name' => 'nullable|string|max:100',
@@ -48,7 +48,7 @@ class AdminSettingController extends Controller
         ]);
 
         $updated = array_merge($current, array_filter($validated, fn($val) => !is_null($val)));
-        Cache::forever('brainbuzz_system_settings', $updated);
+        Cache::forever('clueshift_system_settings', $updated);
 
         return response()->json([
             'success' => true,

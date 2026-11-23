@@ -195,7 +195,7 @@ setStreak(data.streak || {
         <main className="daily-challenge-page">
             <div className="daily-challenge-header">
                 <div>
-                    <p className="daily-eyebrow">BRAINBUZZ SPECIAL</p>
+                    <p className="daily-eyebrow">CLUESHIFT SPECIAL</p>
                     <h1>🎯 Daily Challenge</h1>
                     <p>Complete all 5 questions and earn bonus points!</p>
                 </div>

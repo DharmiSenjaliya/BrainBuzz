@@ -406,7 +406,7 @@ const saveResult = async (gameData) => {
 
             <header className="training-heading">
                 <div className="training-heading-copy">
-                    <span className="training-eyebrow"><i /> BRAINBUZZ BRAIN TRAINING</span>
+                    <span className="training-eyebrow"><i /> CLUESHIFT BRAIN TRAINING</span>
                     <h1>Power up your <strong>brain.</strong></h1>
                     <p>Sharpen your memory, focus and reflexes with quick, playful challenges.</p>
                 </div>

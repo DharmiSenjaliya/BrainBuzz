@@ -230,7 +230,7 @@ function Profile({ user, onBack, onEditProfile, onChangePassword }) {
                     </div>
 
                     <div className="profile-identity-copy">
-                        <span className="profile-player-tag">BRAINBUZZ PLAYER</span>
+                        <span className="profile-player-tag">CLUESHIFT PLAYER</span>
                         <h2>{name}</h2>
                         <p className="profile-email">{email}</p>
                     </div>
@@ -335,7 +335,7 @@ function Profile({ user, onBack, onEditProfile, onChangePassword }) {
                         <span className="no-history-icon" aria-hidden="true">🕹️</span>
                         <span className="profile-section-kicker">YOUR FIRST RUN IS WAITING</span>
                         <h3>No games played yet</h3>
-                        <p>Start playing BrainBuzz and your game sessions will appear here.</p>
+                        <p>Start playing ClueShift and your game sessions will appear here.</p>
                     </div>
                 ) : (
                     <div className="game-history-list">

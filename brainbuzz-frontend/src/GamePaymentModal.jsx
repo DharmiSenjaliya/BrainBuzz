@@ -78,8 +78,8 @@ export default function GamePaymentModal({ isOpen, pack, onClose, onSuccess }) {
     }
 
     // Direct UPI Payment Link (upi://pay)
-    const merchantUpiId = 'brainbuzz.games@okhdfcbank'
-    const upiIntentUri = `upi://pay?pa=${merchantUpiId}&pn=BrainBuzzGaming&am=${numericAmount.toFixed(2)}&cu=INR&tn=${encodeURIComponent(pack.name + ' BrainBuzz')}`
+    const merchantUpiId = 'clueshift.games@okhdfcbank'
+    const upiIntentUri = `upi://pay?pa=${merchantUpiId}&pn=ClueShiftGaming&am=${numericAmount.toFixed(2)}&cu=INR&tn=${encodeURIComponent(pack.name + ' ClueShift')}`
     const upiQrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(upiIntentUri)}&bgcolor=1c1b1f&color=ffffff&margin=4`
 
     // Verify Direct UPI Payment with UTR
@@ -161,12 +161,12 @@ export default function GamePaymentModal({ isOpen, pack, onClose, onSuccess }) {
                 key: activeKey,
                 amount: numericAmount * 100,
                 currency: 'INR',
-                name: 'BrainBuzz Trivia Gaming',
+                name: 'ClueShift Puzzle Gaming',
                 description: `${pack.name} (+${pack.coins.toLocaleString()} Coins)`,
                 image: 'https://cdn-icons-png.flaticon.com/512/807/807262.png',
                 prefill: {
                     name: localStorage.getItem('brainbuzz_user_name') || 'Player',
-                    email: localStorage.getItem('brainbuzz_user_email') || 'player@brainbuzz.com',
+                    email: localStorage.getItem('brainbuzz_user_email') || 'player@clueshift.com',
                     contact: '9876543210',
                 },
                 theme: {
@@ -277,7 +277,7 @@ export default function GamePaymentModal({ isOpen, pack, onClose, onSuccess }) {
                                 </div>
                                 <div className="play-item-text">
                                     <div className="play-item-name">{pack.name}</div>
-                                    <div className="play-item-app">BrainBuzz Trivia</div>
+                                    <div className="play-item-app">ClueShift Puzzle</div>
                                 </div>
                             </div>
                             <div className="play-item-price-box">

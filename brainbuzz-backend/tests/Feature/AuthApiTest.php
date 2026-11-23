@@ -16,7 +16,7 @@ class AuthApiTest extends TestCase
     public function test_registration_and_player_login_work(): void
     {
         $this->postJson('/api/register', [
-            'name' => 'BrainBuzz Player',
+            'name' => 'ClueShift Player',
             'email' => 'player@example.test',
             'password' => 'StrongPass123!',
             'password_confirmation' => 'StrongPass123!',

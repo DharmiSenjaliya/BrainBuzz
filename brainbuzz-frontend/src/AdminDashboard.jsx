@@ -103,7 +103,7 @@ const [dailyChallengeForm, setDailyChallengeForm] = useState({
             const url = window.URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
-            a.download = `brainbuzz-questions-${new Date().toISOString().slice(0, 10)}.csv`
+            a.download = `clueshift-questions-${new Date().toISOString().slice(0, 10)}.csv`
             document.body.appendChild(a)
             a.click()
             window.URL.revokeObjectURL(url)
@@ -1516,10 +1516,10 @@ const handleDeletePlayer = async (id) => {
 
             <header className="admin-header">
                 <div className="admin-brand">
-                    <div className="admin-logo">B</div>
+                    <div className="admin-logo">C</div>
 
                     <div>
-                        <h2>BrainBuzz Admin</h2>
+                        <h2>ClueShift Admin</h2>
                         <span>Management Dashboard</span>
                     </div>
                 </div>
@@ -1674,7 +1674,7 @@ const handleDeletePlayer = async (id) => {
                                     <h1>Welcome back, {admin?.name || 'Admin'}</h1>
 
                                     <p>
-                                        Manage BrainBuzz content and player feedback from one place.
+                                        Manage ClueShift content and player feedback from one place.
                                     </p>
                                 </div>
 
@@ -1844,7 +1844,7 @@ const handleDeletePlayer = async (id) => {
                                     <h1>Questions</h1>
 
                                     <p>
-                                        Add, edit and manage BrainBuzz questions.
+                                        Add, edit and manage ClueShift questions.
                                     </p>
                                 </div>
 
@@ -2157,7 +2157,7 @@ const handleDeletePlayer = async (id) => {
                                     </span>
                                     <h1>Categories</h1>
                                     <p>
-                                        Manage question categories for BrainBuzz.
+                                        Manage question categories for ClueShift.
                                     </p>
                                 </div>
 
@@ -2330,7 +2330,7 @@ const handleDeletePlayer = async (id) => {
             <div>
                 <span className="admin-eyebrow">PLAYER VOICE</span>
                 <h1>Player Feedback</h1>
-                <p>See how players feel about their BrainBuzz experience.</p>
+                <p>See how players feel about their ClueShift experience.</p>
             </div>
 
             <button
@@ -2684,7 +2684,7 @@ const handleDeletePlayer = async (id) => {
                                     <h1>Player Management</h1>
 
                                     <p>
-                                        Manage registered BrainBuzz players.
+                                        Manage registered ClueShift players.
                                     </p>
                                 </div>
                             </div>

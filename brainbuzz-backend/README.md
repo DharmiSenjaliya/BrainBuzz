@@ -65,7 +65,7 @@ The `app:rotate-daily-game` scheduler generates and publishes a new AI mini game
 On a Linux host, install this cron entry using the absolute path to the backend:
 
 ```cron
-* * * * * cd /path/to/brainbuzz-backend && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /path/to/clueshift-backend && php artisan schedule:run >> /dev/null 2>&1
 ```
 
 For local development on Windows, keep this command running in a terminal (or use `composer run dev`):

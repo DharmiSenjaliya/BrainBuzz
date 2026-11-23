@@ -302,7 +302,7 @@
     color: #dbe5f4;
 }
 
-/* Player dashboard and core BrainBuzz game */
+/* Player dashboard and core ClueShift game */
 
 .app.dark-theme .dashboard-container {
     width: min(calc(100% - 36px), 1180px);
@@ -1136,34 +1136,116 @@
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
     .app.dark-theme .navbar {
-        gap: 10px;
-        padding: 12px 14px;
+        min-height: 56px;
+        padding: 8px 14px;
+        gap: 8px;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: space-between;
     }
 
     .app.dark-theme .navbar h2 {
-        font-size: 20px;
+        font-size: 18px;
+        white-space: nowrap;
+        margin: 0;
+        flex-shrink: 0;
     }
 
     .app.dark-theme .user-area {
-        width: 100%;
+        width: auto;
         justify-content: flex-end;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        gap: 6px;
+        flex-shrink: 1;
+        min-width: 0;
     }
 
-    .app.dark-theme .user-area > span {
-        margin-right: auto;
+    .app.dark-theme .user-area > span.user-greeting {
+        display: none;
+    }
+
+    .app.dark-theme .nav-audio-toggle.bgm-toggle {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .app.dark-theme .navbar {
+        gap: 4px;
+        padding: 8px 10px;
+        min-height: 52px;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .app.dark-theme .navbar h2 {
+        font-size: 15px;
+        white-space: nowrap;
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+    .app.dark-theme .user-area {
+        width: auto;
+        justify-content: flex-end;
+        flex-wrap: nowrap;
+        gap: 4px;
+        flex-shrink: 1;
+        min-width: 0;
+    }
+
+    .app.dark-theme .user-area > span.user-greeting {
+        display: none;
+    }
+
+    .app.dark-theme .user-area > span:not(.user-greeting) {
+        font-size: 11px;
+    }
+
+    .app.dark-theme .nav-action-pill {
+        padding: 4px 6px;
+        font-size: 11px;
+    }
+
+    .app.dark-theme .nav-action-pill.rewards .pill-text {
+        display: none;
+    }
+
+    .app.dark-theme .nav-audio-toggle.bgm-toggle {
+        display: none;
+    }
+
+    .app.dark-theme .nav-audio-toggle {
+        width: 26px;
+        height: 26px;
         font-size: 12px;
+        padding: 0;
+    }
+
+    .app.dark-theme .notification-bell-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
+    }
+
+    .app.dark-theme .logout-btn {
+        padding: 4px 7px;
+        font-size: 10.5px;
+        border-radius: 8px;
     }
 
     .app.dark-theme .notification-dropdown {
         position: fixed;
-        top: 120px;
+        top: 62px;
         right: 12px;
         left: 12px;
         width: auto;
-        max-height: min(70vh, 560px);
+        max-height: min(75vh, 560px);
     }
 
     .app.dark-theme .auth-container {
@@ -1574,18 +1656,19 @@
 .app.dark-theme .dashboard-arcade .dashboard-game-heading p {
     margin-bottom: 0;
     color: #9da9c7;
-    font-size: 9px;
+    font-size: 13px;
     text-align: center;
 }
 
 .app.dark-theme .dashboard-arcade .player-category-filter {
     max-width: 390px;
-    margin: 20px auto 10px;
+    margin: 16px auto 10px;
 }
 
 .app.dark-theme .dashboard-arcade .player-category-filter label {
     color: #c3b4ff;
-    font-size: 9px;
+    font-size: 12px;
+    font-weight: 600;
 }
 
 .app.dark-theme .dashboard-arcade .player-category-filter select {
@@ -2545,19 +2628,21 @@
     }
 
     .app.dark-theme .dashboard-arcade .dashboard-welcome-copy > p:not(.level) {
-        font-size: 9px;
+        font-size: 13px;
+        line-height: 1.5;
     }
 
     .dashboard-welcome-meta {
-        gap: 5px;
+        gap: 6px;
         margin-top: 12px;
+        flex-wrap: wrap;
     }
 
     .dashboard-welcome-meta > span {
-        min-height: 24px;
+        min-height: 26px;
         gap: 5px;
-        padding: 0 7px;
-        font-size: 5px;
+        padding: 2px 8px;
+        font-size: 11px;
     }
 
     .dashboard-hero-art {
@@ -2605,40 +2690,55 @@
     }
 
     .dashboard-hero-level small {
-        font-size: 5px;
+        font-size: 10px;
     }
 
     .dashboard-hero-level strong {
-        font-size: 7px;
+        font-size: 12px;
     }
 
     .app.dark-theme .dashboard-arcade .dashboard-stats {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px;
-        margin-bottom: 13px;
+        margin-bottom: 14px;
+    }
+
+    .app.dark-theme .dashboard-arcade .stat-card.stat-card-accuracy {
+        grid-column: 1 / -1;
     }
 
     .app.dark-theme .dashboard-arcade .stat-card {
-        min-height: 76px;
-        gap: 8px;
-        padding: 10px 9px;
-        border-radius: 13px;
+        min-height: 62px;
+        gap: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
     }
 
     .app.dark-theme .dashboard-arcade .stat-card .stat-icon {
-        width: 31px;
-        height: 31px;
-        flex-basis: 31px;
+        width: 36px;
+        height: 36px;
+        flex-basis: 36px;
+        flex-shrink: 0;
         border-radius: 10px;
-        font-size: 14px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .app.dark-theme .dashboard-arcade .stat-card p {
-        font-size: 6px;
+        font-size: 11px;
+        margin: 0 0 2px 0;
+        color: #94a3b8;
     }
 
     .app.dark-theme .dashboard-arcade .stat-card h2 {
         font-size: 18px;
+        margin: 0;
+        font-weight: 800;
+        color: #f8fafc;
     }
 
     .app.dark-theme .dashboard-arcade .games-hub-promo {
@@ -2656,8 +2756,9 @@
 
     .app.dark-theme .dashboard-arcade .games-hub-promo-button {
         min-height: 38px;
-        padding: 0 12px;
-        font-size: 8px;
+        padding: 0 14px;
+        font-size: 12px;
+        font-weight: 700;
     }
 
     .app.dark-theme .dashboard-arcade .dashboard-game {
@@ -2675,9 +2776,9 @@
     }
 
     .app.dark-theme .dashboard-arcade .level-card {
-        min-height: 157px;
-        gap: 7px;
-        padding: 12px 8px;
+        min-height: 145px;
+        gap: 6px;
+        padding: 12px 10px;
         border-radius: 13px;
     }
 
@@ -2688,33 +2789,34 @@
 
     .app.dark-theme .dashboard-arcade .level-pagination button {
         min-height: 38px;
-        padding: 0 8px;
-        font-size: 10px;
-    }
-
-    .app.dark-theme .dashboard-arcade .level-pagination > span {
-        font-size: 11px;
-    }
-
-    .app.dark-theme .dashboard-arcade .level-pagination small {
-        font-size: 9px;
-    }
-
-    .app.dark-theme .dashboard-arcade .level-card h3 {
+        padding: 0 10px;
         font-size: 12px;
     }
 
+    .app.dark-theme .dashboard-arcade .level-pagination > span {
+        font-size: 12px;
+    }
+
+    .app.dark-theme .dashboard-arcade .level-pagination small {
+        font-size: 11px;
+    }
+
+    .app.dark-theme .dashboard-arcade .level-card h3 {
+        font-size: 14px;
+    }
+
     .app.dark-theme .dashboard-arcade .level-card p {
-        font-size: 7px;
+        font-size: 11px;
     }
 
     .app.dark-theme .dashboard-arcade .level-card button {
-        min-height: 32px;
-        font-size: 8px;
+        min-height: 34px;
+        font-size: 12px;
+        font-weight: 700;
     }
 
     .app.dark-theme .dashboard-arcade .level-stars {
-        font-size: 13px;
+        font-size: 14px;
     }
 
     .dashboard-shortcuts {
@@ -2733,18 +2835,18 @@
     }
 
     .app.dark-theme .dashboard-arcade .dashboard-shortcuts > .dashboard-btn {
-        min-height: 59px;
+        min-height: 54px;
         grid-template-columns: 34px minmax(0, 1fr) 15px;
         padding: 8px 10px;
         border-radius: 12px;
     }
 
     .dashboard-shortcut-copy {
-        font-size: 8px;
+        font-size: 13px;
     }
 
     .dashboard-shortcut-copy small {
-        font-size: 6px;
+        font-size: 11px;
     }
 }
 
@@ -2933,5 +3035,180 @@
 
     .app.dark-theme .dashboard-arcade .dashboard-shortcut-copy small {
         font-size: 11px;
+    }
+}
+
+/* ==========================================================================
+   REAL MOBILE GAME CONSOLE NAVIGATION & DEDICATED TABS (LOBBY / LEVELS / STATS)
+   ========================================================================== */
+
+.mobile-game-bottom-nav {
+    display: none;
+}
+
+/* DESKTOP VIEW (> 768px): All dashboard sections remain visible simultaneously */
+@media (min-width: 769px) {
+    .dashboard-container .hero-section,
+    .dashboard-container .dashboard-stats,
+    .dashboard-container .games-hub-promo,
+    .dashboard-container .dashboard-game,
+    .dashboard-container .dashboard-shortcuts {
+        display: block !important;
+    }
+
+    .dashboard-container .dashboard-stats {
+        display: grid !important;
+    }
+
+    .mobile-game-bottom-nav {
+        display: none !important;
+    }
+}
+
+/* REAL MOBILE GAME VIEW (<= 768px): Dedicated Tabbed Experience */
+@media (max-width: 768px) {
+    .dashboard-container.dashboard-arcade {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 0 72px 0 !important;
+    }
+
+    /* Fixed Glassmorphic Mobile Console Bottom Bar */
+    .mobile-game-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 58px;
+        background: rgba(8, 12, 28, 0.96);
+        border-top: 1px solid rgba(56, 189, 248, 0.35);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        z-index: 9999;
+        align-items: center;
+        justify-content: space-around;
+        padding: 0 4px;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.15);
+    }
+
+    .mobile-nav-btn {
+        background: transparent;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        color: #94a3b8;
+        padding: 6px 10px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex: 1;
+        max-width: 80px;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile-nav-icon {
+        font-size: 19px;
+        line-height: 1;
+        transition: transform 0.2s ease;
+    }
+
+    .mobile-nav-label {
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: inherit;
+    }
+
+    .mobile-nav-btn.active {
+        color: #38bdf8;
+        background: rgba(56, 189, 248, 0.12);
+    }
+
+    .mobile-nav-btn.active .mobile-nav-icon {
+        transform: scale(1.15);
+        filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.8));
+    }
+
+    .mobile-nav-btn.active .mobile-nav-label {
+        color: #38bdf8;
+        text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+    }
+
+    /* ----------------------------------------------------
+       TAB 1: PLAY (FIRST PAGE / GAME LOBBY - EXACT RED BOX)
+       ---------------------------------------------------- */
+    .dashboard-container.tab-active-play .hero-section {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        min-height: calc(100dvh - 54px - 58px) !important;
+        width: 100% !important;
+        margin: 0 !important;
+        border-radius: 0 0 22px 22px !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-top: none !important;
+        padding: 18px 14px 16px !important;
+        box-sizing: border-box !important;
+    }
+
+    .dashboard-container.tab-active-play .hero-content {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        min-height: calc(100dvh - 54px - 58px - 34px) !important;
+        width: 100% !important;
+    }
+
+    .dashboard-container.tab-active-play .dashboard-stats,
+    .dashboard-container.tab-active-play .games-hub-promo,
+    .dashboard-container.tab-active-play .dashboard-game,
+    .dashboard-container.tab-active-play .dashboard-shortcuts {
+        display: none !important;
+    }
+
+    /* ----------------------------------------------------
+       TAB 2: LEVELS (MAIN CAMPAIGN & LEVELS GRID)
+       ---------------------------------------------------- */
+    .dashboard-container.tab-active-levels .hero-section,
+    .dashboard-container.tab-active-levels .dashboard-stats,
+    .dashboard-container.tab-active-levels .games-hub-promo,
+    .dashboard-container.tab-active-levels .dashboard-shortcuts {
+        display: none !important;
+    }
+
+    .dashboard-container.tab-active-levels .dashboard-game {
+        display: block !important;
+        padding: 20px 14px !important;
+        margin: 14px !important;
+        border-radius: 20px !important;
+    }
+
+    /* ----------------------------------------------------
+       TAB 3: STATS (PLAYER STATISTICS & CAREER OVERVIEW)
+       ---------------------------------------------------- */
+    .dashboard-container.tab-active-stats .hero-section,
+    .dashboard-container.tab-active-stats .games-hub-promo,
+    .dashboard-container.tab-active-stats .dashboard-game {
+        display: none !important;
+    }
+
+    .dashboard-container.tab-active-stats .dashboard-stats {
+        display: grid !important;
+        padding: 16px 14px 0 !important;
+        margin: 14px 14px 0 14px !important;
+    }
+
+    .dashboard-container.tab-active-stats .dashboard-shortcuts {
+        display: grid !important;
+        padding: 16px 14px !important;
+        margin: 14px !important;
     }
 }

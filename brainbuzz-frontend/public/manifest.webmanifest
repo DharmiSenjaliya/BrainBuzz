@@ -1,6 +1,6 @@
 {
-  "name": "BrainBuzz - Cyber Trivia & Brain Games",
-  "short_name": "BrainBuzz",
+  "name": "ClueShift - Cyber Clue Puzzle & Brain Games",
+  "short_name": "ClueShift",
   "description": "Engage your mind with 5-clue cyber puzzles, 1v1 PvP duels, memory training and daily tournaments.",
   "start_url": "/",
   "display": "standalone",

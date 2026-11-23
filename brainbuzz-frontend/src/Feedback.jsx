@@ -120,8 +120,8 @@ function Feedback({ onBack }) {
                 <PlayerBackButton onClick={onBack} />
 
                 <span className="feedback-brand">
-                    <span className="feedback-brand-icon">B</span>
-                    BrainBuzz
+                    <span className="feedback-brand-icon">C</span>
+                    ClueShift
                 </span>
             </div>
 
@@ -135,7 +135,7 @@ function Feedback({ onBack }) {
 
                     <h1>
                         Help us make
-                        <span> BrainBuzz better.</span>
+                        <span> ClueShift better.</span>
                     </h1>
 
                     <p>
@@ -164,12 +164,12 @@ function Feedback({ onBack }) {
                             <span className="feedback-journey-line" />
                             <div>
                                 <span>03</span>
-                                <i>Help BrainBuzz grow</i>
+                                <i>Help ClueShift grow</i>
                             </div>
                         </div>
                         <p className="feedback-journey-note">
                             <span aria-hidden="true">🔒</span>
-                            Your feedback is shared with the BrainBuzz team.
+                            Your feedback is shared with the ClueShift team.
                         </p>
                     </div>
                 </div>
@@ -180,7 +180,7 @@ function Feedback({ onBack }) {
                         <div>
                             <span className="feedback-step">YOUR EXPERIENCE</span>
                             <h2>How was your experience?</h2>
-                            <p>Rate your overall experience with BrainBuzz.</p>
+                            <p>Rate your overall experience with ClueShift.</p>
                         </div>
 
                         <div className="feedback-heading-icon">✦</div>
@@ -270,7 +270,7 @@ function Feedback({ onBack }) {
                 </form>
 
                 <div className="feedback-footer">
-                    Made with <span>♥</span> for the BrainBuzz community
+                    Made with <span>♥</span> for the ClueShift community
                 </div>
 
             </div>

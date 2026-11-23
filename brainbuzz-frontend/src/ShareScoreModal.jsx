@@ -18,7 +18,7 @@ export default function ShareScoreModal({ isOpen, onClose, scoreData, playerName
 
     const accuracy = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0
     const displayName = playerName || 'Brainiac'
-    const shareText = `🧠 I just scored ${score} pts with ${accuracy}% accuracy on Level ${level} in BrainBuzz! Can you beat my score? Play now: ${window.location.origin}`
+    const shareText = `🧠 I just scored ${score} pts with ${accuracy}% accuracy on Level ${level} in ClueShift! Can you beat my score? Play now: ${window.location.origin}`
 
     const handleCopy = () => {
         soundService.playClick()
@@ -70,7 +70,7 @@ export default function ShareScoreModal({ isOpen, onClose, scoreData, playerName
         // Title
         ctx.fillStyle = '#38bdf8'
         ctx.font = 'bold 24px Inter, sans-serif'
-        ctx.fillText('⚡ BRAINBUZZ TRIVIA CHAMPION', 40, 60)
+        ctx.fillText('⚡ CLUESHIFT PUZZLE CHAMPION', 40, 60)
 
         // Subtitle
         ctx.fillStyle = '#94a3b8'
@@ -94,7 +94,7 @@ export default function ShareScoreModal({ isOpen, onClose, scoreData, playerName
         // Footer
         ctx.fillStyle = '#64748b'
         ctx.font = '14px Inter, sans-serif'
-        ctx.fillText('brainbuzz.game • Dare to challenge my brain!', 40, 320)
+        ctx.fillText('clueshift.game • Dare to challenge my brain!', 40, 320)
 
         // Trophy Emoji / Icon
         ctx.font = '72px Inter, sans-serif'
@@ -102,7 +102,7 @@ export default function ShareScoreModal({ isOpen, onClose, scoreData, playerName
 
         // Download
         const link = document.createElement('a')
-        link.download = `brainbuzz-score-level-${level}.png`
+        link.download = `clueshift-score-level-${level}.png`
         link.href = canvas.toDataURL('image/png')
         link.click()
     }
@@ -122,16 +122,16 @@ export default function ShareScoreModal({ isOpen, onClose, scoreData, playerName
                 {/* Scorecard preview */}
                 <div className="scorecard-preview" ref={cardRef}>
                     <div className="card-top">
-                        <span className="card-brand">⚡ BRAINBUZZ</span>
+                        <span className="card-brand">⚡ CLUESHIFT</span>
                         <span className="card-level">Level {level} {passed ? '✓ Cleared' : ''}</span>
                     </div>
 
                     <div className="card-body">
                         <div className="card-player-row">
-                            <span className="card-avatar">🧠</span>
+                            <span className="card-avatar">⚡</span>
                             <div>
                                 <h3 className="card-player-name">{displayName}</h3>
-                                <span className="card-badge-pill">Trivia Master</span>
+                                <span className="card-badge-pill">Puzzle Master</span>
                             </div>
                         </div>
 

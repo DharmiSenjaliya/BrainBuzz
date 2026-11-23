@@ -1,5 +1,5 @@
 /* ========================================
-   BRAINBUZZ - GLOBAL CSS
+   CLUESHIFT - GLOBAL CSS
 ======================================== */
 
 * {
@@ -356,6 +356,10 @@ button:disabled {
   transition: all 0.3s ease;
 }
 
+.clue-box .clue:last-child:nth-child(odd) {
+  grid-column: span 2;
+}
+
 .clue:hover {
   background: #6255d9;
   color: #ffffff;
@@ -656,34 +660,53 @@ body.dark-theme .auth-page {
 @media (max-width: 768px) {
 
   .navbar {
-    padding: 15px 4%;
-  }
-
-  .navbar h2 {
-    font-size: 21px;
-  }
-
-  .user-area {
-    gap: 9px;
-  }
-
-  .game-container {
-    width: 94%;
-    margin: 30px auto;
-    padding: 28px 20px;
-  }
-
-  .game-container h1 {
-    font-size: 28px;
-  }
-
-  .clue-box {
-    padding: 15px;
+    padding: 12px 18px;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
     gap: 10px;
   }
 
+  .navbar h2 {
+    font-size: 19px;
+    white-space: nowrap;
+    margin: 0;
+  }
+
+  .user-area {
+    gap: 8px;
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+
+  .user-area span.user-greeting {
+    display: none;
+  }
+
+  .nav-audio-toggle.bgm-toggle {
+    display: none;
+  }
+
+  .game-container {
+    width: 95%;
+    margin: 20px auto;
+    padding: 24px 16px;
+  }
+
+  .game-container h1 {
+    font-size: 26px;
+  }
+
+  .clue-box {
+    padding: 12px;
+    gap: 8px;
+  }
+
   .clue {
-    padding: 14px 8px;
+    padding: 12px 8px;
     font-size: 13px;
   }
 }
@@ -691,41 +714,79 @@ body.dark-theme .auth-page {
 @media (max-width: 480px) {
 
   .navbar {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 15px 5%;
+    padding: 10px 12px;
+    min-height: 54px;
+    gap: 6px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
   }
 
   .navbar h2 {
-    font-size: 22px;
+    font-size: 17px;
+    letter-spacing: -0.2px;
+    white-space: nowrap;
   }
 
   .user-area {
-    width: 100%;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    gap: 5px;
+    width: auto;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+  }
+
+  .user-area span.user-greeting {
+    display: none;
+  }
+
+  .nav-audio-toggle.bgm-toggle {
+    display: none;
   }
 
   .user-area span {
+    font-size: 11px;
+  }
+
+  .nav-action-pill {
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+
+  .nav-action-pill.rewards .pill-text {
+    display: none;
+  }
+
+  .nav-audio-toggle {
+    width: 26px;
+    height: 26px;
     font-size: 12px;
+    padding: 0;
+  }
+
+  .notification-bell-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
   }
 
   .theme-btn,
   .logout-btn {
-    padding: 8px 11px;
-    font-size: 12px;
+    padding: 4px 7px;
+    font-size: 10.5px;
+    border-radius: 8px;
   }
 
   .auth-container {
-    padding: 30px 20px;
+    padding: 24px 16px;
   }
 
   .auth-logo {
-    font-size: 29px;
+    font-size: 26px;
   }
 
   .auth-container h2 {
-    font-size: 22px;
+    font-size: 20px;
   }
 
   .game-container {
@@ -2176,7 +2237,7 @@ body.dark-theme .auth-page {
 
 
 /* =================================
-   BRAINBUZZ NOTIFICATION SYSTEM
+   CLUESHIFT NOTIFICATION SYSTEM
 ================================= */
 
 .notification-wrapper {
@@ -2384,7 +2445,7 @@ body.dark-theme .auth-page {
 }
 
 
-/* BrainBuzz Levels Section */
+/* ClueShift Levels Section */
 .level-cards {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -2585,7 +2646,7 @@ body.dark-theme .auth-page {
 }
 
 
-/* BRAINBUZZ GAMES HUB PROMO */
+/* CLUESHIFT GAMES HUB PROMO */
 
 .games-hub-promo {
     display: flex;
@@ -2936,4 +2997,170 @@ body.dark-theme .auth-page {
     0% { transform: scale(0.95); opacity: 0; }
     50% { transform: scale(1.02); }
     100% { transform: scale(1); opacity: 1; }
+}
+
+/* ==========================================================================
+   REAL MOBILE GAME CONSOLE NAVIGATION & DEDICATED TABS (LOBBY / LEVELS / STATS)
+   ========================================================================== */
+
+.mobile-game-bottom-nav {
+    display: none;
+}
+
+@media (min-width: 769px) {
+    .dashboard-container .hero-section,
+    .dashboard-container .dashboard-stats,
+    .dashboard-container .games-hub-promo,
+    .dashboard-container .dashboard-game,
+    .dashboard-container .dashboard-shortcuts {
+        display: block !important;
+    }
+
+    .dashboard-container .dashboard-stats {
+        display: grid !important;
+    }
+
+    .mobile-game-bottom-nav {
+        display: none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-container.dashboard-arcade {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 0 72px 0 !important;
+    }
+
+    .mobile-game-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 58px;
+        background: rgba(8, 12, 28, 0.96);
+        border-top: 1px solid rgba(56, 189, 248, 0.35);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        z-index: 9999;
+        align-items: center;
+        justify-content: space-around;
+        padding: 0 4px;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(56, 189, 248, 0.15);
+    }
+
+    .mobile-nav-btn {
+        background: transparent;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        color: #94a3b8;
+        padding: 6px 10px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex: 1;
+        max-width: 80px;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile-nav-icon {
+        font-size: 19px;
+        line-height: 1;
+        transition: transform 0.2s ease;
+    }
+
+    .mobile-nav-label {
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: inherit;
+    }
+
+    .mobile-nav-btn.active {
+        color: #38bdf8;
+        background: rgba(56, 189, 248, 0.12);
+    }
+
+    .mobile-nav-btn.active .mobile-nav-icon {
+        transform: scale(1.15);
+        filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.8));
+    }
+
+    .mobile-nav-btn.active .mobile-nav-label {
+        color: #38bdf8;
+        text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+    }
+
+    /* TAB 1: PLAY (FIRST PAGE / GAME LOBBY - EXACT RED BOX) */
+    .dashboard-container.tab-active-play .hero-section {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        min-height: calc(100dvh - 54px - 58px) !important;
+        width: 100% !important;
+        margin: 0 !important;
+        border-radius: 0 0 22px 22px !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-top: none !important;
+        padding: 18px 14px 16px !important;
+        box-sizing: border-box !important;
+    }
+
+    .dashboard-container.tab-active-play .hero-content {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        min-height: calc(100dvh - 54px - 58px - 34px) !important;
+        width: 100% !important;
+    }
+
+    .dashboard-container.tab-active-play .dashboard-stats,
+    .dashboard-container.tab-active-play .games-hub-promo,
+    .dashboard-container.tab-active-play .dashboard-game,
+    .dashboard-container.tab-active-play .dashboard-shortcuts {
+        display: none !important;
+    }
+
+    /* TAB 2: LEVELS (MAIN CAMPAIGN & LEVELS GRID) */
+    .dashboard-container.tab-active-levels .hero-section,
+    .dashboard-container.tab-active-levels .dashboard-stats,
+    .dashboard-container.tab-active-levels .games-hub-promo,
+    .dashboard-container.tab-active-levels .dashboard-shortcuts {
+        display: none !important;
+    }
+
+    .dashboard-container.tab-active-levels .dashboard-game {
+        display: block !important;
+        padding: 20px 14px !important;
+        margin: 14px !important;
+        border-radius: 20px !important;
+    }
+
+    /* TAB 3: STATS (PLAYER STATISTICS & CAREER OVERVIEW) */
+    .dashboard-container.tab-active-stats .hero-section,
+    .dashboard-container.tab-active-stats .games-hub-promo,
+    .dashboard-container.tab-active-stats .dashboard-game {
+        display: none !important;
+    }
+
+    .dashboard-container.tab-active-stats .dashboard-stats {
+        display: grid !important;
+        padding: 16px 14px 0 !important;
+        margin: 14px 14px 0 14px !important;
+    }
+
+    .dashboard-container.tab-active-stats .dashboard-shortcuts {
+        display: grid !important;
+        padding: 16px 14px !important;
+        margin: 14px !important;
+    }
 }
