@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: clueshift-backend
+    runtime: docker
+    rootDir: ClueShift-backend
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        value: base64:VbRsv2Zzgmgj3pmcAluQq0PbopSYHsGHrAsLpLVGlUw=
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: DB_DATABASE
+        value: /var/www/html/database/database.sqlite
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://clue-shift.vercel.app,http://localhost:5173

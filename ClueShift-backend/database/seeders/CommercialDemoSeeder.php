@@ -72,9 +72,11 @@ class CommercialDemoSeeder extends Seeder
 
         $categoryModels = [];
         foreach ($categories as $cat) {
+            $slug = \Illuminate\Support\Str::slug($cat['name']);
             $categoryModels[$cat['name']] = Category::firstOrCreate(
                 ['name' => $cat['name']],
                 [
+                    'slug' => $slug,
                     'icon' => $cat['icon'],
                     'description' => $cat['description'],
                     'is_active' => true,
