@@ -13,13 +13,16 @@ export const API_BASE_URL = normalizeBaseUrl(
     configuredApiBaseUrl ||
         (import.meta.env.DEV
             ? 'http://127.0.0.1:8001/api'
-            : `${window.location.origin}/api`),
+            : 'https://clueshift-backend.onrender.com/api'),
     'VITE_API_BASE_URL'
 )
 
 const configuredStorageBaseUrl = import.meta.env.VITE_STORAGE_BASE_URL?.trim()
 export const STORAGE_BASE_URL = normalizeBaseUrl(
-    configuredStorageBaseUrl || new URL(API_BASE_URL).origin,
+    configuredStorageBaseUrl ||
+        (import.meta.env.DEV
+            ? 'http://127.0.0.1:8001'
+            : 'https://clueshift-backend.onrender.com'),
     'VITE_STORAGE_BASE_URL'
 )
 
